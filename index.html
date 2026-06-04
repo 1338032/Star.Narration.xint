@@ -12035,7 +12035,7 @@ function loadBuiltinPacks(){
       .catch(function(e){console.warn('内置资源加载失败:',url,e);return null;});
   });
   Promise.all(promises).then(function(results){
-    builtinPacks=results.filter(function(d){return d&&d._app==='bijiAI_resource';});
+    builtinPacks=results.filter(function(d){return d&&d._app==='syn_resource';});
     _builtinPacksLoading=false;
     if(document.getElementById('resList')) renderResList();
   }).catch(function(){
@@ -25333,7 +25333,7 @@ if(wc<10){showToast('内容太少，至少写10字再分享');return;}
 showDlg('分享到资源','将「'+(work.title||'无标题')+'」打包为资源包并导出？',()=>{
 const packData=JSON.parse(JSON.stringify(work));
 const pack={
-_app:'bijiAI_resource',
+_app:'syn_resource',
 _ver:APP_VER,
 id:uid(),
 name:(work.title||'无标题')+'_分享',
@@ -26127,7 +26127,7 @@ function doResExport(){
     var finalLabel=(el.dataset.resLabel||'').replace(/（资源包名）/g,packName);
     items.push({type:el.dataset.resType,name:finalLabel,data:JSON.parse(el.dataset.resData)});
   });
-  const pack={_app:'bijiAI_resource',_ver:APP_VER,id:uid(),name:packName,desc:packDesc,author:packAuthor,createdAt:new Date().toISOString(),items:items};
+  const pack={_app:'syn_resource',_ver:APP_VER,id:uid(),name:packName,desc:packDesc,author:packAuthor,createdAt:new Date().toISOString(),items:items};
   const jsonStr=JSON.stringify(pack,null,2);
   const fileName='星叙_'+new Date().toLocaleDateString().replace(/\//g,'-')+'_'+packName+'.json';
   window._pendingResExport={jsonStr,fileName};
@@ -26216,7 +26216,7 @@ const content=(document.getElementById('expContent').value||'').trim();
 if(!title){showToast('请输入标题');return;}
 if(!content){showToast('请输入内容');return;}
 const pack={
-_app:'bijiAI_resource',
+_app:'syn_resource',
 _ver:APP_VER,
 id:uid(),
 name:title,
@@ -26247,7 +26247,7 @@ const reader=new FileReader();
 reader.onload=ev=>{
 try{
 const data=JSON.parse(ev.target.result);
-if(data._app!=='bijiAI_resource'||!data.items){
+if(data._app!=='syn_resource'||!data.items){
 showToast('这不是有效的资源包文件',3000);return;
 }
 const existing=resPacks.findIndex(p=>p.id===data.id);
