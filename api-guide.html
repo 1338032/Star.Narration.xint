@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API 配置新手指南 · 星叙</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&family=Noto+Serif+SC:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0a0a12;
+  --card:#14141f;
+  --card2:#1c1c2a;
+  --card3:#222233;
+  --accent:#6c5ce7;
+  --accent2:#a29bfe;
+  --accent3:#fd79a8;
+  --gold:#f9ca24;
+  --teal:#00cec9;
+  --green:#55efc4;
+  --red:#ff7675;
+  --text:#e8e8f0;
+  --text2:#8888a8;
+  --border:rgba(108,92,231,.18);
+  --border2:rgba(255,255,255,.07);
+  --glow:rgba(108,92,231,.25);
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  font-family:'Noto Serif SC',Georgia,serif;
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.8;
+  overflow-x:hidden;
+}
+
+/* ===== 背景 ===== */
+body::before{
+  content:'';position:fixed;inset:0;z-index:-1;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 0%,rgba(108,92,231,.1),transparent 55%),
+    radial-gradient(ellipse 60% 50% at 90% 100%,rgba(253,121,168,.06),transparent 50%),
+    radial-gradient(ellipse 50% 40% at 50% 50%,rgba(0,206,201,.03),transparent 60%);
+}
+
+/* ===== 噪点纹理 ===== */
+body::after{
+  content:'';position:fixed;inset:0;z-index:-1;
+  opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  pointer-events:none;
+}
+
+/* ===== 顶部英雄区 ===== */
+.hero{
+  position:relative;
+  padding:80px 40px 60px;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 16px;border-radius:30px;
+  background:rgba(108,92,231,.12);border:1px solid rgba(108,92,231,.3);
+  font-size:12px;color:var(--accent2);letter-spacing:2px;
+  margin-bottom:24px;font-family:'JetBrains Mono',monospace;
+}
+.hero h1{
+  font-family:'ZCOOL QingKe HuangYou',sans-serif;
+  font-size:clamp(32px,6vw,60px);font-weight:400;letter-spacing:4px;
+  background:linear-gradient(135deg,#fff 0%,var(--accent2) 40%,var(--accent3) 80%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:16px;line-height:1.2;
+}
+.hero-sub{
+  font-size:15px;color:var(--text2);max-width:560px;margin:0 auto 40px;
+  font-family:'Noto Serif SC',serif;line-height:2;
+}
+.hero-stats{
+  display:flex;justify-content:center;gap:32px;flex-wrap:wrap;
+}
+.hero-stat{
+  text-align:center;
+}
+.hero-stat .num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:28px;font-weight:500;
+  background:linear-gradient(135deg,var(--accent2),var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.hero-stat .label{font-size:11px;color:var(--text2);letter-spacing:1px;margin-top:4px;}
+
+/* ===== 浮动装饰线 ===== */
+.deco-line{
+  position:absolute;
+  background:linear-gradient(90deg,transparent,var(--accent),transparent);
+  height:1px;opacity:.3;
+}
+.deco-line.h{width:60%;left:20%;bottom:0;}
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;
+}
+
+/* ===== 目录 ===== */
+.toc{
+  max-width:900px;margin:0 auto 60px;padding:0 24px;
+}
+.toc-card{
+  background:var(--card);border:1px solid var(--border);border-radius:20px;
+  padding:28px 32px;
+  position:relative;overflow:hidden;
+}
+.toc-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));
+}
+.toc-title{
+  font-size:13px;color:var(--text2);letter-spacing:3px;
+  font-family:'JetBrains Mono',monospace;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.toc-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.toc-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;
+}
+.toc-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:12px;
+  background:var(--card2);border:1px solid var(--border2);
+  text-decoration:none;color:var(--text2);font-size:13px;
+  transition:all .25s;cursor:pointer;
+}
+.toc-item:hover{color:var(--accent2);border-color:var(--accent);background:rgba(108,92,231,.08);}
+.toc-item .toc-icon{font-size:16px;width:24px;text-align:center;flex-shrink:0;}
+.toc-item .toc-num{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  color:var(--accent);opacity:.6;margin-left:auto;
+}
+
+/* ===== 主容器 ===== */
+.container{max-width:900px;margin:0 auto;padding:0 24px 80px;}
+
+/* ===== 章节标题 ===== */
+.section{margin-bottom:56px;}
+.section-hdr{
+  display:flex;align-items:center;gap:16px;
+  margin-bottom:24px;padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+  position:sticky;top:0;z-index:10;
+  background:linear-gradient(180deg,var(--bg) 80%,transparent);
+  padding-top:16px;
+}
+.section-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;color:var(--accent);
+  background:rgba(108,92,231,.1);border:1px solid rgba(108,92,231,.25);
+  padding:4px 10px;border-radius:6px;white-space:nowrap;
+}
+.section-hdr h2{
+  font-family:'ZCOOL QingKe HuangYou',sans-serif;
+  font-size:22px;font-weight:400;letter-spacing:2px;
+  background:linear-gradient(135deg,var(--text),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.section-hdr .section-icon{font-size:20px;}
+
+/* ===== 概念卡片（基础概念） ===== */
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;}
+.concept-card{
+  background:var(--card);border:1px solid var(--border2);border-radius:16px;
+  padding:20px;position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.concept-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.concept-card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:linear-gradient(180deg,var(--accent),var(--accent2));
+  border-radius:3px 0 0 3px;
+}
+.concept-icon{font-size:28px;margin-bottom:12px;}
+.concept-term{
+  font-size:15px;font-weight:600;color:var(--text);margin-bottom:8px;
+  font-family:'Noto Serif SC',serif;
+}
+.concept-desc{font-size:13px;color:var(--text2);line-height:1.9;}
+.concept-tag{
+  display:inline-block;margin-top:10px;
+  padding:3px 10px;border-radius:8px;font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(108,92,231,.1);color:var(--accent2);
+  border:1px solid rgba(108,92,231,.2);
+}
+
+/* ===== API 提供商卡片 ===== */
+.provider-card{
+  background:var(--card);border:1px solid var(--border2);border-radius:20px;
+  padding:24px;margin-bottom:16px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+}
+.provider-card:hover{border-color:rgba(108,92,231,.4);box-shadow:0 8px 30px rgba(0,0,0,.3);}
+.provider-card.official{border-left:3px solid var(--accent);}
+.provider-card.relay{border-left:3px solid var(--teal);}
+.provider-card.free{border-left:3px solid var(--green);}
+.provider-card.domestic{border-left:3px solid var(--gold);}
+
+.provider-hdr{display:flex;align-items:flex-start;gap:16px;margin-bottom:16px;}
+.provider-logo{
+  width:48px;height:48px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;flex-shrink:0;
+  background:var(--card2);border:1px solid var(--border2);
+}
+.provider-info{flex:1;min-width:0;}
+.provider-name{
+  font-size:17px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+}
+.provider-badge{
+  font-size:10px;padding:2px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;
+  font-weight:500;
+}
+.badge-official{background:rgba(108,92,231,.15);color:var(--accent2);border:1px solid rgba(108,92,231,.25);}
+.badge-relay{background:rgba(0,206,201,.1);color:var(--teal);border:1px solid rgba(0,206,201,.2);}
+.badge-free{background:rgba(85,239,196,.1);color:var(--green);border:1px solid rgba(85,239,196,.2);}
+.badge-domestic{background:rgba(249,202,36,.1);color:var(--gold);border:1px solid rgba(249,202,36,.2);}
+.badge-hot{background:rgba(253,121,168,.12);color:var(--accent3);border:1px solid rgba(253,121,168,.2);}
+.badge-warn{background:rgba(255,118,117,.1);color:var(--red);border:1px solid rgba(255,118,117,.2);}
+
+.provider-sub{font-size:12px;color:var(--text2);margin-top:4px;}
+
+.provider-body{font-size:13px;color:var(--text2);line-height:1.9;margin-bottom:16px;}
+
+/* 步骤列表 */
+.steps{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.steps li{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 14px;background:var(--card2);border-radius:10px;
+  font-size:13px;color:var(--text2);
+  border:1px solid var(--border2);
+  word-break:break-all;
+  overflow-wrap:anywhere;
+  min-width:0;
+}
+.steps li code{
+  word-break:break-all;
+  overflow-wrap:anywhere;
+  display:inline-block;
+  max-width:100%;
+  font-size:11px;
+}
+.steps li a{
+  color:var(--accent2);
+  text-decoration:none;
+  word-break:break-all;
+  overflow-wrap:anywhere;
+}
+.step-num{
+  width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#fff;flex-shrink:0;margin-top:1px;
+  font-family:'JetBrains Mono',monospace;
+}
+.steps li a:hover{text-decoration:underline;}
+
+/* 代码块 */
+.code-block{
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.06);
+  border-radius:12px;padding:14px 18px;
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:#a8d8a8;line-height:2;margin:12px 0;
+  position:relative;
+  overflow-x:auto;
+  overflow-y:visible;
+  word-break:break-all;
+  white-space:pre-wrap;
+  max-width:100%;
+  box-sizing:border-box;
+}
+.code-block .val{
+  color:#ffeaa7;
+  word-break:break-all;
+  overflow-wrap:anywhere;
+  display:inline-block;
+  max-width:100%;
+}
+.code-block .code-label{
+  position:absolute;top:8px;right:12px;
+  font-size:10px;color:var(--text2);letter-spacing:1px;
+}
+.code-block .hl{color:var(--accent2);}
+.code-block .val{color:#ffeaa7;word-break:break-all;}
+.code-block .cmt{color:#636380;}
+
+/* 信息框 */
+.info-box{
+  border-radius:12px;padding:14px 18px;margin:14px 0;
+  font-size:13px;line-height:1.9;
+  display:flex;align-items:flex-start;gap:12px;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  min-width:0;
+}
+.info-box .ib-content{
+  flex:1;
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.info-box.tip{background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.2);}
+.info-box.warn{background:rgba(255,118,117,.08);border:1px solid rgba(255,118,117,.2);}
+.info-box.note{background:rgba(0,206,201,.08);border:1px solid rgba(0,206,201,.2);}
+.info-box.gold{background:rgba(249,202,36,.07);border:1px solid rgba(249,202,36,.2);}
+.info-box i{font-size:16px;margin-top:2px;flex-shrink:0;}
+.info-box.tip i{color:var(--accent2);}
+.info-box.warn i{color:var(--red);}
+.info-box.note i{color:var(--teal);}
+.info-box.gold i{color:var(--gold);}
+.info-box strong{color:var(--text);display:block;margin-bottom:4px;}
+
+/* 标签行 */
+.tag-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+.tag-item{
+  padding:4px 12px;border-radius:20px;font-size:11px;
+  font-family:'JetBrains Mono',monospace;
+  border:1px solid var(--border2);background:var(--card2);color:var(--text2);
+}
+.tag-item.green{border-color:rgba(85,239,196,.25);color:var(--green);background:rgba(85,239,196,.06);}
+.tag-item.red{border-color:rgba(255,118,117,.25);color:var(--red);background:rgba(255,118,117,.06);}
+.tag-item.gold{border-color:rgba(249,202,36,.25);color:var(--gold);background:rgba(249,202,36,.06);}
+.tag-item.purple{border-color:rgba(108,92,231,.3);color:var(--accent2);background:rgba(108,92,231,.08);}
+
+/* 对比表格 */
+.compare-table{width:100%;border-collapse:collapse;font-size:12px;margin:16px 0;}
+.compare-table th{
+  background:var(--card2);color:var(--text2);
+  padding:10px 14px;text-align:left;
+  border:1px solid var(--border2);
+  font-family:'JetBrains Mono',monospace;font-weight:500;letter-spacing:.5px;
+  font-size:11px;
+}
+.compare-table td{
+  padding:10px 14px;border:1px solid rgba(255,255,255,.04);
+  color:var(--text2);vertical-align:top;line-height:1.7;
+}
+.compare-table tr:hover td{background:rgba(255,255,255,.02);}
+.compare-table .td-name{color:var(--text);font-weight:500;}
+.compare-table .td-free{color:var(--green);}
+.compare-table .td-paid{color:var(--gold);}
+.compare-table .td-hard{color:var(--red);}
+.compare-table .td-easy{color:var(--green);}
+.compare-table .td-mid{color:#fdcb6e;}
+
+/* 分隔线 */
+.divider{
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--border),transparent);
+  margin:32px 0;
+}
+
+/* 整合教程 */
+.integrate-steps{display:flex;flex-direction:column;gap:16px;margin-top:16px;}
+.integrate-step{
+  background:var(--card);border:1px solid var(--border2);border-radius:16px;
+  padding:20px 24px;position:relative;
+  word-break:break-word;
+  overflow-wrap:anywhere;
+  overflow:visible;
+}
+.integrate-step::before{
+  content:attr(data-step);
+  position:absolute;top:-12px;left:20px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:#fff;font-size:10px;font-weight:700;
+  padding:4px 12px;border-radius:10px;
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:1px;
+}
+.integrate-step h4{
+  font-size:14px;color:var(--text);margin-bottom:10px;margin-top:4px;
+  font-family:'Noto Serif SC',serif;
+}
+.integrate-step p{font-size:13px;color:var(--text2);line-height:1.9;}
+
+/* 滚动条 */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-thumb{background:rgba(108,92,231,.3);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:rgba(108,92,231,.5);}
+/* ===== 桌面端顶部固定导航 ===== */
+.desktop-nav{
+  display:none;
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  background:rgba(10,10,18,.88);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 32px;
+  align-items:center;justify-content:space-between;
+  height:52px;
+}
+.desktop-nav-logo{
+  font-family:'ZCOOL QingKe HuangYou',sans-serif;
+  font-size:16px;letter-spacing:2px;
+  background:linear-gradient(135deg,#fff,var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.desktop-nav-back{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:20px;
+  border:1px solid var(--border);background:rgba(108,92,231,.08);
+  color:var(--text2);font-size:12px;text-decoration:none;
+  transition:all .2s;
+}
+.desktop-nav-back:hover{border-color:var(--accent);color:var(--accent2);}
+.desktop-nav-toc{
+  display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);
+}
+.desktop-nav-toc a{
+  color:var(--text2);text-decoration:none;padding:4px 10px;
+  border-radius:8px;transition:all .18s;white-space:nowrap;
+}
+.desktop-nav-toc a:hover{color:var(--accent2);background:rgba(108,92,231,.1);}
+@media(min-width:900px){
+  .desktop-nav{display:flex;}
+  .hero{padding-top:128px;}
+  .toc{margin-top:20px;}
+  .container{max-width:980px;}
+  .section-hdr{
+    top:52px;
+  }
+}
+/* 回到顶部 */
+.back-top{
+  position:fixed;bottom:32px;right:32px;
+  width:44px;height:44px;border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 4px 20px var(--glow);
+  color:#fff;font-size:16px;
+  transition:all .3s;opacity:0;
+  border:none;
+}
+.back-top.show{opacity:1;}
+.back-top:hover{transform:translateY(-3px);box-shadow:0 8px 30px var(--glow);}
+
+/* ===== 响应式 ===== */
+@media(max-width:640px){
+  .hero{padding:50px 20px 40px;}
+  .container{padding:0 14px 60px;}
+  .toc{padding:0 14px;}
+  .toc-card{padding:16px;}
+  .hero-stats{gap:16px;}
+  .hero-stat .num{font-size:22px;}
+  .concept-grid{grid-template-columns:1fr;}
+  .compare-table{font-size:10px;}
+  .compare-table th,.compare-table td{padding:6px 8px;}
+  .provider-hdr{flex-direction:column;gap:10px;}
+  .provider-logo{width:40px;height:40px;font-size:18px;}
+  .section-hdr h2{font-size:18px;}
+  .integrate-step{padding:16px 16px 16px 16px;}
+  .code-block{font-size:11px;padding:12px 12px;}
+  .tag-row{gap:6px;}
+  .tag-item{font-size:10px;padding:3px 8px;}
+  .toc-grid{grid-template-columns:repeat(2,1fr);}
+  .info-box{padding:12px 14px;gap:10px;}
+  .steps li{padding:8px 10px;gap:8px;}
+  .provider-card{padding:16px;}
+  .hero h1{letter-spacing:2px;}
+  .hero-badge{font-size:11px;}
+  .back-top{bottom:20px;right:16px;width:38px;height:38px;font-size:14px;}
+}
+
+@media(max-width:400px){
+  .toc-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:12px;}
+  .hero-stat .num{font-size:18px;}
+  .section-hdr h2{font-size:16px;}
+  .compare-table{font-size:9px;}
+  .compare-table th,.compare-table td{padding:5px 6px;}
+}
+</style>
+</head>
+<body>
+<!-- 桌面端顶部导航 -->
+<nav class="desktop-nav">
+  <a href="./index.html" class="desktop-nav-back"><i class="fas fa-chevron-left"></i> 返回星叙</a>
+  <div class="desktop-nav-logo">API 配置指南</div>
+  <div class="desktop-nav-toc">
+    <a href="#sec-basic">基础概念</a>
+    <a href="#sec-deepseek">DeepSeek</a>
+    <a href="#sec-qwen">通义千问</a>
+    <a href="#sec-relay">中转站</a>
+    <a href="#sec-integrate">接入配置</a>
+    <a href="#sec-trouble">常见问题</a>
+  </div>
+</nav>
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(108,92,231,.12),transparent 70%);top:-100px;left:-100px;"></div>
+  <div class="hero-orb" style="width:300px;height:300px;background:radial-gradient(circle,rgba(253,121,168,.08),transparent 70%);bottom:-50px;right:-50px;"></div>
+  <div class="hero-badge"><i class="fas fa-book-open"></i> 新手入门指南 · API 配置</div>
+  <h1>API 配置完全手册</h1>
+  <p class="hero-sub">从零开始，手把手教你接入国内外各大 AI 服务<br>官方直连、中转代理、公益免费站一网打尽</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">8+</div><div class="label">AI 服务平台</div></div>
+    <div class="hero-stat"><div class="num">3</div><div class="label">接入方式</div></div>
+    <div class="hero-stat"><div class="num">∞</div><div class="label">创作可能</div></div>
+  </div>
+  <div class="deco-line h"></div>
+</div>
+
+<!-- ===== 目录 ===== -->
+<div class="toc">
+  <div class="toc-card">
+    <div class="toc-title"><i class="fas fa-list-ul" style="color:var(--accent2)"></i> 目录导航</div>
+    <div class="toc-grid">
+      <a href="#sec-basic" class="toc-item"><span class="toc-icon">💡</span>基础概念<span class="toc-num">§1</span></a>
+      <a href="#sec-openai" class="toc-item"><span class="toc-icon">🤖</span>OpenAI<span class="toc-num">§2</span></a>
+      <a href="#sec-claude" class="toc-item"><span class="toc-icon">🧠</span>Claude<span class="toc-num">§3</span></a>
+      <a href="#sec-gemini" class="toc-item"><span class="toc-icon">💎</span>Gemini<span class="toc-num">§4</span></a>
+      <a href="#sec-deepseek" class="toc-item"><span class="toc-icon">🔍</span>DeepSeek<span class="toc-num">§5</span></a>
+      <a href="#sec-wenxin" class="toc-item"><span class="toc-icon">🌸</span>文心一言<span class="toc-num">§6</span></a>
+      <a href="#sec-qwen" class="toc-item"><span class="toc-icon">🌐</span>通义千问<span class="toc-num">§7</span></a>
+      <a href="#sec-relay" class="toc-item"><span class="toc-icon">🔁</span>中转站<span class="toc-num">§8</span></a>
+      <a href="#sec-free" class="toc-item"><span class="toc-icon">🎁</span>公益免费站<span class="toc-num">§9</span></a>
+      <a href="#sec-compare" class="toc-item"><span class="toc-icon">📊</span>对比总览<span class="toc-num">§10</span></a>
+      <a href="#sec-integrate" class="toc-item"><span class="toc-icon">🔧</span>接入星叙<span class="toc-num">§11</span></a>
+      <a href="#sec-trouble" class="toc-item"><span class="toc-icon">🛠</span>常见问题<span class="toc-num">§12</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 主内容 ===== -->
+<div class="container">
+
+<!-- §1 基础概念 -->
+<div class="section" id="sec-basic">
+  <div class="section-hdr">
+    <span class="section-num">§ 01</span>
+    <span class="section-icon">💡</span>
+    <h2>基础概念，先搞清楚这几个词</h2>
+  </div>
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="concept-icon">🔑</div>
+      <div class="concept-term">API Key（密钥）</div>
+      <div class="concept-desc">就像你的"通行证"，一串字母数字组合，是你调用 AI 服务的唯一凭证。<strong style="color:var(--red)">绝对不能泄露给他人！</strong></div>
+      <span class="concept-tag">sk-xxxxxxxxxxxxxxxx</span>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🌐</div>
+      <div class="concept-term">API 地址（Base URL）</div>
+      <div class="concept-desc">告诉程序"去哪个服务器"请求 AI。官方地址固定，中转站会有不同的地址。</div>
+      <span class="concept-tag">https://api.openai.com/v1</span>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">📦</div>
+      <div class="concept-term">模型名称（Model）</div>
+      <div class="concept-desc">同一家服务商可能有多个 AI 模型，写清楚模型名才能调用到对的那一个。</div>
+      <span class="concept-tag">gpt-4o / claude-3-5-sonnet</span>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">💰</div>
+      <div class="concept-term">Token（令牌）</div>
+      <div class="concept-desc">AI 计费单位，大约每 1000 个汉字 = 1500 token。每次对话都会消耗 token，账户余额不足会报错。</div>
+      <span class="concept-tag">约 750 字 ≈ 1000 token</span>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🔁</div>
+      <div class="concept-term">中转站 / 二转站</div>
+      <div class="concept-desc">国内访问不了官方 API？中转站架设在海外服务器，帮你转发请求，接口格式和官方一样。</div>
+      <span class="concept-tag">relay / proxy</span>
+    </div>
+    <div class="concept-card">
+      <div class="concept-icon">🎁</div>
+      <div class="concept-term">公益免费站</div>
+      <div class="concept-desc">由热心网友维护，免费提供 API 调用。额度有限，适合轻度使用或测试体验。</div>
+      <span class="concept-tag">free / public</span>
+    </div>
+  </div>
+  <div class="info-box warn" style="margin-top:20px">
+    <i class="fas fa-shield-alt"></i>
+    <div class="ib-content">
+      <strong>安全提醒</strong>
+      API Key 是你的账号资产，请勿截图分享、勿存入公开文档、勿提交到 GitHub！一旦泄露请立即在官网撤销该 Key。
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §2 OpenAI -->
+<div class="section" id="sec-openai">
+  <div class="section-hdr">
+    <span class="section-num">§ 02</span>
+    <span class="section-icon">🤖</span>
+    <h2>OpenAI（ChatGPT）</h2>
+  </div>
+  <div class="provider-card official">
+    <div class="provider-hdr">
+      <div class="provider-logo">🤖</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          OpenAI 官方
+          <span class="provider-badge badge-official">官方直连</span>
+          <span class="provider-badge badge-warn">需魔法上网</span>
+        </div>
+        <div class="provider-sub">全球最强 GPT 系列，GPT-4o、o1、o3 等旗舰模型</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      OpenAI 是目前综合能力最强的 AI 平台，但国内无法直接访问，需要科学上网。新账号赠送少量免费额度，用完后需绑定境外信用卡付费。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>开启科学上网（全局模式），访问 <a href="https://platform.openai.com" target="_blank">platform.openai.com</a></li>
+      <li><span class="step-num">2</span>注册账号（建议用 Gmail，国内手机号无法注册）</li>
+      <li><span class="step-num">3</span>进入 <strong style="color:var(--accent2)">API Keys</strong> 页面 → 点击 <strong style="color:var(--accent2)">Create new secret key</strong></li>
+      <li><span class="step-num">4</span>复制 Key（<span style="color:var(--red)">只显示一次！</span>请立即保存）</li>
+      <li><span class="step-num">5</span>填入 Base URL：<code style="color:var(--accent2)">https://api.openai.com/v1</code></li>
+    </ul>
+    <div class="code-block">
+      <span class="cmt"># 常用模型名称</span><br>
+      <span class="hl">gpt-4o</span>               <span class="cmt"># 旗舰，速度与质量平衡（推荐）</span><br>
+      <span class="hl">gpt-4o-mini</span>          <span class="cmt"># 经济版，便宜好用</span><br>
+      <span class="hl">o3-mini</span>              <span class="cmt"># 深度推理模型</span>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 能力最强</span>
+      <span class="tag-item red">✗ 需科学上网</span>
+      <span class="tag-item red">✗ 需境外信用卡</span>
+      <span class="tag-item gold">$ 按量付费</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §3 Claude -->
+<div class="section" id="sec-claude">
+  <div class="section-hdr">
+    <span class="section-num">§ 03</span>
+    <span class="section-icon">🧠</span>
+    <h2>Anthropic Claude</h2>
+  </div>
+  <div class="provider-card official">
+    <div class="provider-hdr">
+      <div class="provider-logo">🧠</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          Anthropic 官方
+          <span class="provider-badge badge-official">官方直连</span>
+          <span class="provider-badge badge-warn">需魔法上网</span>
+          <span class="provider-badge badge-hot">写作首选</span>
+        </div>
+        <div class="provider-sub">Claude Sonnet / Opus 系列，写作、创意能力出众</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      Claude 在长文写作、文风模仿、角色扮演方面表现突出，是创作类 APP 的热门选择。国内同样需要科学上网，且对 IP 地址要求较严格（部分地区的机场节点也会被拦截，建议使用美国/欧洲节点）。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>开启科学上网，访问 <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a></li>
+      <li><span class="step-num">2</span>注册并完成手机号验证（支持国内号码）</li>
+      <li><span class="step-num">3</span>进入 <strong style="color:var(--accent2)">API Keys</strong> → <strong style="color:var(--accent2)">Create Key</strong></li>
+      <li><span class="step-num">4</span>复制 Key，保存妥当</li>
+      <li><span class="step-num">5</span>Base URL 填：<code style="color:var(--accent2)">https://api.anthropic.com</code>（注意：无 /v1）</li>
+    </ul>
+    <div class="code-block">
+      <span class="hl">claude-sonnet-4-20250514</span>    <span class="cmt"># 旗舰写作（推荐）</span><br>
+      <span class="hl">claude-haiku-4-5-20251001</span>   <span class="cmt"># 速度快，经济实惠</span>
+    </div>
+    <div class="info-box tip">
+      <i class="fas fa-lightbulb"></i>
+      <div class="ib-content">
+        <strong>新手提示</strong>
+        Claude API 格式与 OpenAI 略有不同，如果软件是基于 OpenAI 格式开发的，需要选择 Claude 专属接口，或使用兼容层（很多中转站提供 OpenAI 格式的 Claude 接口）。
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 写作创作强</span>
+      <span class="tag-item red">✗ 需科学上网</span>
+      <span class="tag-item red">✗ IP 要求严</span>
+      <span class="tag-item gold">$ 按量付费</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §4 Gemini -->
+<div class="section" id="sec-gemini">
+  <div class="section-hdr">
+    <span class="section-num">§ 04</span>
+    <span class="section-icon">💎</span>
+    <h2>Google Gemini</h2>
+  </div>
+  <div class="provider-card official">
+    <div class="provider-hdr">
+      <div class="provider-logo">💎</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          Google AI Studio（官方）
+          <span class="provider-badge badge-official">官方</span>
+          <span class="provider-badge badge-free">有免费额度</span>
+          <span class="provider-badge badge-hot">性价比高</span>
+        </div>
+        <div class="provider-sub">Gemini 2.5 Pro / Flash，免费额度充足，性价比极高</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      Google 提供的 AI Studio 每天有免费请求额度，Gemini 2.0 Flash 甚至完全免费。适合预算有限的用户，尤其是 Gemini 2.5 Pro 推理能力已接近 GPT-4 水平。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>科学上网，访问 <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a></li>
+      <li><span class="step-num">2</span>用 Google 账号登录（需非中国区账号）</li>
+      <li><span class="step-num">3</span>点击左侧 <strong style="color:var(--accent2)">Get API key</strong> → <strong style="color:var(--accent2)">Create API key</strong></li>
+      <li><span class="step-num">4</span>复制 Key（格式为 AIza 开头）</li>
+      <li><span class="step-num">5</span>Base URL：<code style="color:var(--accent2)">https://generativelanguage.googleapis.com/v1beta/openai/</code></li>
+    </ul>
+    <div class="code-block">
+      <span class="hl">gemini-2.5-pro-preview-06-05</span>   <span class="cmt"># 旗舰推理（收费）</span><br>
+      <span class="hl">gemini-2.0-flash</span>                 <span class="cmt"># 免费！速度快</span><br>
+      <span class="hl">gemini-2.5-flash-preview-05-20</span>   <span class="cmt"># 免费额度内可用</span>
+    </div>
+    <div class="info-box note">
+      <i class="fas fa-info-circle"></i>
+      <div class="ib-content">
+        <strong>OpenAI 兼容接口</strong>
+        Google 提供了 OpenAI 格式的兼容地址（上方 Base URL 末尾含 /openai/），可以直接在支持 OpenAI 格式的软件里使用，非常方便。
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 有免费额度</span>
+      <span class="tag-item green">✓ OpenAI 兼容</span>
+      <span class="tag-item red">✗ 需科学上网</span>
+      <span class="tag-item gold">$ 免费+付费双档</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §5 DeepSeek -->
+<div class="section" id="sec-deepseek">
+  <div class="section-hdr">
+    <span class="section-num">§ 05</span>
+    <span class="section-icon">🔍</span>
+    <h2>DeepSeek（深度求索）</h2>
+  </div>
+  <div class="provider-card domestic">
+    <div class="provider-hdr">
+      <div class="provider-logo">🔍</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          DeepSeek 官方
+          <span class="provider-badge badge-domestic">国内直连</span>
+          <span class="provider-badge badge-hot">超高性价比</span>
+          <span class="provider-badge badge-free">新号送额度</span>
+        </div>
+        <div class="provider-sub">国产最强模型，接近 GPT-4 水平，价格极低，无需科学上网</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      DeepSeek R1 和 V3 是目前国内最受欢迎的 AI 模型，性能媲美国际顶尖水准，价格却极为低廉（约 GPT-4o 的 1/30）。国内直连无需科学上网，新用户有免费额度赠送。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>直接访问 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a>（无需科学上网）</li>
+      <li><span class="step-num">2</span>手机号注册，完成实名认证</li>
+      <li><span class="step-num">3</span>进入 <strong style="color:var(--accent2)">API Keys</strong> → <strong style="color:var(--accent2)">创建 API Key</strong></li>
+      <li><span class="step-num">4</span>充值（最低 10 元）或使用赠送余额</li>
+      <li><span class="step-num">5</span>Base URL：<code style="color:var(--accent2)">https://api.deepseek.com/v1</code></li>
+    </ul>
+    <div class="code-block">
+      <span class="hl">deepseek-chat</span>      <span class="cmt"># DeepSeek V3（综合能力强，推荐）</span><br>
+      <span class="hl">deepseek-reasoner</span>  <span class="cmt"># DeepSeek R1（深度推理，解题逻辑强）</span>
+    </div>
+    <div class="info-box gold">
+      <i class="fas fa-star"></i>
+      <div class="ib-content">
+        <strong>推荐指数 ⭐⭐⭐⭐⭐</strong>
+        对于国内用户来说，DeepSeek 是性价比最高的选择，无需魔法，价格实惠，效果优秀。如果只想接一个 API，优先选这个！
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 无需科学上网</span>
+      <span class="tag-item green">✓ 价格超低</span>
+      <span class="tag-item green">✓ OpenAI 兼容</span>
+      <span class="tag-item gold">$ 约 0.001元/千token</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §6 文心一言 -->
+<div class="section" id="sec-wenxin">
+  <div class="section-hdr">
+    <span class="section-num">§ 06</span>
+    <span class="section-icon">🌸</span>
+    <h2>文心一言（百度）</h2>
+  </div>
+  <div class="provider-card domestic">
+    <div class="provider-hdr">
+      <div class="provider-logo">🌸</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          百度智能云千帆平台
+          <span class="provider-badge badge-domestic">国内直连</span>
+          <span class="provider-badge badge-free">部分免费</span>
+        </div>
+        <div class="provider-sub">ERNIE 系列，中文语境理解好，适合中文内容创作</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      百度的文心 ERNIE 系列对中文语境理解较深，适合中文相关任务。通过百度智能云千帆平台接入，部分轻量模型有免费额度。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>访问 <a href="https://qianfan.cloud.baidu.com" target="_blank">qianfan.cloud.baidu.com</a></li>
+      <li><span class="step-num">2</span>百度账号登录，完成企业/个人认证</li>
+      <li><span class="step-num">3</span>进入 <strong style="color:var(--accent2)">应用接入</strong> → 创建应用，获取 API Key 和 Secret Key</li>
+      <li><span class="step-num">4</span>用两个 Key 换取 Access Token（需要额外一步，较麻烦）</li>
+      <li><span class="step-num">5</span>或使用 <strong style="color:var(--accent2)">OpenAI 兼容地址</strong>：<code style="color:var(--accent2)">https://qianfan.baidubce.com/v2</code></li>
+    </ul>
+    <div class="code-block">
+      <span class="hl">ernie-4.5-turbo-128k</span>   <span class="cmt"># 旗舰长文本模型</span><br>
+      <span class="hl">ernie-lite-8k</span>           <span class="cmt"># 轻量版，免费额度</span>
+    </div>
+    <div class="info-box tip">
+      <i class="fas fa-lightbulb"></i>
+      <div class="ib-content">
+        <strong>简化接入方法</strong>
+        千帆平台已提供 OpenAI 兼容接口（v2 版本），可以直接像 OpenAI 一样调用，不需要再手动换 token，推荐使用此方式。
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 无需科学上网</span>
+      <span class="tag-item green">✓ 中文理解强</span>
+      <span class="tag-item red">✗ 注册认证繁琐</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §7 通义千问 -->
+<div class="section" id="sec-qwen">
+  <div class="section-hdr">
+    <span class="section-num">§ 07</span>
+    <span class="section-icon">🌐</span>
+    <h2>通义千问（阿里云）</h2>
+  </div>
+  <div class="provider-card domestic">
+    <div class="provider-hdr">
+      <div class="provider-logo">🌐</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          阿里云百炼平台
+          <span class="provider-badge badge-domestic">国内直连</span>
+          <span class="provider-badge badge-free">赠送额度大</span>
+        </div>
+        <div class="provider-sub">Qwen 系列，新用户赠送大量 token，生态完善</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      阿里云的通义千问 Qwen 系列综合性能强劲，新用户注册后有较丰厚的免费 token 赠送，接入方式简单，完全兼容 OpenAI 格式。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>访问 <a href="https://bailian.console.aliyun.com" target="_blank">bailian.console.aliyun.com</a></li>
+      <li><span class="step-num">2</span>阿里云账号登录（支持支付宝快捷登录）</li>
+      <li><span class="step-num">3</span>开通模型服务 → 进入 <strong style="color:var(--accent2)">API-KEY</strong> 页面 → 创建 Key</li>
+      <li><span class="step-num">4</span>Base URL：<code style="color:var(--accent2)">https://dashscope.aliyuncs.com/compatible-mode/v1</code></li>
+    </ul>
+    <div class="code-block">
+      <span class="hl">qwen-max</span>          <span class="cmt"># 旗舰模型，性能最强</span><br>
+      <span class="hl">qwen-plus</span>         <span class="cmt"># 均衡版，推荐日常使用</span><br>
+      <span class="hl">qwen-turbo</span>        <span class="cmt"># 轻量快速版</span><br>
+      <span class="hl">qwen-long</span>         <span class="cmt"># 超长上下文（100万 token）</span>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 无需科学上网</span>
+      <span class="tag-item green">✓ 赠送额度大</span>
+      <span class="tag-item green">✓ OpenAI 兼容</span>
+      <span class="tag-item green">✓ 注册简单</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §8 中转站 -->
+<div class="section" id="sec-relay">
+  <div class="section-hdr">
+    <span class="section-num">§ 08</span>
+    <span class="section-icon">🔁</span>
+    <h2>中转站 / 二转站</h2>
+  </div>
+  <div class="info-box note">
+    <i class="fas fa-info-circle"></i>
+    <div class="ib-content">
+      <strong>什么是中转站？</strong>
+      中转站架设在海外服务器，代替你转发 API 请求。你无需科学上网，只需把 Base URL 改成中转站地址，Key 用中转站提供的即可。接口格式和官方完全一致。
+    </div>
+  </div>
+
+  <div class="provider-card relay" style="margin-top:16px">
+    <div class="provider-hdr">
+      <div class="provider-logo">🔁</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          常见中转站类型
+          <span class="provider-badge badge-relay">中转代理</span>
+        </div>
+        <div class="provider-sub">收费型中转站，稳定可靠，支持 GPT / Claude / Gemini 多模型</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      中转站一般按 token 售卖，价格通常比官方略贵（包含代理服务成本），但免去了科学上网的麻烦。寻找时可以在各大 AI 交流群、论坛（如 V2EX、少数派、NodeSeek）搜索推荐。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>在中转站注册账号，充值购买额度</li>
+      <li><span class="step-num">2</span>在个人中心获取中转站提供的 API Key</li>
+      <li><span class="step-num">3</span>将 Base URL 改为中转站的地址（如 <code style="color:var(--teal)">https://api.xxx.com/v1</code>）</li>
+      <li><span class="step-num">4</span>模型名称通常与官方一致，直接填写即可</li>
+      <li><span class="step-num">5</span>发送一条消息测试是否连通</li>
+    </ul>
+    <div class="info-box warn">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div class="ib-content">
+        <strong>选择中转站注意事项</strong>
+        ① 避免选择要求预付大额费用的站 ② 优先选口碑良好、运营超过 6 个月的 ③ 不要相信"永久有效"的承诺 ④ 先小额测试再充值 ⑤ 对话内容会经过第三方服务器，勿发送敏感信息
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 无需科学上网</span>
+      <span class="tag-item green">✓ 支持多种模型</span>
+      <span class="tag-item red">✗ 有跑路风险</span>
+      <span class="tag-item gold">$ 略贵于官方</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §9 公益免费站 -->
+<div class="section" id="sec-free">
+  <div class="section-hdr">
+    <span class="section-num">§ 09</span>
+    <span class="section-icon">🎁</span>
+    <h2>公益免费站</h2>
+  </div>
+  <div class="info-box tip">
+    <i class="fas fa-heart" style="color:var(--accent3)"></i>
+    <div class="ib-content">
+      <strong>公益站的由来</strong>
+      由热心网友自费搭建，免费开放使用。通常限速、限额度，适合轻度体验，不建议用于正式创作。请珍惜使用，不要滥用！
+    </div>
+  </div>
+
+  <div class="provider-card free" style="margin-top:16px">
+    <div class="provider-hdr">
+      <div class="provider-logo">🎁</div>
+      <div class="provider-info">
+        <div class="provider-name">
+          公益免费站特点
+          <span class="provider-badge badge-free">完全免费</span>
+        </div>
+        <div class="provider-sub">无需付费，注册即用，额度有限</div>
+      </div>
+    </div>
+    <div class="provider-body">
+      公益站大多基于 One API / New API 等开源项目搭建，接口与 OpenAI 格式完全兼容，支持 GPT-4、Claude、Gemini 等多种模型，每日有免费额度刷新。
+    </div>
+    <ul class="steps">
+      <li><span class="step-num">1</span>在网络上搜索"OpenAI 公益 API"或加入相关 TG/QQ 群获取地址</li>
+      <li><span class="step-num">2</span>注册账号（通常只需邮箱）</li>
+      <li><span class="step-num">3</span>在"令牌"页面创建 API Key</li>
+      <li><span class="step-num">4</span>填入对应的 Base URL 和 Key 即可</li>
+    </ul>
+    <div class="info-box warn">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div class="ib-content">
+        <strong>重要提醒</strong>
+        公益站随时可能停服，请勿依赖于重要创作。对话内容同样会经过服务器，切勿输入个人隐私、商业机密等敏感信息。
+      </div>
+    </div>
+    <div class="tag-row">
+      <span class="tag-item green">✓ 完全免费</span>
+      <span class="tag-item green">✓ 无需科学上网</span>
+      <span class="tag-item red">✗ 不稳定</span>
+      <span class="tag-item red">✗ 额度有限</span>
+      <span class="tag-item red">✗ 随时停服</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §10 对比表格 -->
+<div class="section" id="sec-compare">
+  <div class="section-hdr">
+    <span class="section-num">§ 10</span>
+    <span class="section-icon">📊</span>
+    <h2>各平台对比总览</h2>
+  </div>
+  <div style="overflow-x:auto;border-radius:14px;border:1px solid var(--border2)">
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>平台</th>
+          <th>类型</th>
+          <th>需科学上网</th>
+          <th>注册难度</th>
+          <th>费用</th>
+          <th>推荐场景</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-name">🔍 DeepSeek</td>
+          <td><span class="provider-badge badge-domestic">国内官方</span></td>
+          <td class="td-easy">✓ 不需要</td>
+          <td class="td-easy">简单</td>
+          <td class="td-paid">极低（0.001元/千token）</td>
+          <td>国内首选，综合创作</td>
+        </tr>
+        <tr>
+          <td class="td-name">🌐 通义千问</td>
+          <td><span class="provider-badge badge-domestic">国内官方</span></td>
+          <td class="td-easy">✓ 不需要</td>
+          <td class="td-easy">简单</td>
+          <td class="td-free">赠送大额度</td>
+          <td>长文本、免费尝鲜</td>
+        </tr>
+        <tr>
+          <td class="td-name">🌸 文心一言</td>
+          <td><span class="provider-badge badge-domestic">国内官方</span></td>
+          <td class="td-easy">✓ 不需要</td>
+          <td class="td-mid">中等</td>
+          <td class="td-free">部分免费</td>
+          <td>中文理解、合规场景</td>
+        </tr>
+        <tr>
+          <td class="td-name">💎 Gemini</td>
+          <td><span class="provider-badge badge-official">国际官方</span></td>
+          <td class="td-hard">✗ 需要</td>
+          <td class="td-mid">中等</td>
+          <td class="td-free">Flash 免费</td>
+          <td>免费体验高质量AI</td>
+        </tr>
+        <tr>
+          <td class="td-name">🤖 OpenAI</td>
+          <td><span class="provider-badge badge-official">国际官方</span></td>
+          <td class="td-hard">✗ 需要</td>
+          <td class="td-hard">较难</td>
+          <td class="td-paid">中等</td>
+          <td>追求最强效果</td>
+        </tr>
+        <tr>
+          <td class="td-name">🧠 Claude</td>
+          <td><span class="provider-badge badge-official">国际官方</span></td>
+          <td class="td-hard">✗ 需要</td>
+          <td class="td-hard">较难</td>
+          <td class="td-paid">中等</td>
+          <td>写作创作首选</td>
+        </tr>
+        <tr>
+          <td class="td-name">🔁 中转站</td>
+          <td><span class="provider-badge badge-relay">第三方代理</span></td>
+          <td class="td-easy">✓ 不需要</td>
+          <td class="td-easy">简单</td>
+          <td class="td-paid">略高于官方</td>
+          <td>需要 GPT/Claude 但没魔法</td>
+        </tr>
+        <tr>
+          <td class="td-name">🎁 公益站</td>
+          <td><span class="provider-badge badge-free">第三方免费</span></td>
+          <td class="td-easy">✓ 不需要</td>
+          <td class="td-easy">简单</td>
+          <td class="td-free">完全免费</td>
+          <td>临时测试、轻度体验</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="info-box gold" style="margin-top:20px">
+    <i class="fas fa-route"></i>
+    <div class="ib-content">
+      <strong>新手推荐路线</strong>
+      没有预算 → 先试 <strong>通义千问</strong>（免费额度大）或 <strong>公益站</strong><br>
+      少量预算 → 充 10 元 <strong>DeepSeek</strong>，可用很久<br>
+      追求最佳写作效果 → <strong>中转站接 Claude</strong> 或直接接官方
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §11 接入星叙 -->
+<div class="section" id="sec-integrate">
+  <div class="section-hdr">
+    <span class="section-num">§ 11</span>
+    <span class="section-icon">🔧</span>
+    <h2>将 API 配置到「星叙」</h2>
+  </div>
+  <p style="font-size:14px;color:var(--text2);margin-bottom:20px;line-height:2">
+    获取到 API Key 和 Base URL 之后，按以下步骤填入星叙即可开始使用。
+  </p>
+  <div class="integrate-steps">
+    <div class="integrate-step" data-step="STEP 01">
+      <h4>打开设置 → API 配置</h4>
+      <p>点击底部导航栏的「设置」图标，找到「API 配置」或「AI 服务」入口。</p>
+    </div>
+    <div class="integrate-step" data-step="STEP 02">
+      <h4>填写 API 地址（Base URL）</h4>
+      <p>将对应平台的 Base URL 粘贴到「API 地址」输入框。注意末尾是否需要 /v1，不同平台要求不同。</p>
+      <div class="code-block" style="margin-top:10px">
+        <span class="cmt"># 各平台 Base URL 速查</span><br>
+        <span class="hl">DeepSeek：</span>  <span class="val">https://api.deepseek.com/v1</span><br>
+        <span class="hl">通义千问：</span>  <span class="val">https://dashscope.aliyuncs.com/compatible-mode/v1</span><br>
+        <span class="hl">Gemini：  </span>  <span class="val">https://generativelanguage.googleapis.com/v1beta/openai/</span><br>
+        <span class="hl">OpenAI：  </span>  <span class="val">https://api.openai.com/v1</span><br>
+        <span class="hl">Claude：  </span>  <span class="val">https://api.anthropic.com</span>
+      </div>
+    </div>
+    <div class="integrate-step" data-step="STEP 03">
+      <h4>填写 API Key</h4>
+      <p>将你的密钥完整粘贴到「API Key」输入框，注意不要有多余的空格。</p>
+    </div>
+    <div class="integrate-step" data-step="STEP 04">
+      <h4>填写模型名称（Model）</h4>
+      <p>在「模型」或「Model」输入框填入对应的模型名。也可以点击下拉列表选择（如果有的话）。建议先用较快的模型测试，确认连通后再换旗舰模型。</p>
+    </div>
+    <div class="integrate-step" data-step="STEP 05">
+      <h4>保存并测试</h4>
+      <p>点击保存后，发送一条"你好"测试。如果 AI 正常回复，说明配置成功！如果报错，请检查 Key 是否复制完整、URL 格式是否正确。</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §12 常见问题 -->
+<div class="section" id="sec-trouble">
+  <div class="section-hdr">
+    <span class="section-num">§ 12</span>
+    <span class="section-icon">🛠</span>
+    <h2>常见错误 &amp; 解决方法</h2>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;">
+
+    <div class="provider-card" style="border-left:3px solid var(--red)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);background:rgba(255,118,117,.1);padding:3px 10px;border-radius:6px">401 Unauthorized</span>
+        <span style="font-size:13px;color:var(--text)">认证失败</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9">API Key 错误或无效。检查：① Key 是否复制完整（无空格）② Key 是否已被撤销 ③ Key 是否匹配当前 Base URL（不能用 DeepSeek 的 Key 去请求 OpenAI）</p>
+    </div>
+
+    <div class="provider-card" style="border-left:3px solid var(--red)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);background:rgba(255,118,117,.1);padding:3px 10px;border-radius:6px">429 Too Many Requests</span>
+        <span style="font-size:13px;color:var(--text)">请求频率超限</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9">请求太频繁或账户余额不足。解决：① 等待片刻再试 ② 检查账户余额 ③ 降低并发请求数量</p>
+    </div>
+
+    <div class="provider-card" style="border-left:3px solid var(--red)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);background:rgba(255,118,117,.1);padding:3px 10px;border-radius:6px">404 Not Found</span>
+        <span style="font-size:13px;color:var(--text)">地址或模型不存在</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9">Base URL 填写有误，或模型名称拼写错误。检查 URL 末尾是否多了/少了斜线、模型名是否准确。</p>
+    </div>
+
+    <div class="provider-card" style="border-left:3px solid var(--gold)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold);background:rgba(249,202,36,.1);padding:3px 10px;border-radius:6px">连接超时 / 无响应</span>
+        <span style="font-size:13px;color:var(--text)">网络问题</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9">国际官方 API 需要科学上网。解决：① 检查科学上网是否开启 ② 换全局模式而非 PAC 模式 ③ 尝试换节点 ④ 或改用国内平台/中转站</p>
+    </div>
+
+    <div class="provider-card" style="border-left:3px solid var(--teal)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal);background:rgba(0,206,201,.1);padding:3px 10px;border-radius:6px">模型名称问题</span>
+        <span style="font-size:13px;color:var(--text)">不知道填什么</span>
+      </div>
+      <p style="font-size:13px;color:var(--text2);line-height:1.9">去各平台的官方文档查"模型列表"，或在平台控制台的模型广场里查找正确的 model ID。注意大小写和连字符要完全一致。</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- 底部 -->
+<div style="text-align:center;padding:40px 0 20px;border-top:1px solid var(--border2);margin-top:20px">
+  <div style="font-family:'ZCOOL QingKe HuangYou',sans-serif;font-size:18px;letter-spacing:3px;
+    background:linear-gradient(135deg,var(--accent2),var(--accent3));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px">
+    星叙 · API 配置指南
+  </div>
+  <div style="font-size:11px;color:var(--text2);letter-spacing:1px;font-family:'JetBrains Mono',monospace">
+    本文档随平台更新，如遇差异请以各官方文档为准
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- 回到顶部 -->
+<button class="back-top" id="backTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-chevron-up"></i>
+</button>
+
+<script>
+// 回到顶部按钮
+window.addEventListener('scroll',function(){
+  var btn = document.getElementById('backTop');
+  btn.classList.toggle('show', window.scrollY > 300);
+});
+
+// 平滑锚点跳转
+document.querySelectorAll('a[href^="#"]').forEach(function(a){
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    var id = this.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if(el){
+      var top = el.getBoundingClientRect().top + window.scrollY - 20;
+      window.scrollTo({top:top,behavior:'smooth'});
+    }
+  });
+});
+</script>
+</body>
+</html>
