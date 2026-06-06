@@ -11961,29 +11961,89 @@ function _initPhraseManageDrag() {
       shortcuts: tbGet(TB_SHORTCUTS_KEY, []),
       phrases: tbGet('tb_phrases', [])
     };
-    // 尝试包含背景图单独存储的数据
     try {
       var bgStandalone = localStorage.getItem(TB_BEAUTY_KEY + '_bg');
       if (bgStandalone) data.beautyBg = bgStandalone;
-    } catch (e) { /* ignore */ }
+    } catch (e) {}
 
     var jsonStr = JSON.stringify(data, null, 2);
-    var blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
     var dateStr = new Date().toLocaleDateString().replace(/\//g, '-');
     var filename = '穿书系统备份_' + dateStr + '.json';
 
-    // 兼容移动端（使用 a 标签下载）
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() {
-      document.body.removeChild(a);
-      URL.revokeObjectURL(a.href);
-    }, 1000);
-    tbToast('备份已导出：' + filename);
+    // 先尝试下载文件
+    var downloaded = false;
+    try {
+      var blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        if (a.parentNode) document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }, 1000);
+      downloaded = true;
+    } catch (e) { downloaded = false; }
+
+    // 弹出确认弹窗
+    _tbShowExportDlg(jsonStr, downloaded);
+  }
+
+  function _tbShowExportDlg(jsonStr, attempted) {
+    var old = document.getElementById('_tbExportDlg');
+    if (old) old.remove();
+
+    var ov = document.createElement('div');
+    ov.id = '_tbExportDlg';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)';
+    ov.innerHTML =
+      '<div style="background:var(--card);border-radius:18px;width:100%;max-width:360px;padding:22px 20px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5)">' +
+        '<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px">📦 导出备份</div>' +
+        '<div style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:18px">' +
+          (attempted
+            ? '已尝试导出文件，请检查手机的<b style="color:var(--text)">下载文件夹</b>或浏览器下载记录。<br><br>没有收到文件？点下方「复制数据」粘贴到备忘录保存。'
+            : '文件导出遇到问题。<br>可点击「复制数据」将备份复制到剪贴板，再粘贴到备忘录保存。') +
+        '</div>' +
+        '<div style="display:flex;flex-direction:column;gap:9px">' +
+          '<button id="_tbExpOk" style="width:100%;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:700;cursor:pointer">✅ 已收到文件</button>' +
+          '<button id="_tbExpCopy" style="width:100%;padding:12px;border-radius:11px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:13px;cursor:pointer">📋 没收到？复制数据内容</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+
+    document.getElementById('_tbExpOk').onclick = function () { ov.remove(); };
+
+    document.getElementById('_tbExpCopy').onclick = function () {
+      var btn = this;
+      btn.disabled = true;
+      function _done(ok) {
+        btn.disabled = false;
+        if (ok) { tbToast('✅ 备份已复制，请粘贴到备忘录保存'); ov.remove(); }
+        else { tbToast('复制失败，请截图或手动备份'); }
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(jsonStr).then(function () { _done(true); }).catch(function () { _tbExecCopy(jsonStr, _done); });
+      } else {
+        _tbExecCopy(jsonStr, _done);
+      }
+    };
+
+    ov.addEventListener('click', function (e) { if (e.target === ov) ov.remove(); });
+  }
+
+  function _tbExecCopy(text, cb) {
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;pointer-events:none';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select();
+      var ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      cb(ok);
+    } catch (e) { cb(false); }
   }
 
   function importAllData() {

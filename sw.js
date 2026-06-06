@@ -1,5 +1,5 @@
 // ⚠️ 每次更新 index.html 后必须手动修改这里的版本号，否则用户看不到更新！
-const CACHE_NAME = 'syn-v1;
+const CACHE_NAME = 'syn-v2;
 
 self.addEventListener('install', function(e) {
   // [FIX] skipWaiting 必须放在 e.waitUntil() 中，否则安装未完成时 SW 可能提前激活
