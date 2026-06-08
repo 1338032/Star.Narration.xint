@@ -14,7 +14,7 @@
 
 <br/>
 
-**[🌐 立即使用](https://1338032.github.io/Star.Narration.xint/)** · **[📦 下载 APK](https://1338032.github.io/Star.Narration.xint/syn.apk)** · **[📖 使用指南](#使用指南)**
+**[🌐 立即使用](https://1338032.github.io/Star.Narration.xint/)** · **[📦 下载 APK](https://1338032.github.io/Star.Narration.xint/syn.apk)** · **[📖 使用指南](https://1338032.github.io/Star.Narration.xint/Basic-Tutorial.md)**
 
 <br/>
 
