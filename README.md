@@ -47,8 +47,6 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 
 我会继续把星叙做成一个**尊重创作者、尊重原创**的工具，也欢迎大家在合理使用的前提下，一起维护健康、良性的创作生态。
 
-⭐️ 感谢每一位真正用心创作的朋友，是你们让这个工具有了存在的意义。
-
 ---
 
 ## ✨ 核心功能
@@ -211,190 +209,162 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 <div align="center">
 
+**❗️ 目前星叙仅支持中文显示，外国用户请移步其他更适合的产品**
+
 **⭐ 如果星叙对你有帮助，欢迎点个 Star！**
 
 *v1.4.4 · Created with ❤️ by 心田*
 
 </div>
 
+
+---
+
+# English Version
+
+
 <div align="center">
 
-<img src="./icon-192.png" alt="Star Narration Icon" width="120" style="border-radius: 24px;" />
+<img src="./icon-192.png" alt="Star Narration icon" width="120" style="border-radius: 24px;" />
 
 # ✦ Star Narration ✦
-### 星叙 · xint
+### Star Narration · xint
 
-*Let every spark of inspiration have the chance to become a full story*
+*Every spark of inspiration deserves a chance to become a real work*
 
-[![Version](https://img.shields.io/badge/version-v1.4.4-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
-[![License](https://img.shields.io/badge/free-Free-51cf66?style=for-the-badge&logo=heart&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
-[![PWA](https://img.shields.io/badge/PWA-installable-a29bfe?style=for-the-badge&logo=googlechrome&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
-[![Platform](https://img.shields.io/badge/platform-Web_+_Android-ff6b6b?style=for-the-badge&logo=android&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
-
-<br/>
-
-**[🌐 Open App](https://1338032.github.io/Star.Narration.xint/)** · **[📦 Download APK](https://1338032.github.io/Star.Narration.xint/syn.apk)** · **[📖 Guide](https://1338032.github.io/Star.Narration.xint/Basic-Tutorial.md)**
-
-<br/>
-
-> Star Narration is an intelligent writing tool designed for **web novel creators**.  
-> No registration required, local data storage, completely free — your stories belong to you.
+[Version](https://1338032.github.io/Star.Narration.xint/) | [Free to use](https://1338032.github.io/Star.Narration.xint/) | [PWA Installable](https://1338032.github.io/Star.Narration.xint/) | [Web + Android Platform](https://1338032.github.io/Star.Narration.xint/)
 
 </div>
 
 ---
 
-## 📢 Creative Philosophy Statement
+## 📢 Statement of Creative Positioning
 
-From its very beginning, Star Narration clearly opposes the use of AI for mass-generating low-quality content, spam publishing, or ghostwriting.
+From its inception, Star Narration has clearly opposed the use of AI for mass-producing low-quality content, platform manipulation, or ghostwriting.
 
-The purpose of this tool is **not to replace human writing**, but to provide passionate creators with a **powerful, private, and convenient creative workspace**.
+The intention behind this tool is not to replace human writers with AI, but to provide a powerful, private, and practical creative assistant for people who genuinely love storytelling.
 
 I firmly believe:
 
-> **Great stories always come from the author’s real emotions, life experiences, and unique thinking — AI cannot replace that.**
+> Good stories always come from the author’s real emotions, life experiences, and unique thinking. AI cannot replace that.
 
-AI should serve as a **creative companion and assistant**, not the main author.
+AI should serve as an “inspiration partner” and “efficiency assistant”, not the主体 of writing.
 
-Every published work should still be **guided, edited, and refined by the creator**, who is responsible for its content.
+Every finished work presented to readers should still be led, refined, and finalized by the author, who takes full responsibility for the content.
 
-All features in Star Narration (foreshadow tracking, essence compressor, Star Notes, worldbuilding system, version history, etc.) are designed to help authors **think better, plan better, and refine better**, not to generate finished works in one click.
+All features of Star Narration (foreshadowing tracker, essence compressor, star notes, world-building manager, version history, etc.) are designed to help authors think better, plan better, and improve their stories—not to generate finished works with one click.
 
-If you agree with the idea of **“human creativity + AI assistance”**, you are welcome to use Star Narration.
+If you agree with the concept of “human creation + AI assistance”, you are welcome to use Star Narration.
 
-If you are looking for a tool that automatically generates novels for direct publishing, then Star Narration is **not suitable for you**.
+If you expect a tool that automatically generates complete novels for direct publication, then Star Narration is not for you.
 
-We will continue building this tool with respect for creators and originality, and we welcome everyone to help maintain a healthy creative ecosystem.
+I will continue developing it into a tool that respects creators and originality, and I welcome everyone to help maintain a healthy creative ecosystem under reasonable use.
 
-⭐ Thank you to every dedicated creator — you are the reason this tool exists.
+⭐ Thank you to every creator who puts real effort into their work.
 
 ---
 
 ## ✨ Core Features
 
-| Feature | Description |
-|--------|-------------|
-| 🤖 AI Writing Assistant | Custom AI integration for story continuation based on style, characters, and worldbuilding. Supports streaming output, quality scoring, and retry. |
-| 🧵 Foreshadow Tracker | Track every foreshadowing element with placement and resolution status to avoid forgotten plot threads. |
-| 🗂️ Worldbuilding Manager | Centralized management of characters, worlds, writing style rules, and outlines. Automatically referenced during AI generation. |
-| 📦 Resource Hub | Package characters, worlds, and styles into reusable bundles for sharing or importing. |
-| 🎭 Roleplay Mode | Interact with your characters and explore side stories through dialogue. |
-| 📝 Star Notes | Capture fragmented inspiration and auto-organize via tags. |
-| ⏱️ Timeline Manager | Visual timeline system with automatic detection of chronological inconsistencies. |
-| 🔬 Essence Compressor | Summarize long content into optimized context for AI continuity. |
+### 🤖 AI Assisted Writing
+Connect custom AI APIs to continue writing based on your style, character settings, and world-building. Supports streaming output, quality scoring, and retry generation.
+
+### 🧵 Foreshadowing Tracker
+Track every foreshadowing element with structured records, ensuring no plot thread is forgotten.
+
+### 🗂️ Full Setting Management
+Manage characters, world-building, writing rules, outlines, and more. Automatically referenced during AI generation.
+
+### 📦 Resource Hub
+Package characters, worlds, and writing styles into reusable resource packs for sharing or reuse.
+
+### 🎭 Role Play Mode
+Interact with your characters and explore side stories to deepen emotional connection.
+
+### 📝 Star Notes
+A unique idea note system that organizes fragmented inspiration automatically.
+
+### ⏱️ Timeline Management
+Visually manage story timelines and detect logical inconsistencies.
+
+### 🔬 Essence Compressor
+Summarize long content into optimized AI context input for better continuity.
 
 ---
 
 ## 🚀 More Highlights
 
-| Feature | Description |
-|--------|-------------|
-| 🔍 Global Search | Search across all stories, notes, foreshadowing, timelines, and favorites |
-| 📚 Chapter Versioning | Up to 20 saved versions per chapter with comparison and rollback |
-| 🎙️ TTS Reading Mode | Immersive text-to-speech reading experience |
-| ✍️ AI Proofreading | One-click typo detection and correction |
-| 🌏 Side Story Generator | Generate spin-off stories based on completed works |
-| 📊 Writing Analytics | Statistics for word count, projects, and creative goals |
-| 🖋️ Writing Style Analysis | Analyze and unify writing style across works |
-| 📱 Immersive Reading Mode | Fullscreen distraction-free reading experience |
-| 🔤 Custom Fonts | Multiple built-in fonts for personalized reading |
-| 💾 Data Backup & Restore | Export all data safely with one click |
+- Global search across all works and notes
+- Chapter version history (up to 20 versions per chapter)
+- TTS narration mode
+- AI proofreading for typos
+- Spin-off story generation
+- Writing statistics dashboard
+- Writing style analysis
+- Immersive reading mode
+- Custom fonts
+- Data backup & restore
 
 ---
 
-## 🎨 UI Themes
+## 🎨 Themes
 
-Star Narration includes **5 color themes × 2 light/dark modes**, offering a comfortable creative environment:
+5 color themes × 2 modes (light/dark)
 
-| Theme | Colors |
-|------|--------|
-| 🟣 Default Purple | `#6c5ce7` · `#a29bfe` |
-| 🔵 Deep Ocean Blue | `#2980b9` · `#5dade2` |
-| 🟢 Forest Green | `#27ae60` · `#58d68d` |
-| 🟠 Warm Orange | `#e67e22` · `#f0b27a` |
-| ⬜ Light Mode | Clean white aesthetic |
+- Purple (default)
+- Deep Blue
+- Forest Green
+- Warm Orange
+- Light Mode
 
 ---
 
-## 📲 Installation & Usage
+## 📲 Installation
 
-### Option 1: Web App (Recommended)
+### Direct Access (Recommended)
+https://1338032.github.io/Star.Narration.xint/
 
-Visit 👉 https://1338032.github.io/Star.Narration.xint/
+### Install as PWA
+Use browser “Add to Home Screen” or install icon in Chrome/Safari.
 
-### Option 2: Install as PWA
-
-Open in Chrome / Safari:
-
-- Mobile: Share → Add to Home Screen  
-- Desktop: Click install icon in address bar  
-
-Works like a native app with offline support.
-
-### Option 3: Android APK
-
-Download directly and install:
-
+### Android APK
 https://1338032.github.io/Star.Narration.xint/syn.apk
 
 ---
 
-## 🔒 Privacy & Security
+## 🔒 Privacy
 
-- **Local storage only**: All works and data are stored on your device
-- **No account required**
-- **API keys stored locally only**
-- No data is uploaded to any server
-
----
-
-## 💡 Quick Start
-
-```
-1.Open 5tar Narration in your browser
-2. Add your AI API key in settings
-(OpenAl-compatible APIs supported)
-3.Create a new project and define characters/
-worldbuilding
-4. Write your first paragraph
-5.Click “AI Continue”t to begin generating
-your story
-```
-
-> 💬 Beginner tip: Check the built-in “Guide” (top-right menu). You can learn everything in about 15 minutes.
+- All data is stored locally on your device
+- API keys are stored locally only
+- No account required
 
 ---
 
-## 🛠️ Technical Details
+## 🛠️ Technical Features
 
-- Pure frontend single-page application
-- No backend dependency
-- Supports PWA offline mode
-- IndexedDB / localStorage persistence
-- Compatible with OpenAI-style APIs (GPT / Claude / DeepSeek etc.)
-- Fully responsive design (mobile / tablet / desktop)
+- Pure frontend single-page app
+- PWA support for offline usage
+- IndexedDB/localStorage persistence
+- Compatible with OpenAI-style APIs (GPT, Claude, DeepSeek, etc.)
+- Responsive design for all devices
 
 ---
 
 ## 📬 Contact
 
-> Author: **心田**
+Author: xint
 
-| Platform | Contact |
-|----------|--------|
-| 📮 Email | a13380324832@qq.com |
-| 💬 QQ | 962005530 |
-| 📕 Xiaohongshu | 95567118758 / 27418565861 |
-
-Feedback and suggestions are welcome via issues or messages.
+Email: a13380324832@qq.com  
+QQ: 962005530  
+Xiaohongshu: 95567118758 / 27418565861  
 
 ---
 
-## ⚖️ License Notice
+## ⚖️ License
 
-The following original modules are protected by copyright: Star Notes, Essence Compressor, Context System, Foreshadow Tracker, Resource Hub, and other uniquely designed features and interaction systems.
+Original creative modules such as Star Notes, Essence Compressor, Foreshadowing Tracker, Resource Hub, and advanced writing systems are protected by copyright.
 
-Unauthorized copying, cloning, or derivative reproduction is prohibited.
+Unauthorized copying, cloning, or reproduction is prohibited.
 
 Content created by users belongs to the users themselves.
 
@@ -402,8 +372,10 @@ Content created by users belongs to the users themselves.
 
 <div align="center">
 
-**⭐ If Star Narration helps you, please consider giving it a Star!**
+❗️ At present, Star Narration only supports Chinese-language display. Foreign users are advised to switch to other, more suitable products.
 
-*v1.4.4 · Created with ❤️ by 心田*
+If this project helps you, please give it a ⭐ Star!
+
+v1.4.4 · Created with ❤️ by xint
 
 </div>
