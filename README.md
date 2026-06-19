@@ -7,7 +7,7 @@
 
 *让每一个灵感都有机会长成作品*
 
-[![Version](https://img.shields.io/badge/版本-v1.4.4-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
+[![Version](https://img.shields.io/badge/版本-v1.4.5-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![License](https://img.shields.io/badge/免费使用-Free-51cf66?style=for-the-badge&logo=heart&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![PWA](https://img.shields.io/badge/PWA-可安装-a29bfe?style=for-the-badge&logo=googlechrome&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![Platform](https://img.shields.io/badge/平台-Web_+_Android-ff6b6b?style=for-the-badge&logo=android&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
@@ -213,7 +213,7 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 **⭐ 如果星叙对你有帮助，欢迎点个 Star！**
 
-*v1.4.4 · Created with ❤️ by 心田*
+*v1.4.5 · Created with ❤️ by 心田*
 
 </div>
 
@@ -376,6 +376,6 @@ Content created by users belongs to the users themselves.
 
 If this project helps you, please give it a ⭐ Star!
 
-v1.4.4 · Created with ❤️ by xint
+v1.4.5 · Created with ❤️ by xint
 
 </div>
