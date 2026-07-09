@@ -230,12 +230,23 @@ box-shadow:0 10px 40px rgba(0,0,0,.15),0 0 20px rgba(108,92,231,.1);
 textarea::-webkit-resizer{display:none;}
 textarea{resize:none!important;}
 .tx-resize-handle{
-position:absolute;bottom:4px;right:4px;
-width:0;height:0;
-border-style:solid;
-border-width:0 0 12px 12px;
-border-color:transparent transparent rgba(108,92,231,.8) transparent;
-pointer-events:none;border-radius:0 0 3px 0;
+  position:absolute;bottom:0;right:0;
+  width:26px;height:26px;
+  cursor:se-resize;
+  touch-action:none;
+  z-index:2;
+  -webkit-tap-highlight-color:transparent;
+  display:flex;align-items:flex-end;justify-content:flex-end;
+  padding:3px;
+}
+.tx-resize-handle::after{
+  content:'';display:block;
+  width:0;height:0;
+  border-style:solid;
+  border-width:0 0 13px 13px;
+  border-color:transparent transparent rgba(108,92,231,.85) transparent;
+  border-radius:0 0 3px 0;
+  pointer-events:none;
 }
 .tx-wrap{position:relative;display:block;}
 .set-entry{border-bottom:none!important;}
@@ -287,10 +298,10 @@ body.simple-ui .simple-hide{
 }
 .page-loading-ov.show{opacity:1;pointer-events:auto;}
 .pl-icon{
-  width:80px;height:80px;
+  width:48px;height:48px;
   border-radius:0;object-fit:contain;
-  margin-bottom:20px;
-  filter:drop-shadow(0 4px 16px rgba(108,92,231,.4));
+  margin-bottom:12px;
+  filter:drop-shadow(0 2px 10px rgba(108,92,231,.35));
 }
 .pl-icon.secret-icon{
   width:64px;height:96px;
@@ -556,6 +567,55 @@ display:flex;align-items:center;gap:4px;transition:all .3s;
 }
 .hdr-btn:active{transform:scale(.95);}
 .hdr-btn svg{width:15px;height:15px;}
+@keyframes hdrStarPulse{
+  0%,100%{
+    opacity:.92;
+    text-shadow:0 0 5px rgba(255,255,255,.6),0 0 10px rgba(255,255,255,.35);
+  }
+  50%{
+    opacity:1;
+    text-shadow:0 0 8px rgba(255,255,255,.95),0 0 16px rgba(255,255,255,.55),0 0 26px rgba(255,255,255,.25);
+  }
+}
+.hdr-star {
+  font-size: 22px;
+  color: #e8e0ff;                        /* 纯白 → 带一点紫调的柔白 */
+  -webkit-text-fill-color: #e8e0ff;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+  animation: hdrStarPulse 3s ease-in-out infinite;
+  /* 原来双层光晕都很强，现在缩小半径、降低不透明度 */
+  text-shadow:
+    0 0 4px rgba(255, 255, 255, 0.35),
+    0 0 10px rgba(200, 180, 255, 0.18);
+  margin-right: 3px;
+  position: relative;
+  top: -1px;
+}
+.hdr-star.star-offline {
+  color: #f9ca24;
+  -webkit-text-fill-color: #f9ca24;
+  /* 离线状态黄色也跟着收敛 */
+  text-shadow:
+    0 0 4px rgba(249, 202, 36, 0.50),
+    0 0 10px rgba(249, 202, 36, 0.20);
+}
+body.theme-light .hdr-star {
+  color: var(--accent2);
+  -webkit-text-fill-color: var(--accent2);
+  text-shadow:
+    0 0 4px rgba(108, 92, 231, 0.40),
+    0 0 10px rgba(108, 92, 231, 0.15);
+}
+body.theme-light .hdr-star.star-offline {
+  color: #e67e22;
+  -webkit-text-fill-color: #e67e22;
+  text-shadow:
+    0 0 4px rgba(230, 126, 34, 0.40),
+    0 0 10px rgba(230, 126, 34, 0.15);
+}
 body.theme-light .hdr{
 background:linear-gradient(135deg,rgba(245,245,248,.95) 0%,rgba(255,255,255,.98) 100%);
 border-bottom-color:rgba(0,0,0,.08);
@@ -1887,6 +1947,7 @@ background:var(--bg);overflow-y:auto;
 #rpGroupModal.show,#rpGroupSettingsOv.show{display:flex!important;flex-direction:column;overflow:hidden;}
 #rpModal.show{display:flex!important;flex-direction:column;}
 #advCreateOv.show{display:flex!important;flex-direction:column;overflow:hidden;}
+#fanwaiOv.show{display:flex!important;flex-direction:column;overflow:hidden;}
 #advCreateOv .set-modal-body{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .set-modal-hdr{
 position:sticky;top:0;z-index:10;
@@ -2409,12 +2470,14 @@ cursor:pointer;padding:4px 8px;border-radius:8px;
 .ch-panel-list{
 padding:12px 18px 20px;overflow-y:auto;flex:1;
 display:flex;flex-direction:column;gap:0;
+-webkit-user-select:none;user-select:none;
 }
 .ch-item{
 padding:12px 16px;border-radius:12px;border:none;border-bottom:none;
 background:transparent;color:var(--text2);font-size:13px;
 text-align:left;cursor:pointer;transition:all .25s;
 display:flex;flex-direction:row;align-items:center;gap:12px;
+-webkit-user-select:none;user-select:none;
 }
 .ch-item:last-child{border-bottom:none;}
 .ch-item:active{transform:scale(.97);background:rgba(108,92,231,.06);}
@@ -3895,6 +3958,9 @@ body.theme-light .xj-modal{background:linear-gradient(160deg,#ededf7 0%,#e2e2f5 
 .tl-view-toggle{display:flex;gap:6px;margin-bottom:10px;}
 .tl-view-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:11px;cursor:pointer;transition:all .2s;}
 .tl-view-btn.act{background:var(--accent);color:#fff;border-color:var(--accent);}
+/* 故事时间线：全屏弹窗容器 */
+#timelineOv{display:none;position:fixed;inset:0;z-index:810;background:var(--bg);flex-direction:column;overflow:hidden;}
+#timelineOv.show{display:flex;animation:slideUp .3s ease;}
 #addFsOv{z-index:850;} /* 创作目标 */ .goal-panel{padding:14px 18px;}
 .goal-card{
 background:var(--card);border-radius:16px;padding:18px;
@@ -6141,6 +6207,15 @@ body.theme-light .mat-sort-btn{background:rgba(108,92,231,.04);}
 .mat-picker-item-icon{width:32px;height:32px;border-radius:8px;background:rgba(108,92,231,.1);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px;}
 .mat-picker-item-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
 .mat-picker-item-preview{font-size:11px;color:var(--text2);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+/* ==================== 书目素材模块（全屏弹窗） ==================== */
+#bookMatModuleOv{display:none;position:fixed;inset:0;z-index:810;background:var(--bg);flex-direction:column;overflow:hidden;}
+#bookMatModuleOv.show{display:flex;animation:slideUp .3s ease;}
+.bmm-item{display:flex;align-items:flex-start;gap:10px;padding:12px;border-radius:12px;background:var(--card);border:1px solid var(--border);margin-bottom:10px;}
+.bmm-item-icon{width:32px;height:32px;border-radius:8px;background:rgba(108,92,231,.1);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:2px;}
+.bmm-item-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden;}
+.bmm-item-preview{font-size:11px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.bmm-item-del{flex-shrink:0;background:none;border:none;color:var(--text2);font-size:15px;cursor:pointer;padding:4px 6px;border-radius:8px;-webkit-tap-highlight-color:transparent;}
+.bmm-item-del:active{color:var(--danger);background:rgba(255,107,107,.08);}
 /* 每日灵感火焰按钮 */
 .set-modal-hdr .mat-dib-btn{font-size:20px;padding:4px 6px;border-radius:8px;transition:color .3s,opacity .3s;flex-shrink:0;}
 .set-modal-hdr .mat-dib-btn:active{opacity:.6;}
@@ -6175,6 +6250,175 @@ body.theme-light #mat-dib-popup{background:var(--bg);}
 .cc-dismiss{padding:7px 16px;border-radius:10px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;cursor:pointer}
 body.theme-light .cc-pass{background:rgba(81,207,102,.05)}
 body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
+/* ==================== 快照抽屉 ==================== */
+#snapshotDrawerOv{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(0,0,0,.5);
+  display:none;align-items:flex-end;justify-content:center;
+}
+#snapshotDrawerOv.show{display:flex;animation:fadeIn .2s ease;}
+#snapshotDrawer{
+  width:100%;max-width:520px;
+  background:var(--card);
+  border-radius:20px 20px 0 0;
+  max-height:82vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 -8px 40px rgba(0,0,0,.45);
+  animation:snDrawerUp .3s cubic-bezier(.4,0,.2,1);
+}
+@keyframes snDrawerUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.sn-hdr{
+  padding:16px 20px 12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;flex-shrink:0;
+}
+.sn-hdr-title{
+  flex:1;font-size:15px;font-weight:700;
+  display:flex;align-items:center;gap:8px;color:var(--text);
+}
+.sn-list{flex:1;overflow-y:auto;padding:10px 14px 20px;}
+.sn-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 14px;border-radius:12px;
+  border:1px solid var(--border);background:var(--card);
+  margin-bottom:8px;cursor:pointer;
+  transition:border-color .2s,background .2s;
+}
+.sn-item:active{background:rgba(108,92,231,.1);border-color:var(--accent);}
+.sn-item-main{flex:1;min-width:0;}
+.sn-item-label{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sn-item-time{font-size:11px;color:var(--text2);margin-bottom:3px;}
+.sn-item-preview{font-size:11px;color:var(--text2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sn-del-btn{
+  flex-shrink:0;width:30px;height:30px;border-radius:50%;border:none;
+  background:rgba(255,107,107,.12);color:var(--danger);
+  font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:2px;
+}
+.sn-del-btn:active{background:rgba(255,107,107,.28);}
+.sn-empty{
+  text-align:center;padding:44px 16px;
+  color:var(--text2);font-size:13px;line-height:2;
+}
+/* 快照预览全屏 */
+#snapshotPreviewOv{
+  position:fixed;inset:0;z-index:9100;
+  background:var(--bg);
+  display:none;flex-direction:column;
+}
+#snapshotPreviewOv.show{display:flex;animation:fadeIn .2s ease;}
+.sn-preview-hdr{
+  padding:14px 16px;background:var(--card);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.sn-preview-body{
+  flex:1;overflow-y:auto;padding:20px;
+  font-size:var(--rd-fontsize,15px);line-height:var(--rd-lineheight,2);
+  color:var(--text);white-space:pre-wrap;word-wrap:break-word;
+}
+.sn-preview-footer{
+  padding:12px 16px;background:var(--card);
+  border-top:1px solid var(--border);
+  display:flex;gap:10px;flex-shrink:0;
+  padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));
+}
+/* ==================== 番外篇 全屏弹窗（复用 set-modal） ==================== */
+/* 摘要操作按钮 */
+.fw-sum-hdr{
+  font-size:12px;font-weight:700;color:var(--accent2);
+  margin-bottom:10px;display:flex;align-items:center;gap:6px;
+}
+.fw-sum-actions{display:flex;gap:8px;margin-top:10px;}
+.fw-sum-actions button{
+  flex:1;padding:10px;border-radius:10px;
+  border:1px solid var(--border);background:var(--bg);
+  color:var(--text2);font-size:12px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  -webkit-tap-highlight-color:transparent;
+}
+.fw-sum-actions button:active{border-color:var(--accent);color:var(--accent2);}
+/* 单篇番外卡片 */
+.fw-ep-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:16px;margin-bottom:14px;overflow:hidden;
+}
+.fw-ep-hdr{
+  padding:13px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(108,92,231,.1),transparent);
+}
+.fw-ep-num{font-size:14px;font-weight:700;color:var(--text);}
+.fw-ep-stat{font-size:11px;color:var(--text2);}
+.fw-ep-stat.done{color:var(--success);}
+.fw-ep-body{padding:14px 16px 16px;position:relative;}
+.fw-ep-ta{
+  width:100%;padding:10px 12px;box-sizing:border-box;
+  border-radius:10px;border:1px solid var(--border);
+  background:var(--bg);color:var(--text);
+  font-size:12px;line-height:1.7;font-family:inherit;
+  min-height:80px;transition:border-color .2s;
+}
+.fw-ep-ta:focus{outline:none;border-color:var(--accent);}
+/* 已生成结果卡片 */
+.fw-result-card{
+  background:linear-gradient(135deg,rgba(108,92,231,.07),rgba(162,155,254,.03));
+  border:1px solid rgba(108,92,231,.22);
+  border-radius:16px;padding:16px;margin-bottom:14px;
+}
+.fw-result-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.fw-result-num{font-size:14px;font-weight:700;color:var(--text);}
+.fw-result-wc{font-size:11px;color:var(--success);font-weight:600;}
+.fw-result-preview{
+  font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:12px;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+}
+.fw-result-acts{display:flex;gap:6px;flex-wrap:wrap;}
+.fw-result-acts button{
+  padding:6px 12px;border-radius:9px;border:1px solid var(--border);
+  background:var(--card);color:var(--text2);font-size:11px;cursor:pointer;
+  display:flex;align-items:center;gap:4px;-webkit-tap-highlight-color:transparent;
+}
+.fw-result-acts button:active{border-color:var(--accent);color:var(--accent2);}
+.fw-result-acts button.danger{border-color:rgba(255,107,107,.25);color:var(--danger);}
+/* ==================== 编辑器滚动置顶/置底按钮 ==================== */
+.ed-scroll-btn{
+  position:fixed;right:14px;z-index:520;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(108,92,231,.22);
+  background:rgba(20,20,30,.78);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:rgba(162,155,254,.9);font-size:15px;
+  cursor:pointer;display:none;
+  align-items:center;justify-content:center;
+  box-shadow:0 2px 14px rgba(0,0,0,.35);
+  transition:opacity .22s,transform .22s;
+  -webkit-tap-highlight-color:transparent;
+}
+.ed-scroll-btn.show{display:flex;animation:fadeIn .2s ease;}
+.ed-scroll-btn:active{transform:scale(.88);}
+body.theme-light .ed-scroll-btn{
+  background:rgba(248,248,252,.88);color:var(--accent);
+  box-shadow:0 2px 14px rgba(0,0,0,.12);
+}
+#edScrollTop{bottom:calc(76px + env(safe-area-inset-bottom,0px));}
+#edScrollBottom{bottom:calc(76px + env(safe-area-inset-bottom,0px));}
+/* ==================== 编辑器文本区 粗滚动条 ==================== */
+#edTextarea::-webkit-scrollbar{width:14px;}
+#edTextarea::-webkit-scrollbar-track{
+  background:rgba(108,92,231,.06);
+}
+#edTextarea::-webkit-scrollbar-thumb{
+  background:rgba(108,92,231,.42);
+  border-radius:7px;
+  min-height:50px;
+}
+#edTextarea::-webkit-scrollbar-thumb:active{
+  background:rgba(108,92,231,.72);
+}
 </style>
 <!-- [FIX-2] 防FOUC：在CSS解析前同步应用主题class，消除浅色模式用户首次加载时的暗色→亮色闪白问题 -->
 <script>
@@ -6267,7 +6511,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
   <div class="splash-card">
     <div class="splash-icon"><img src="./xinx.png" alt="星叙"></div>
     <div class="splash-logo">星叙</div>
-    <div class="splash-sub">让灵感落笔成章</div>
+    <div class="splash-sub">故事宇宙创作平台</div>
     <div class="splash-sub2">你的写作搭子 · 同人与网文创作</div>
     <div class="splash-progress"><div class="splash-progress-bar" id="splashBar"></div></div>
     <div class="splash-status">
@@ -6287,8 +6531,8 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 
 <div class="hdr" role="banner" aria-label="顶部导航栏">
 <div class="hdr-left">
-<h1>星叙</h1>
-<div class="hdr-sub">AI辅助创作工坊 · 让灵感落笔成章</div>
+<h1><span class="hdr-star" id="hdrStar">✦</span>星叙</h1>
+<div class="hdr-sub">AI辅助创作工坊 · 构筑你的故事宇宙</div>
 </div>
 <div class="hdr-right">
   <button class="hdr-btn" id="moreMenuBtn" title="更多功能" style="border:none;background:none;padding:5px 8px;">
@@ -6369,7 +6613,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 </div>
 <div style="display:flex;gap:6px">
 <button onclick="batchDelete()" style="padding:5px 12px;border-radius:8px;border:1px solid rgba(255,107,107,.3);background:transparent;color:var(--danger);font-size:10px;cursor:pointer"><i class="fas fa-trash"></i> 删除</button>
-<button onclick="batchExportTxt()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent2);font-size:10px;cursor:pointer"><i class="fas fa-download"></i> 导出</button>
+<button onclick="batchExportMenu()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent2);font-size:10px;cursor:pointer"><i class="fas fa-download"></i> 导出</button>
 </div>
 </div>
 </div>
@@ -6691,9 +6935,10 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 </div>
 </div>
 <div class="tool-group">
-<div class="tool-group-title"><i class="fas fa-book-open"></i> 番外续写</div>
+<div class="tool-group-title"><i class="fas fa-book-open"></i> 番外 · 素材模块</div>
 <div class="tool-grid">
 <div class="tool-item" onclick="closeAllToolPanels();rdToolOpen=false;openFanwai()" style="border-color:var(--success);color:var(--success)"><i class="fas fa-book-open"></i> 继写番外篇 <span class="ti-desc">为作品续写番外故事</span></div>
+<div class="tool-item" onclick="closeAllToolPanels();rdToolOpen=false;openBookMatModule()" style="border-color:var(--accent);color:var(--accent2)"><i class="fas fa-cubes"></i> 素材模块 <span class="ti-desc">续写自动引用素材</span></div>
 </div>
 </div>
 </div>
@@ -6797,7 +7042,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <div class="hb-body hb-page act" id="hbPageManual">
 
 <h3>一、星叙是什么？</h3>
-<p>星叙是一款本地运行的「AI辅助创作工坊」。比起"一键出爽文"，它更强调 <strong>你始终是作者</strong>，AI只是一个随叫随到的写作搭子：帮你想点子、出大纲、写段落、润色文字、管理世界观和人物设定，让长篇也能一步步写完。</p>
+<p>星叙是一款本地运行的「AI辅助创作工坊」，一个创作者为自己打造的故事宇宙工作台。比起"一键出爽文"，它更强调 <strong>你始终是作者</strong>，AI只是随叫随到的写作搭子：帮你想点子、出大纲、写段落、润色文字、管理世界观和人物设定，让长篇也能一步步写完。</p>
 <p>所有数据都保存在你的浏览器本地（或APP内置浏览器），你可以 <strong>随时导出备份</strong>，不依赖云端账号，也不和任何平台绑定。</p>
 <div class="notice" style="margin-bottom:12px">
   <p><strong>✦ 关于「星叙」这个名字</strong></p>
@@ -6806,23 +7051,22 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 </div>
 
 <div class="notice">
-<p><strong>当前版本：v1.4.5（2026.6.20）</strong></p>
-  <p>✦ 全新素材工坊：从「更多」菜单进入，管理文本/图片素材，支持标签分类、全文搜索（高亮）、收藏置顶、批量操作</p>
-<p>✦ 每日灵感打卡：素材工坊顶栏火焰图标，每日随机主题，连续打卡条纹追踪</p>
-<p>✦ 素材 AI 增强：AI 标签推荐、精简/深度扩写（对比模式）、AI 识图描述</p>
-<p>✦ 素材直接用于创作：长按素材卡片 → 用于创作 → 注入描述框或续写方向</p>
-<p>✦ 全流程引用素材：创作描述弹窗、续写上下文、AI 改写、番外篇均支持引用素材库</p>
-<p>✓ 修复素材编辑时图片数据误显示在文字内容框的问题</p>
-<p>✓ 修复 AI 改写弹窗被压缩的布局问题</p>
-<p>✦ 精品续写：阅读页新增💎按钮，AI先规划本章蓝图（可查看确认），再按规划正式创作，关键章节专用</p>
-<p>✦ 生成后一致性检测（默认关闭）：续写完成后自动比对人设/伏笔/已确立事实，冲突以卡片提示，可一键重写</p>
-<p>✦ 已确立事实：上下文设置新增字段，锁定不可逆的剧情节点，AI 绝对不会违反</p>
-<p>✦ 伏笔自动注入：续写时自动读取伏笔追踪器中未回收的伏笔，无需手动导入</p>
-<p>✦ 结构化角色状态快照：智能续写自动生成管道格式快照，角色行为穿帮率显著降低</p>
-<p>✦ 反重复参数：API设置新增 frequency_penalty / presence_penalty 两个滑块，直接从模型层面抑制词语和段落重复</p>
-<p>✦ 反重复系统提示词增强：续写提示词新增段落级反重复规则，进一步约束 AI 不得原地踏步</p>
-  <p style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(108,92,231,.2)"><strong>⚠️ 关于后续更新</strong></p>
-  <p>由于个人精力和经济原因，星叙将进入不定期更新阶段。我不会放弃这个项目，但更新频率可能会降低。感谢每一位用户的支持和陪伴，你们的反馈是我继续做下去的最大动力。❤️</p>
+<p><strong>当前版本：v1.4.6（2026.7.10）</strong></p>
+<p>✦ <strong>章节版本快照</strong>：AI续写/改写时自动静默保存快照，最多保留10条超出自动删除最旧，工具箱中可随时查看回滚</p>
+<p>✦ <strong>时间线全屏升级</strong>：时间线弹窗改为全屏，新增搜索栏，支持按章节名或故事内时间快速定位</p>
+<p>✦ <strong>AI改写章节自定义跳转</strong>：点击改写弹窗里的章节名，直接输入目标章节编号，无需一章章翻</p>
+<p>✦ <strong>番外篇全屏升级</strong>：番外页改为全屏弹窗，底部按钮固定，章节需求输入框增加下拉手柄</p>
+<p>✦ <strong>素材上下文模块</strong>：素材可作为"上下文模块"挂在小说上，每次续写自动参考（工具箱番外篇旁边）</p>
+<p>✦ <strong>置顶/置底快捷按钮</strong>：草稿和小说写作页面新增半透明磨砂置顶/置底浮动按钮，滚动条加粗</p>
+<p>✦ <strong>收藏分享统一导出资源包</strong>：长篇/短篇收藏菜单"分享"均改为资源包导出，含名称/作者/简介填写</p>
+<p>✦ <strong>批量管理新增资源包导出</strong>：我的收藏批量管理可选"导出TXT"或"导出为资源包"</p>
+<p>✦ <strong>导出格式新增Word和EPUB</strong>：小说导出新增 .docx 和 .epub 两种格式</p>
+<p>✦ <strong>丰富功能新增"追加到原文"</strong>：世界观/文风/规则丰富内容可直接追加，不修改原文</p>
+<p>✦ <strong>长按章节确认删除</strong>：小说章节列表长按删除，现弹出确认弹窗防止误操作</p>
+<p>✓ 修复AI改写弹窗崩溃 / 章节选择器手机端无响应 / 章节数输入改为自定义弹窗</p>
+<p>✓ 移除AI改写弹窗多余分隔线，页面Emoji图标统一为FA图标风格</p>
+<p style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(108,92,231,.2)"><strong>⚠️ 关于后续更新</strong></p>
+<p>由于个人精力和经济原因，星叙将进入不定期更新阶段。我不会放弃这个项目，但更新频率可能会降低。感谢每一位用户的支持和陪伴，你们的反馈是我继续做下去的最大动力。❤️</p>
 </div>
 
 <h3>二、创作理念：AI是搭子，不是替身</h3>
@@ -7801,7 +8045,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 </div>
 <div style="text-align:center;margin-top:28px">
   <img src="./Logo.png" style="max-width:220px;width:65%;height:auto;display:block;margin:0 auto 10px">
-  <p style="color:var(--text2);font-size:11px;margin:0">v1.4.5 · Created by 心田<br>让每一个灵感都有机会长成作品</p>
+  <p style="color:var(--text2);font-size:11px;margin:0">v1.4.6 · Created by 心田<br>让每一个灵感都有机会长成作品</p>
 </div>
 
 </div>
@@ -8164,7 +8408,6 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <div class="tool-item simple-hide" onclick="closeAllToolPanels();toggleEdSearch()"><i class="fas fa-search"></i> 搜索定位 <span class="ti-desc">查找关键词</span></div>
 <div class="tool-item simple-hide" onclick="closeAllToolPanels();aiCheckTypo()"><i class="fas fa-search"></i> 查错别字 <span class="ti-desc">AI识别笔误</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();edUndo()" id="edUndoBtnNew"><i class="fas fa-undo"></i> 撤回操作 <span class="ti-desc">恢复上一步</span></div>
-<div class="tool-item" onclick="closeAllToolPanels();var ta=document.getElementById('edTextarea');if(ta){ta.scrollTop=0;ta.focus();ta.setSelectionRange(0,0);}"><i class="fas fa-arrow-up"></i> 回到顶部</div>
 </div>
 </div>
 </div>
@@ -8259,18 +8502,18 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <div style="display:flex;flex-direction:column;gap:8px">
 <div style="display:flex;align-items:center;gap:8px">
 <span style="font-size:11px;color:var(--text2);width:20px;flex-shrink:0;text-align:center">从</span>
-<div style="display:flex;align-items:stretch;flex:1;border:1px solid var(--border);border-radius:9px;overflow:hidden;min-height:34px;background:var(--bg)">
-<button onclick="_rwRdStepCh('s',-1)" style="width:36px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:18px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s" onmousedown="this.style.background='var(--border)'" onmouseup="this.style.background='var(--card2)'" ontouchstart="this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'">‹</button>
-<div id="rwRdSLabel" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text);padding:0 6px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"></div>
-<button onclick="_rwRdStepCh('s',1)" style="width:36px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:18px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s" onmousedown="this.style.background='var(--border)'" onmouseup="this.style.background='var(--card2)'" ontouchstart="this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'">›</button>
+<div style="display:flex;align-items:stretch;flex:1;border:1px solid var(--border);border-radius:9px;overflow:hidden;min-height:44px;background:var(--bg)">
+<button onclick="_rwRdStepCh('s',-1)" ontouchstart="event.preventDefault();_rwRdStepCh('s',-1);this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'" style="width:44px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:22px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent">‹</button>
+<div id="rwRdSLabel" onclick="_rwRdCustomInput('s')" title="点击输入章节数" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text);padding:0 6px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer"></div>
+<button onclick="_rwRdStepCh('s',1)" ontouchstart="event.preventDefault();_rwRdStepCh('s',1);this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'" style="width:44px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:22px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent">›</button>
 </div>
 </div>
 <div style="display:flex;align-items:center;gap:8px">
 <span style="font-size:11px;color:var(--text2);width:20px;flex-shrink:0;text-align:center">到</span>
-<div style="display:flex;align-items:stretch;flex:1;border:1px solid var(--border);border-radius:9px;overflow:hidden;min-height:34px;background:var(--bg)">
-<button onclick="_rwRdStepCh('e',-1)" style="width:36px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:18px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s" onmousedown="this.style.background='var(--border)'" onmouseup="this.style.background='var(--card2)'" ontouchstart="this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'">‹</button>
-<div id="rwRdELabel" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text);padding:0 6px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis"></div>
-<button onclick="_rwRdStepCh('e',1)" style="width:36px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:18px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s" onmousedown="this.style.background='var(--border)'" onmouseup="this.style.background='var(--card2)'" ontouchstart="this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'">›</button>
+<div style="display:flex;align-items:stretch;flex:1;border:1px solid var(--border);border-radius:9px;overflow:hidden;min-height:44px;background:var(--bg)">
+<button onclick="_rwRdStepCh('e',-1)" ontouchstart="event.preventDefault();_rwRdStepCh('e',-1);this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'" style="width:44px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:22px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent">‹</button>
+<div id="rwRdELabel" onclick="_rwRdCustomInput('e')" title="点击输入章节数" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--text);padding:0 6px;text-align:center;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer"></div>
+<button onclick="_rwRdStepCh('e',1)" ontouchstart="event.preventDefault();_rwRdStepCh('e',1);this.style.background='var(--border)'" ontouchend="this.style.background='var(--card2)'" style="width:44px;flex-shrink:0;background:var(--card2);border:none;color:var(--text);font-size:22px;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:background .15s;-webkit-tap-highlight-color:transparent">›</button>
 </div>
 </div>
 </div>
@@ -8292,9 +8535,9 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 </div>
 </div>
 <button class="btn-s" onclick="openMatPickerForRewrite()" style="width:100%;margin-top:8px;margin-bottom:4px"><i class="fas fa-box-open"></i> 从素材库引用创作素材</button>
-<div id="rewriteBtns" style="display:flex;gap:8px;margin-top:10px">
-<button class="dlg-cancel" style="flex:1" onclick="closeRewriteOv()">取消</button>
-<button class="dlg-ok" id="rewriteDoBtn" style="flex:1.5" onclick="doArticleRewrite()"><i class="fas fa-rocket"></i> 开始重写</button>
+<div class="cd-footer" id="rewriteBtns" style="padding:12px 0 0;margin-top:6px;background:transparent">
+<button class="cd-secondary-btn" onclick="closeRewriteOv()">取消</button>
+<button class="cd-gen-btn" id="rewriteDoBtn" onclick="doArticleRewrite()"><i class="fas fa-rocket"></i> 开始改写</button>
 </div>
 <div id="rewriteProgress" style="display:none;margin-top:10px">
 <div style="font-size:12px;color:var(--accent2);margin-bottom:6px">改写进度</div>
@@ -9236,7 +9479,17 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <div class="frow"><div class="fg"><label class="fl">Temperature</label><input class="fi" id="apiTemp" type="number" step="0.1" min="0" max="1.5" value="0.8" oninput="var v=Math.min(parseFloat(this.value)||0.8,1.5);var s=document.getElementById('quickTemp');var q=document.getElementById('qtVal');if(s)s.value=v;if(q)q.textContent=v;"></div><div class="fg"><label class="fl">Max Tokens</label><input class="fi" id="apiMaxTokens" type="number" value="4096"></div></div>
 <div class="fg"><label class="fl">场景预设</label><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"><button class="tag" onclick="setTempPreset(0.5,'严谨')"><i class="fas fa-drafting-compass"></i> 严谨</button><button class="tag" onclick="setTempPreset(0.7,'平衡')"><i class="fas fa-balance-scale"></i> 平衡</button><button class="tag" onclick="setTempPreset(0.9,'创意')"><i class="fas fa-lightbulb"></i> 创意</button><button class="tag" onclick="setTempPreset(1.1,'狂野')"><i class="fas fa-fire"></i> 狂野</button></div></div>
 <div style="margin-top:12px;padding:10px 12px;background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:12px">
-<div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:10px"><i class="fas fa-ban"></i> 反重复参数 <span style="font-size:10px;font-weight:400;color:var(--text2)">— 减少 AI 词语复读和段落绕圈</span></div>
+<div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:6px;display:flex;align-items:center;gap:6px">
+  <i class="fas fa-ban"></i> 反重复参数
+  <span style="font-size:10px;font-weight:400;color:var(--text2)">— 减少 AI 词语复读和段落绕圈</span>
+  <span style="flex:1"></span>
+  <span id="antiRepeatToggleBtn" onclick="toggleAntiRepeat()" title="折叠/展开参数" style="font-size:10px;color:var(--text2);cursor:pointer;padding:2px 8px;border-radius:6px;border:1px solid var(--border);background:var(--card2);display:flex;align-items:center;gap:3px;transition:all .2s;user-select:none"><i class="fas fa-eye-slash" id="antiRepeatToggleIcon"></i> 已隐藏</span>
+</div>
+<div style="font-size:10px;color:#e74c3c;margin-bottom:8px;line-height:1.6;padding:6px 8px;background:rgba(231,76,60,.06);border-radius:7px;border:1px solid rgba(231,76,60,.15)">
+  <i class="fas fa-exclamation-triangle" style="margin-right:3px"></i>
+  <b>注意：</b>部分 AI 模型（如 Claude、Gemini 等）<b>不支持</b> frequency_penalty / presence_penalty 参数调用，强行传入会导致报错。请根据你所用模型的文档确认是否支持后再启用，不确定时请保持默认值 0。
+</div>
+<div id="antiRepeatBody">
 <div class="fg" style="margin-bottom:8px">
 <label class="fl" style="font-size:11px">频率惩罚 frequency_penalty<span style="color:var(--text2);font-weight:400"> — 抑制同一词语反复出现</span></label>
 <div style="display:flex;align-items:center;gap:10px;margin-top:4px">
@@ -9254,6 +9507,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <div style="font-size:10px;color:var(--text2);margin-top:3px">推荐 0.10~0.20 · 过高（>0.4）会导致话题跳跃太快，连贯性变差</div>
 </div>
 <button class="tag" style="margin-top:6px;font-size:10px" onclick="var _fq=document.getElementById('apiFreqPenalty');if(_fq){_fq.value=0.25;_fq.dispatchEvent(new Event('input'));}document.getElementById('freqPenVal').textContent='0.25';var _pq=document.getElementById('apiPresPenalty');if(_pq){_pq.value=0.15;_pq.dispatchEvent(new Event('input'));}document.getElementById('presPenVal').textContent='0.15';showToast('已应用推荐反重复配置')"><i class="fas fa-magic"></i> 一键应用推荐值</button>
+</div>
 </div>
 <div class="fg" style="display:flex;align-items:center;justify-content:space-between"><label class="fl" style="margin:0">流式输出</label><div role="switch" aria-checked="true" aria-label="流式输出" style="position:relative;width:44px;height:24px;cursor:pointer" onclick="toggleStreamSwitch(this)"><input type="checkbox" id="streamOn" checked style="display:none"><div style="width:44px;height:24px;border-radius:12px;background:var(--accent);transition:background .3s" id="streamTrack"><div style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:22px;transition:left .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)" id="streamThumb"></div></div></div></div>
 <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
@@ -10917,63 +11171,141 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 
 </div>
 
-<!-- FANWAI 番外篇弹窗 -->
-<div class="fanwai-ov" id="fanwaiOv" onclick="if(event.target===this)closeFanwai()">
-<div class="fanwai-box">
-<h3 id="fanwaiTitle"><i class="fas fa-book-open"></i> 继写番外篇</h3>
-<p style="font-size:11px;color:var(--text2);margin-bottom:12px" id="fanwaiSubtitle">为这篇作品续写番外故事</p>
-
-<div class="fanwai-scroll">
-<!-- 原作摘要区 -->
-<div class="fanwai-summary-wrap">
-<div class="fw-sum-hdr">
-<span><i class="fas fa-clipboard-list"></i> 原作内容摘要</span>
+<!-- ========== 书目素材模块 全屏弹窗 ========== -->
+<div id="bookMatModuleOv" role="dialog" aria-label="素材模块">
+<div style="flex-shrink:0;position:sticky;top:0;z-index:10;background:var(--bg);padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+  <button onclick="closeBookMatModule()" style="background:none;border:none;color:var(--accent2);font-size:13px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:5px;flex-shrink:0;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M15 18l-6-6 6-6"/></svg>返回
+  </button>
+  <h2 id="bmmTitle" style="font-size:15px;font-weight:700;flex:1;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="fas fa-cubes"></i> 素材模块</h2>
 </div>
-<textarea id="fwSummaryText" class="fta" placeholder="原作的核心内容摘要（短篇自动填充；长篇建议用AI总结或手动补充）&#10;&#10;包括：主要角色、核心事件、结局走向等" style="min-height:80px"></textarea>
-<div style="font-size:9px;color:var(--text2);margin-top:4px">番外续写时AI会参考这段摘要来保持角色和剧情一致性</div>
-<div style="display:flex;gap:8px;margin-top:8px">
-<button id="fwSumBtn" onclick="aiFanwaiSummary()" style="flex:1;padding:7px 10px;border-radius:9px;border:1px solid var(--accent);background:transparent;color:var(--accent2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px"><i class="fas fa-robot"></i> AI总结</button>
-<button onclick="openMatPickerForFanwai()" style="flex:1;padding:7px 10px;border-radius:9px;border:1px solid rgba(108,92,231,.4);background:transparent;color:var(--accent2);font-size:11px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;-webkit-tap-highlight-color:transparent"><i class="fas fa-box-open"></i> 引用素材</button>
-</div>
-</div>
-
-<!-- 番外设置 -->
-<div class="fg">
-<label class="fl"><i class="fas fa-sort-numeric-up"></i> 番外总篇数（最多3篇）</label>
-<div style="display:flex;gap:8px;margin-top:6px">
-<span class="tag" id="fwCount1" onclick="setFwCount(1,this)" style="padding:6px 14px">1篇</span>
-<span class="tag act" id="fwCount2" onclick="setFwCount(2,this)" style="padding:6px 14px">2篇</span>
-<span class="tag" id="fwCount3" onclick="setFwCount(3,this)" style="padding:6px 14px">3篇</span>
+<div style="flex:1;overflow-y:auto;padding:18px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
+  <div style="font-size:11px;color:var(--text2);line-height:1.7;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.2);border-radius:12px;padding:10px 12px;margin-bottom:16px;">
+    <i class="fas fa-circle-info" style="color:var(--accent2)"></i> 挂载在这里的素材会在「快速续写 / 智能续写 / 精品续写」时自动作为参考内容发送给AI，无需每次手动引用。
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <span style="font-size:11px;font-weight:700;color:var(--accent2);" id="bmmCount">已挂载 0 条素材</span>
+    <button onclick="addBookMatModuleItem()" style="padding:6px 14px;border-radius:9px;border:1px solid var(--accent);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;"><i class="fas fa-plus"></i> 添加素材</button>
+  </div>
+  <div id="bmmList"></div>
 </div>
 </div>
 
-<!-- 各篇番外大纲 -->
-<div id="fwOutlineList" style="margin-top:12px"></div>
-
-<!-- 已生成的番外 -->
-<div id="fwResultList" style="margin-top:12px"></div>
+<!-- ========== 故事时间线 全屏弹窗 ========== -->
+<div id="timelineOv" role="dialog" aria-label="故事时间线">
+<div style="flex-shrink:0;position:sticky;top:0;z-index:10;background:var(--bg);padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);">
+  <button onclick="closeTimeline()" style="background:none;border:none;color:var(--accent2);font-size:13px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:5px;flex-shrink:0;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M15 18l-6-6 6-6"/></svg>返回
+  </button>
+  <div style="flex:1;min-width:0;">
+    <h2 style="font-size:16px;font-weight:700;margin:0;display:flex;align-items:center;gap:6px;"><i class="fas fa-clock"></i> 故事时间线</h2>
+    <div id="tlSubtitle" style="font-size:10px;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></div>
+  </div>
+</div>
+<div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
+  <div style="padding:14px 18px 4px;position:sticky;top:0;z-index:5;background:var(--bg);">
+    <div style="position:relative;">
+      <input type="text" id="tlSearchInput" placeholder="搜索所在章节、故事内时间…" oninput="filterTimeline(this.value)" style="width:100%;padding:10px 36px 10px 14px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:13px;outline:none;box-sizing:border-box;">
+      <button id="tlSearchClear" onclick="clearTlSearch()" style="display:none;position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:13px;cursor:pointer;padding:6px;-webkit-tap-highlight-color:transparent;">✕</button>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button onclick="addTimelineEntry()" style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--accent);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;cursor:pointer;font-weight:600"><i class="fas fa-plus"></i> 添加时间节点</button>
+      <button onclick="aiDetectTimeline()" id="aiTimelineBtn" style="flex:1;padding:9px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer"><i class="fas fa-robot"></i> AI识别时间线</button>
+    </div>
+    <div id="tlViewToggleWrap" style="margin-top:8px;"></div>
+  </div>
+  <div id="timelineContent" style="padding:4px 18px 20px;"></div>
+</div>
+<div id="timelineFooter" style="padding:10px 18px;border-top:1px solid var(--border);font-size:10px;color:var(--text2);flex-shrink:0;"></div>
 </div>
 
-<!-- 底部按钮 -->
-<div style="display:flex;gap:10px;margin-top:14px;flex-shrink:0">
-<button class="dlg-cancel" onclick="closeFanwai()" style="flex:1">关闭</button>
-<button class="dlg-ok" id="fwStartBtn" onclick="startFanwaiGen()" style="flex:1.5"><i class="fas fa-rocket"></i> 开始生成番外</button>
+<!-- FANWAI 番外篇全屏页 -->
+<div class="set-modal" id="fanwaiOv">
+
+<!-- 顶栏（复用 set-modal-hdr） -->
+<div class="set-modal-hdr">
+  <button onclick="closeFanwai()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:18px;height:18px"><path d="M15 18l-6-6 6-6"/></svg>返回
+  </button>
+  <div style="flex:1;min-width:0">
+    <h2 style="font-size:16px;font-weight:700;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="fanwaiTitle"><i class="fas fa-book-open"></i> 继写番外篇</h2>
+    <div style="font-size:11px;color:var(--text2);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="fanwaiSubtitle">为这篇作品续写番外故事</div>
+  </div>
 </div>
 
-<!-- 生成进度 -->
-<div id="fwProgress" style="display:none;margin-top:10px">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-<span style="font-size:12px;font-weight:600">生成进度</span>
-<span style="font-size:11px;color:var(--accent2)" id="fwProgressText">0/0</span>
-</div>
-<div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
-<div id="fwProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s"></div>
-</div>
-<div style="font-size:10px;color:var(--text2);margin-top:4px" id="fwProgressInfo">准备中...</div>
-<button onclick="stopFanwaiGen()" style="margin-top:8px;width:100%;padding:8px;border-radius:10px;border:1px solid var(--danger);background:transparent;color:var(--danger);font-size:11px;cursor:pointer" id="fwStopBtn"><i class="fas fa-stop"></i> 停止生成</button>
-</div>
-</div>
-</div>
+<!-- 滚动正文 + 固定底栏都放在 set-modal-body 里 -->
+<div class="set-modal-body" style="padding:0;display:flex;flex-direction:column;flex:1;overflow:hidden">
+
+  <!-- 正文滚动区 -->
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
+
+    <!-- 原作摘要 -->
+    <div style="padding:18px 18px 16px;border-bottom:1px solid var(--border)">
+      <div class="fw-sum-hdr"><i class="fas fa-clipboard-list"></i> 原作内容摘要</div>
+      <div class="tx-wrap">
+        <textarea id="fwSummaryText" class="fta"
+          placeholder="原作的核心内容摘要&#10;包括：主要角色、核心事件、结局走向&#10;&#10;短篇自动填入全文；长篇点「AI总结」生成"
+          style="min-height:90px;max-height:180px;overflow-y:auto"></textarea>
+        <div class="tx-resize-handle"></div>
+      </div>
+      <div style="font-size:10px;color:var(--text2);margin-top:6px">续写番外时，AI将参考此内容保持角色与剧情一致性</div>
+      <div class="fw-sum-actions">
+        <button id="fwSumBtn" onclick="aiFanwaiSummary()"><i class="fas fa-robot"></i> AI总结</button>
+        <button onclick="openMatPickerForFanwai()"><i class="fas fa-box-open"></i> 引用素材</button>
+      </div>
+    </div>
+
+    <!-- 番外篇数 -->
+    <div style="padding:16px 18px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:10px;letter-spacing:.4px">番外总篇数</div>
+      <div style="display:flex;gap:10px">
+        <span class="tag" id="fwCount1" onclick="setFwCount(1,this)" style="flex:1;text-align:center;padding:10px">1篇</span>
+        <span class="tag act" id="fwCount2" onclick="setFwCount(2,this)" style="flex:1;text-align:center;padding:10px">2篇</span>
+        <span class="tag" id="fwCount3" onclick="setFwCount(3,this)" style="flex:1;text-align:center;padding:10px">3篇</span>
+      </div>
+    </div>
+
+    <!-- 各篇大纲 -->
+    <div style="padding:18px 18px 8px">
+      <div style="font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.4px;margin-bottom:14px">各篇剧情方向（可选填）</div>
+      <div id="fwOutlineList"></div>
+    </div>
+
+    <!-- 已生成结果 -->
+    <div style="padding:0 18px" id="fwResultList"></div>
+
+    <!-- 生成进度 -->
+    <div id="fwProgress" style="display:none;padding:0 18px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:13px;font-weight:600;color:var(--text)"><i class="fas fa-magic" style="color:var(--accent2)"></i> 生成进度</span>
+        <span style="font-size:12px;color:var(--accent2);font-weight:600" id="fwProgressText">0/0</span>
+      </div>
+      <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+        <div id="fwProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s;border-radius:3px"></div>
+      </div>
+      <div style="font-size:11px;color:var(--text2);margin-top:6px" id="fwProgressInfo">准备中...</div>
+      <button onclick="stopFanwaiGen()" id="fwStopBtn"
+        style="margin-top:12px;width:100%;padding:12px;border-radius:12px;border:1px solid var(--danger);background:rgba(255,107,107,.06);color:var(--danger);font-size:12px;font-weight:600;cursor:pointer">
+        <i class="fas fa-stop"></i> 停止生成
+      </button>
+    </div>
+
+  </div><!-- end 正文滚动区 -->
+
+  <!-- 底部固定按钮栏 -->
+  <div style="flex-shrink:0;padding:14px 18px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--border);background:var(--card);display:flex;gap:10px">
+    <button onclick="closeFanwai()"
+      style="flex:0 0 88px;padding:15px;border-radius:14px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent">
+      关闭
+    </button>
+    <button id="fwStartBtn" onclick="startFanwaiGen()"
+      style="flex:1;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 18px rgba(108,92,231,.35);-webkit-tap-highlight-color:transparent">
+      <i class="fas fa-rocket"></i> 开始生成番外
+    </button>
+  </div>
+
+</div><!-- end set-modal-body -->
+</div><!-- end fanwaiOv -->
 <!-- =================== 万能输入框全屏页 =================== -->
 <div id="smartInputPage" style="display:none;position:fixed;inset:0;z-index:950;background:var(--bg);flex-direction:column;overflow:hidden">
 
@@ -11219,10 +11551,12 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <button class="dlg-ok" id="enrichGenBtn" onclick="doEnrichSetting()"><i class="fas fa-wand-magic-sparkles"></i> 开始丰富</button>
 </div>
 <div id="enrichActions" style="display:none;margin-top:8px">
+<div id="enrichModeNote" style="display:none;font-size:11px;color:var(--accent2);background:rgba(108,92,231,.1);border-radius:8px;padding:7px 10px;margin-bottom:8px;line-height:1.6"><i class="fas fa-circle-info"></i> 追加模式：AI已仅输出新增内容，建议点「追加到原文」使用</div>
 <div class="res-exp-btns" style="flex-wrap:wrap;gap:6px">
 <button class="dlg-cancel" onclick="doEnrichSetting()" style="font-size:11px"><i class="fas fa-rotate-right"></i> 重新生成</button>
 <button class="dlg-cancel" onclick="saveEnrichAsPreset()" style="font-size:11px"><i class="fas fa-floppy-disk"></i> 保存为预设</button>
 <button class="dlg-ok" onclick="applyEnrichResult()" style="font-size:11px"><i class="fas fa-check-circle"></i> 直接替换</button>
+<button class="dlg-ok" onclick="appendEnrichResult()" style="font-size:11px;background:linear-gradient(135deg,#27ae60,#2ecc71);border-color:#27ae60"><i class="fas fa-plus-circle"></i> 追加到原文</button>
 </div>
 </div>
 </div>
@@ -11985,7 +12319,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 </div>
 <!-- GLOBAL FLOAT BUTTON 全局快捷浮窗 -->
 <div id="gfbBtn" oncontextmenu="return false">
-  <span class="star-icon">✦</span>
+  <i class="fas fa-bolt" style="color:#fff;font-size:18px;filter:drop-shadow(0 0 6px rgba(255,255,255,.6))"></i>
 </div>
 <div id="gfbPanel">
   <div class="gfb-hdr">
@@ -12055,6 +12389,34 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
     <span class="ldots"><span></span><span></span><span></span></span>
   </div>
 </div>
+<!-- 快照抽屉 -->
+<div id="snapshotDrawerOv" onclick="if(event.target===this)closeSnapshotDrawer()">
+  <div id="snapshotDrawer">
+    <div class="sn-hdr">
+      <div class="sn-hdr-title"><i class="fas fa-history" style="color:var(--accent2)"></i> 历史版本</div>
+      <span id="snChapterLabel" style="font-size:11px;color:var(--text2);flex-shrink:0"></span>
+      <button onclick="clearChapterSnapshots()" style="padding:5px 10px;border-radius:8px;border:1px solid rgba(255,107,107,.35);background:transparent;color:var(--danger);font-size:11px;cursor:pointer;flex-shrink:0">清空</button>
+      <button onclick="closeSnapshotDrawer()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:11px;cursor:pointer;flex-shrink:0">关闭</button>
+    </div>
+    <div class="sn-list" id="snapshotList"></div>
+  </div>
+</div>
+<!-- 快照预览 -->
+<div id="snapshotPreviewOv">
+  <div class="sn-preview-hdr">
+    <button onclick="closeSnapshotPreview()" style="padding:6px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;flex-shrink:0"><i class="fas fa-chevron-left"></i> 返回</button>
+    <div style="flex:1;text-align:center;font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px" id="snPreviewTitle">版本预览</div>
+    <div style="width:60px;flex-shrink:0"></div>
+  </div>
+  <div class="sn-preview-body" id="snPreviewBody"></div>
+  <div class="sn-preview-footer">
+    <button onclick="closeSnapshotPreview()" style="flex:1;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--card2);color:var(--text2);font-size:13px;cursor:pointer">取消</button>
+    <button onclick="_restoreSnapshotConfirm()" style="flex:2;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:700;cursor:pointer"><i class="fas fa-rotate-left"></i> 恢复这个版本</button>
+  </div>
+</div>
+<!-- 编辑器置顶/置底悬浮按钮 -->
+<button id="edScrollTop" class="ed-scroll-btn" onclick="_edScrollTo('top')" title="回到顶部"><i class="fas fa-chevron-up"></i></button>
+<button id="edScrollBottom" class="ed-scroll-btn" onclick="_edScrollTo('bottom')" title="跳到底部"><i class="fas fa-chevron-down"></i></button>
 <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
 <!-- BOTTOM NAV -->
@@ -12124,7 +12486,7 @@ body.theme-light .cc-warn{background:rgba(230,126,34,.05)}
 <script>
 /*
 ╔══════════════════════════════════════════════════════════════════
-║  星叙 index.html — JS 结构目录  v1.4.5
+║  星叙 index.html — JS 结构目录  v1.4.6
 ║  文件共约 50000 行 | HTML+CSS: 1~12123 | JS: 12124~50030
 ╠══════════════════════════════════════════════════════════════════
 ║ [A] 基础设施            12124 ~ 13063
@@ -12442,8 +12804,8 @@ async function getDBStorageUsage() {
     });
 }
 // ==================== CONFIG ====================
-const APP_VER='v1.4.5';
-const UPDATE_VER='1.4.5';
+const APP_VER='v1.4.6';
+const UPDATE_VER='1.4.6';
 // 协议版本号：老用户不需要重新确认
 // 用 var（而非 const/let）以确保挂载到 window 上，跨 script 块可靠访问
 var AGREEMENT_VER='1.1';
@@ -12867,7 +13229,7 @@ function _needsLoadingAnim(type){
       return total>30;
     }
     if(type==='settings'){
-      return (charP.length+worldP.length+styleP.length+ruleP.length)>20;
+      return (charP.length+worldP.length+styleP.length+ruleP.length)>50;
     }
     if(type==='rp'){
       var ch=typeof getRpCurrentChar==='function'?getRpCurrentChar():null;
@@ -13685,7 +14047,7 @@ if(curRd&&curRd.id===id){
   var sc3=document.getElementById('btnSmartCont');
   if(curRd.type==='long'){
     if(liked2){
-      if(bc3){bc3.disabled=false;bc3.textContent='📝 续写第'+(curRd.chapters?curRd.chapters.length+1:2)+'章';}
+      if(bc3){bc3.disabled=false;bc3.innerHTML='<i class="fas fa-pen-nib"></i> 续写第'+(curRd.chapters?curRd.chapters.length+1:2)+'章';}
       if(sc3){sc3.disabled=false;sc3.innerHTML='<i class="fas fa-brain"></i> 智能续写';}
     }else{
       if(bc3){bc3.disabled=true;bc3.textContent='❤️ 请先收藏后才能续写';}
@@ -13777,7 +14139,8 @@ function getCurApi(){
 
   let freqPenalty = parseFloat(document.getElementById('apiFreqPenalty') && document.getElementById('apiFreqPenalty').value) || 0;
   let presPenalty = parseFloat(document.getElementById('apiPresPenalty') && document.getElementById('apiPresPenalty').value) || 0;
-  return { url, key, model, temp, maxTokens, freqPenalty, presPenalty };
+  let hideAntiRepeat = !!_antiRepeatHidden;
+  return { url, key, model, temp, maxTokens, freqPenalty, presPenalty, hideAntiRepeat };
 }
 // 获取AI工具专用API配置（如果未设置则回退到通用API）
 function getToolApi(){
@@ -17931,7 +18294,7 @@ if(smartBtn){smartBtn.disabled=true;smartBtn.textContent='📕 已完结';}
 document.getElementById('dirInputWrap').style.display='none';
 }else if(liked){
 btnCont.disabled=false;
-btnCont.textContent='📝 续写第'+(curRd&&curRd.chapters?curRd.chapters.length+1:2)+'章';
+btnCont.innerHTML='<i class="fas fa-pen-nib"></i> 续写第'+(curRd&&curRd.chapters?curRd.chapters.length+1:2)+'章';
 if(smartBtn){smartBtn.disabled=false;smartBtn.innerHTML='<i class="fas fa-brain"></i> 智能续写';}
 }else{
 btnCont.disabled=true;
@@ -18603,6 +18966,8 @@ function _rdCreateOverlay(){
           '<div class="rd-reader-ov-item" onclick="_rdToolAction(\'proofread\')"><div class="rroi-icon"><i class="fas fa-microscope"></i></div><div class="rroi-text">AI校对</div></div>'+
           '<div class="rd-reader-ov-item" onclick="_rdToolAction(\'rewrite\')"><div class="rroi-icon"><i class="fas fa-sync-alt"></i></div><div class="rroi-text">AI改写</div></div>'+
           '<div class="rd-reader-ov-item" onclick="_rdToolAction(\'fanwai\')"><div class="rroi-icon"><i class="fas fa-book-open"></i></div><div class="rroi-text">番外篇</div></div>'+
+          '<div class="rd-reader-ov-item" onclick="_rdToolAction(\'matmodule\')"><div class="rroi-icon"><i class="fas fa-cubes" style="color:var(--accent2)"></i></div><div class="rroi-text">素材模块</div></div>'+
+           '<div class="rd-reader-ov-item" onclick="_rdToolAction(\'snapshots\')"><div class="rroi-icon"><i class="fas fa-history" style="color:var(--accent2)"></i></div><div class="rroi-text">历史版本</div></div>'+
         '</div>'+
         // 主题背景选择
         '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;padding:8px 0">';
@@ -18636,9 +19001,9 @@ function _rdCreateOverlay(){
         '<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px 8px">'+
           '<span style="font-size:11px;color:var(--text2)">本次续写章节数（1-10）</span>'+
           '<div style="display:flex;align-items:center;gap:10px">'+
-            '<button id="rdOvContMinus" onclick="event.stopPropagation();_rdContChCount=Math.max(1,_rdContChCount-1);_syncContStepperUI()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:18px;line-height:1;cursor:pointer;padding:0;opacity:'+_ovMO+';transition:opacity .2s">−</button>'+
+            '<button id="rdOvContMinus" onclick="event.stopPropagation();_rdContChCount=Math.max(1,_rdContChCount-1);_syncContStepperUI()" ontouchstart="event.preventDefault();event.stopPropagation();_rdContChCount=Math.max(1,_rdContChCount-1);_syncContStepperUI()" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:18px;line-height:1;cursor:pointer;padding:0;opacity:'+_ovMO+';transition:opacity .2s;-webkit-tap-highlight-color:transparent">−</button>'+
             '<span id="rdOvContChNum" style="font-size:15px;font-weight:700;color:var(--accent2);min-width:20px;text-align:center">'+_rdContChCount+'</span>'+
-            '<button id="rdOvContPlus" onclick="event.stopPropagation();_rdContChCount=Math.min(10,_rdContChCount+1);_syncContStepperUI()" style="width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:18px;line-height:1;cursor:pointer;padding:0;opacity:'+_ovPO+';transition:opacity .2s">+</button>'+
+            '<button id="rdOvContPlus" onclick="event.stopPropagation();_rdContChCount=Math.min(10,_rdContChCount+1);_syncContStepperUI()" ontouchstart="event.preventDefault();event.stopPropagation();_rdContChCount=Math.min(10,_rdContChCount+1);_syncContStepperUI()" style="width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:18px;line-height:1;cursor:pointer;padding:0;opacity:'+_ovPO+';transition:opacity .2s;-webkit-tap-highlight-color:transparent">+</button>'+
           '</div>'+
         '</div>'+
         '<div class="rd-reader-ov-row">'+
@@ -18648,6 +19013,7 @@ function _rdCreateOverlay(){
         '<div class="rd-reader-ov-row">'+
           '<div class="rd-reader-ov-item" onclick="_rdHideOverlay();openContextEditor()"><div class="rroi-icon"><i class="fas fa-cog"></i></div><div class="rroi-text">上下文设置</div></div>'+
           '<div class="rd-reader-ov-item" onclick="_rdHideOverlay();undoChapter()"><div class="rroi-icon"><i class="fas fa-undo"></i></div><div class="rroi-text">撤销上一章</div></div>'+
+          '<div class="rd-reader-ov-item" onclick="_rdHideOverlay();manualSaveSnapshot()"><div class="rroi-icon"><i class="fas fa-bookmark" style="color:var(--accent2)"></i></div><div class="rroi-text">手动存档</div></div>'+
         '</div>'+
       '</div>';
   }
@@ -18689,9 +19055,17 @@ function _rdToolAction(action,param){
       case 'copyCh': copyCurChapter(); break;
       case 'foreshadow': openForeshadow(); break;
       case 'timeline': openTimeline(); break;
-      case 'rewrite': openArticleRewrite(); break;
+      case 'rewrite':
+        // 改写前自动保存快照
+        if(curRd && curRd.type==='long' && isLiked(curRd)){
+          try{saveChapterSnapshot(curRd.id, curCh, '改写前·第'+(curCh+1)+'章');}catch(e){}
+        }
+        openArticleRewrite();
+        break;
+      case 'snapshots': openSnapshotDrawer(); break;
       case 'proofread': openProofread('reading'); break;
       case 'fanwai': openFanwai(); break;
+      case 'matmodule': openBookMatModule(); break;
       case 'wordStats': showDetailedWordStats(); break;
       case 'bg':
         setRdThemeBg(param||'0');
@@ -18947,7 +19321,7 @@ if(curRd.type==='long'){
 if(cw2) cw2.style.display='block';
 if(dw2) dw2.style.display='flex';
 if(bc2){
-  if(liked){bc2.disabled=false;bc2.textContent='📝 续写第'+(curRd&&curRd.chapters?curRd.chapters.length+1:2)+'章';}
+  if(liked){bc2.disabled=false;bc2.innerHTML='<i class="fas fa-pen-nib"></i> 续写第'+(curRd&&curRd.chapters?curRd.chapters.length+1:2)+'章';}
   else{bc2.disabled=true;bc2.textContent='❤️ 请先收藏后才能续写';}
 }
 if(smartBtn){
@@ -18973,6 +19347,7 @@ item.className='ch-item'+(i===curCh?' act':'');
 const chNotes=getArticleNotes(curRd.id).filter(n=>n.ch===i); const noteTag=chNotes.length>0?' · ✏️'+chNotes.length:''; const readTime=Math.ceil(wc/500); const hasFs=getForeshadows(curRd.id).filter(f=>f.chapter&&f.chapter.includes(''+(i+1))).length; const fsTag=hasFs>0?' · 🎯'+hasFs:''; var chSummary = (curRd.chSummaries && curRd.chSummaries[i]) ? curRd.chSummaries[i] : '';
 item.innerHTML='<span class="ch-item-num" style="font-size:14px;font-weight:700;width:60px;flex-shrink:0">第'+(i+1)+'章</span><div style="flex:1;min-width:0"><span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">'+esc((curRd.chapters[i]||'').replace(/\n/g,' ').substring(0,30))+'</span>'+(chSummary?'<span class="ch-summary">'+esc(chSummary)+'</span>':'')+'</div><span class="ch-item-wc" style="flex-shrink:0;font-size:10px;opacity:.7">'+wc+'字 · '+readTime+'min'+noteTag+fsTag+'</span>';
 item.onclick=()=>{curCh=i;renderChContent();closeChapterList();document.getElementById('rdModal').scrollTop=0;};
+_bindChItemLongPressDelete(item,function(){confirmDeleteRdChapterAt(i);});
 list.appendChild(item);
 });
 // 添加批量生成摘要按钮
@@ -19371,7 +19746,7 @@ function showParaContextMenu(text, paraIdx){
   });
   setTimeout(function(){
     var okBtn = document.getElementById('dlgOkBtn');
-    if(okBtn) okBtn.textContent = '📝 记笔记';
+    if(okBtn) okBtn.textContent = '记笔记';
     var msgEl = document.getElementById('dlgMsg');
     if(msgEl){
       window._favTempData = {text:text,articleId:curRd?curRd.id:'',articleTitle:curRd?curRd.title:'',chIdx:curCh,paraIdx:paraIdx};
@@ -19581,6 +19956,43 @@ showToast('没有新笔记可导入（可能已存在或格式不匹配）');
 function closeChapterList(){
   navPop('chOv');
 document.getElementById('chOv').classList.remove('show');
+}
+// 阅读页目录：按索引确认删除章节（我的小说/收藏长篇通用，二者都通过 curRd 读写）
+function confirmDeleteRdChapterAt(idx){
+  if(!curRd||!curRd.chapters)return;
+  if(idx<0||idx>=curRd.chapters.length)return;
+  if(curRd.chapters.length<=1){showToast('至少保留一章');return;}
+  var chWc=countWords(curRd.chapters[idx]||'');
+  var chLabel='第'+(idx+1)+'章'+(curRd.chNames&&curRd.chNames[idx]?' '+curRd.chNames[idx]:'');
+  showDlg('删除章节','确定要删除'+chLabel+'吗？('+chWc+'字)\n\n⚠️ 此操作不可恢复！',function(){
+    deleteRdChapterAt(idx);
+  },true);
+}
+// 阅读页目录：按索引执行删除，同步清理平行数组并回写到工作台/收藏夹
+function deleteRdChapterAt(idx){
+  if(!curRd||!curRd.chapters||idx<0||idx>=curRd.chapters.length)return;
+  if(curRd.chapters.length<=1){showToast('至少保留一章');return;}
+  curRd.chapters.splice(idx,1);
+  if(curRd.chNames&&curRd.chNames.length>idx)curRd.chNames.splice(idx,1);
+  if(curRd.chOutlines&&curRd.chOutlines.length>idx)curRd.chOutlines.splice(idx,1);
+  if(curRd.chSummaries&&curRd.chSummaries.length>idx)curRd.chSummaries.splice(idx,1);
+  if(curCh>=curRd.chapters.length)curCh=curRd.chapters.length-1;
+  else if(curCh>idx)curCh--;
+  syncArticle(curRd);
+  renderChContent();
+  var metaEl=document.getElementById('rdMeta');
+  if(metaEl){
+    metaEl.innerHTML=
+      '<span>'+(curRd.type==='long'?'<i class="fas fa-book"></i> 长篇连载':'<i class="fas fa-file"></i> 短篇')+'</span>'+
+      '<span>🕐 '+new Date(curRd.createdAt).toLocaleDateString()+'</span>'+
+      (curRd.chapters?'<span>共 '+curRd.chapters.length+' 章</span>':'')+
+      '<span>'+getTotalWords(curRd)+' 字</span>';
+  }
+  var undoBtn=document.getElementById('btnUndo');
+  if(undoBtn)undoBtn.style.display=(curRd.type==='long'&&curRd.chapters&&curRd.chapters.length>1)?'inline-block':'none';
+  showToast('已删除');
+  closeChapterList();
+  openChapterList();
 }
 // ==================== 阅读页全屏原文编辑 ====================
 let _rdEditDirty=false;
@@ -20140,7 +20552,7 @@ var _contSafetyTimer=setTimeout(function(){
   if(isGen){
     setIsGen(false);
     var _b=document.getElementById('btnCont');
-    if(_b){_b.disabled=false;_b.textContent='📝 续写下一章';}
+    if(_b){_b.disabled=false;_b.innerHTML='<i class="fas fa-pen-nib"></i> 续写下一章';}
     showToast('生成超时，请重试',3000);
   }
 },300000);
@@ -20295,7 +20707,7 @@ const startTime=Date.now();
 
 if(!useStream){
 const result=await callAPINonStream(messages);
-setIsGen(false);btn.disabled=false;btn.textContent='📝 续写第'+(curRd.chapters?curRd.chapters.length+1:2)+'章';
+setIsGen(false);btn.disabled=false;btn.innerHTML='<i class="fas fa-pen-nib"></i> 续写第'+(curRd.chapters?curRd.chapters.length+1:2)+'章';
 clearTimeout(_contSafetyTimer);
 if(!result)return;
 curRd.chapters.push(result);
@@ -20325,7 +20737,7 @@ await callAPIStream(messages,
   }catch(e){}
 },
 (fullText)=>{
-setIsGen(false);btn.disabled=false;btn.textContent='📝 继续连载下一章';
+setIsGen(false);btn.disabled=false;btn.textContent='继续连载下一章';
 clearTimeout(_contSafetyTimer);
 if(!fullText)return;
 curRd.chapters.push(fullText);
@@ -20344,7 +20756,7 @@ if(autoChSummary)setTimeout(function(){autoGenChSummary(curRd, curRd.chapters.le
 try{if(ld('bj_contQualityOn',true))renderContQualityCard(fullText,document.getElementById('rdContent').parentElement);}catch(e){logError('op',e)}
 },
 (errMsg)=>{
-setIsGen(false);btn.disabled=false;btn.textContent='📝 继续连载下一章';
+setIsGen(false);btn.disabled=false;btn.textContent='继续连载下一章';
 clearTimeout(_contSafetyTimer);
 showToast(errMsg,3000);
 }
@@ -20822,7 +21234,7 @@ function toggleBookMenu(id,btn){
     {icon:'fa-pen',text:'更名',fn:function(){renameBook(id);}},
     {icon:'fa-palette',text:'封面',fn:function(){openCoverOptions(id);}},
     {icon:'fa-sync-alt',text:'状态',fn:function(){cycleStatus(id);}},
-    {icon:'fa-share-alt',text:'分享',fn:function(){shareBook(id);}},
+    {icon:'fa-share-alt',text:'分享',fn:function(){shareColBookAsRes(id);}},
     {icon:'fa-file-export',text:'导出',fn:function(){exportBookToTxt(id);}},
     {icon:'fa-trash-alt',text:'删除',fn:function(){deleteBook(id);},danger:true}
   ];
@@ -20900,6 +21312,29 @@ function shareBook(id){
     doCopy(shareText);showToast('已复制到剪贴板，可粘贴分享 📋');
   }
 }
+function shareColBookAsRes(id){
+  var book=cols.books.find(function(b){return b.id===id;});
+  if(!book)return;
+  var wc=getTotalWords(book);
+  if(wc<10){showToast('内容太少，至少写10字再分享');return;}
+  _showResPackInfoForm(
+    {name:book.title||'未命名',author:userCard.name||'星叙用户'},
+    function(packName,packAuthor,packDesc){
+      var packData=JSON.parse(JSON.stringify(book));
+      var pack={
+        _app:'syn_resource',_ver:APP_VER,
+        id:uid(),name:packName,
+        desc:packDesc||(book.chapters?book.chapters.length+'章 · '+wc+'字':'短篇 · '+wc+'字'),
+        author:packAuthor,
+        createdAt:new Date().toISOString(),
+        items:[{type:'work',name:'小说：'+(book.title||'未命名'),data:packData}]
+      };
+      var jsonStr=JSON.stringify(pack,null,2);
+      var fileName='星叙_'+packName+'_'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json';
+      _exportFileWithFallback(fileName,jsonStr,'application/json;charset=utf-8');
+    }
+  );
+}
 function deleteBook(id){
 const book=cols.books.find(b=>b.id===id);
 if(!book)return;
@@ -20921,17 +21356,27 @@ const footer='\n\n════════════════════\n
 doCopy(header+text+footer);
 }
 function shareShort(id){
-  const s=cols.shorts.find(x=>x.id===id);if(!s)return;
-  let text=s.content||'';
-  text=text.replace(/[\u200B-\u200D\uFEFF]/g,'');
-  const header='════════════════════\n「'+s.title+'」\n本文由「星叙」辅助创作生成\n创作工具：星叙 · Created by 心田\n════════════════════\n\n';
-  const footer='\n\n════════════════════\n本文由AI辅助创作，内容仅供参考\n创作工具：星叙 '+APP_VER+'（AI辅助创作工坊）\n网页作者：心田\n════════════════════';
-  const shareText=header+text+footer;
-  if(navigator.share){
-    navigator.share({title:s.title||'分享短文',text:shareText}).catch(function(){});
-  } else {
-    doCopy(shareText);showToast('已复制到剪贴板，可粘贴分享 📋');
-  }
+  var s=cols.shorts.find(function(x){return x.id===id;});
+  if(!s)return;
+  var wc=(s.content||'').length;
+  if(wc<10){showToast('内容太少，至少写10字再分享');return;}
+  _showResPackInfoForm(
+    {name:(s.title||'未命名短篇'),author:userCard.name||'星叙用户'},
+    function(packName,packAuthor,packDesc){
+      var packData=JSON.parse(JSON.stringify(s));
+      var pack={
+        _app:'syn_resource',_ver:APP_VER,
+        id:uid(),name:packName,
+        desc:packDesc||('短篇 · '+wc+'字'),
+        author:packAuthor,
+        createdAt:new Date().toISOString(),
+        items:[{type:'work',name:'短篇：'+(s.title||'未命名'),data:packData}]
+      };
+      var jsonStr=JSON.stringify(pack,null,2);
+      var fileName='星叙_'+packName+'_'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json';
+      _exportFileWithFallback(fileName,jsonStr,'application/json;charset=utf-8');
+    }
+  );
 }
 function deleteShort(id){
 showDlg('删除确认','确定要删除这篇短文吗？',()=>{
@@ -21105,7 +21550,26 @@ if(p.toolKey!==undefined)document.getElementById('toolApiKey').value=p.toolKey||
 if(p.toolModel!==undefined)document.getElementById('toolApiModel').value=p.toolModel||'';
 if(p.freqPenalty!==undefined){var _fp=document.getElementById('apiFreqPenalty');if(_fp){_fp.value=p.freqPenalty;_fp.dispatchEvent(new Event('input'));var _fpv=document.getElementById('freqPenVal');if(_fpv)_fpv.textContent=parseFloat(p.freqPenalty).toFixed(2);}}
 if(p.presPenalty!==undefined){var _pp=document.getElementById('apiPresPenalty');if(_pp){_pp.value=p.presPenalty;_pp.dispatchEvent(new Event('input'));var _ppv=document.getElementById('presPenVal');if(_ppv)_ppv.textContent=parseFloat(p.presPenalty).toFixed(2);}}
+if(p.hideAntiRepeat!==undefined){toggleAntiRepeat(p.hideAntiRepeat);}
 saveCurSettings();showToast('已切换: '+p.name);
+}
+var _antiRepeatHidden=false;
+function toggleAntiRepeat(forceState){
+  var body=document.getElementById('antiRepeatBody');
+  var icon=document.getElementById('antiRepeatToggleIcon');
+  var btn=document.getElementById('antiRepeatToggleBtn');
+  if(!body)return;
+  if(forceState!==undefined){_antiRepeatHidden=forceState;}
+  else{_antiRepeatHidden=!_antiRepeatHidden;}
+  if(_antiRepeatHidden){
+    body.style.display='none';
+    if(icon){icon.className='fas fa-eye';}
+    if(btn){btn.innerHTML='<i class="fas fa-eye"></i> 已隐藏';}
+  }else{
+    body.style.display='';
+    if(icon){icon.className='fas fa-eye-slash';}
+    if(btn){btn.innerHTML='<i class="fas fa-eye-slash"></i> 已展开';}
+  }
 }
 function delApiP(i){apiP.splice(i,1);sv(K.apiP,apiP);renderApiPresets();}
 
@@ -24394,6 +24858,7 @@ updateEdWc();
 renderEdChBar();
 closeEdChList();
 };
+_bindChItemLongPressDelete(item,function(){confirmDeleteEdChapterAt(i);});
 list.appendChild(item);
 });
 // 绑定触摸拖拽排序
@@ -26057,47 +26522,28 @@ tagsDiv.appendChild(tag);
 });
 }
 function shareCrToRes(id){
-const work=crWorks.find(w=>w.id===id);
-if(!work)return;
-const wc=getCrWordCount(work);
-if(wc<10){showToast('内容太少，至少写10字再分享');return;}
-showDlg('分享到资源','将「'+(work.title||'无标题')+'」打包为资源包并导出？',()=>{
-const packData=JSON.parse(JSON.stringify(work));
-const pack={
-_app:'syn_resource',
-_ver:APP_VER,
-id:uid(),
-name:(work.title||'无标题')+'_分享',
-desc:(work.type==='draft'?'草稿':'小说')+' · '+wc+'字',
-author:userCard.name||'星叙用户',
-createdAt:new Date().toISOString(),
-items:[{
-type:'work',
-name:(work.type==='draft'?'草稿':'小说')+'：'+(work.title||'无标题'),
-data:packData
-}]
-};
-const jsonStr=JSON.stringify(pack,null,2);
-const fileName='星叙_分享_'+(work.title||'作品')+'_'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json';
-if(window.showSaveFilePicker){
-(async()=>{
-try{
-const handle=await window.showSaveFilePicker({
-suggestedName:fileName,
-types:[{description:'JSON文件',accept:{'application/json':['.json']}}]
-});
-const writable=await handle.createWritable();
-await writable.write(jsonStr);
-await writable.close();
-showToast('作品已导出为资源包 📤');
-}catch(e){
-if(e.name!=='AbortError')fallbackResExport(jsonStr,fileName);
-}
-})();
-return;
-}
-fallbackResExport(jsonStr,fileName);
-});
+  var work=crWorks.find(function(w){return w.id===id;});
+  if(!work)return;
+  var wc=getCrWordCount(work);
+  if(wc<10){showToast('内容太少，至少写10字再分享');return;}
+  var typeLabel=work.type==='draft'?'草稿':'小说';
+  _showResPackInfoForm(
+    {name:(work.title||'无标题'),author:userCard.name||'星叙用户'},
+    function(packName,packAuthor,packDesc){
+      var packData=JSON.parse(JSON.stringify(work));
+      var pack={
+        _app:'syn_resource',_ver:APP_VER,
+        id:uid(),name:packName,
+        desc:packDesc||(typeLabel+' · '+wc+'字'),
+        author:packAuthor,
+        createdAt:new Date().toISOString(),
+        items:[{type:'work',name:typeLabel+'：'+(work.title||'无标题'),data:packData}]
+      };
+      var jsonStr=JSON.stringify(pack,null,2);
+      var fileName='星叙_'+packName+'_'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json';
+      _exportFileWithFallback(fileName,jsonStr,'application/json;charset=utf-8');
+    }
+  );
 }
 // 章节大纲管理
 function viewOutline(){
@@ -26167,6 +26613,74 @@ renderEdChBar();
 saveEditorContent();
 showToast('已删除');
 },true);
+}
+// ==================== 章节目录：长按删除（共享工具，创作页/阅读页目录通用） ====================
+// item：目录列表中的单个章节DOM项；onLongPress：长按触发后要执行的回调（不含参数，由调用方通过闭包传入具体索引）
+function _bindChItemLongPressDelete(item,onLongPress){
+  var lpTimer=null,moved=false,sx=0,sy=0,fired=false;
+  item.addEventListener('touchstart',function(e){
+    if(e.target.closest('.ch-drag-handle'))return; // 拖拽手柄区域不触发长按删除
+    moved=false;fired=false;
+    if(e.touches.length>0){sx=e.touches[0].clientX;sy=e.touches[0].clientY;}
+    lpTimer=setTimeout(function(){
+      if(moved)return;
+      fired=true;
+      // 强制阻止文字选中：CSS层已禁用，这里再加一层JS保险
+      if(window.getSelection)try{window.getSelection().removeAllRanges();}catch(ex){}
+      _suppressSelect(item);
+      if(navigator.vibrate)navigator.vibrate(30);
+      try{onLongPress();}catch(err){logError('op',err);}
+      setTimeout(function(){_restoreSelect(item);},600);
+    },600);
+  },{passive:false}); // passive:false 允许在回调内调用preventDefault
+  item.addEventListener('touchmove',function(e){
+    if(e.touches.length>0&&(Math.abs(e.touches[0].clientX-sx)>10||Math.abs(e.touches[0].clientY-sy)>10)){
+      moved=true;
+      if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}
+    }
+  },{passive:true});
+  item.addEventListener('touchend',function(e){
+    if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}
+    if(fired){
+      e.preventDefault&&e.preventDefault();
+      e.stopPropagation&&e.stopPropagation();
+      fired=false;
+    }
+  },{passive:false});
+  item.addEventListener('touchcancel',function(){
+    if(lpTimer){clearTimeout(lpTimer);lpTimer=null;}
+    fired=false;
+  });
+}
+// 创作页目录：按索引确认删除章节
+function confirmDeleteEdChapterAt(idx){
+  if(!curEd||curEd.type!=='novel'||!curEd.chapters)return;
+  if(idx<0||idx>=curEd.chapters.length)return;
+  if(curEd.chapters.length<=1){showToast('至少保留一章');return;}
+  var chWc=countWords(curEd.chapters[idx]||'');
+  var chLabel='第'+(idx+1)+'章'+(curEd.chNames&&curEd.chNames[idx]?' '+curEd.chNames[idx]:'');
+  showDlg('删除章节','确定要删除'+chLabel+'吗？('+chWc+'字)\n\n⚠️ 此操作不可恢复！',function(){
+    deleteEdChapterAt(idx);
+  },true);
+}
+// 创作页目录：按索引执行删除（同步清理章节名/大纲/摘要等平行数组，避免索引错位）
+function deleteEdChapterAt(idx){
+  if(!curEd||!curEd.chapters||idx<0||idx>=curEd.chapters.length)return;
+  if(curEd.chapters.length<=1){showToast('至少保留一章');return;}
+  edPushUndo();
+  curEd.chapters.splice(idx,1);
+  if(curEd.chNames&&curEd.chNames.length>idx)curEd.chNames.splice(idx,1);
+  if(curEd.chOutlines&&curEd.chOutlines.length>idx)curEd.chOutlines.splice(idx,1);
+  if(curEd.chSummaries&&curEd.chSummaries.length>idx)curEd.chSummaries.splice(idx,1);
+  if(curEdCh>=curEd.chapters.length)curEdCh=curEd.chapters.length-1;
+  else if(curEdCh>idx)curEdCh--;
+  document.getElementById('edTextarea').value=curEd.chapters[curEdCh]||'';
+  updateEdWc();
+  renderEdChBar();
+  saveEditorContent();
+  showToast('已删除');
+  closeEdChList();
+  openEdChList();
 }
 // ==================== RESOURCE ====================
 function toggleResActionMenu(btn){
@@ -27899,7 +28413,7 @@ if(!curEd)return;
 var versions=getChapterVersions(curEd.id,curEdCh);
 if(idx<0||idx>=versions.length)return;
 var currentText=document.getElementById('edTextarea').value||'';
-document.getElementById('compareLeftLabel').textContent='📝 当前内容 ('+countWords(currentText)+'字)';
+document.getElementById('compareLeftLabel').textContent='当前内容 ('+countWords(currentText)+'字)';
 document.getElementById('compareRightLabel').textContent='💾 '+versions[idx].name+' ('+versions[idx].wordCount+'字)';
 document.getElementById('compareLeftText').textContent=currentText.substring(0,2000)+(currentText.length>2000?'\n\n...（已截断）':'');
 document.getElementById('compareRightText').textContent=(versions[idx].text||'').substring(0,2000)+(versions[idx].text.length>2000?'\n\n...（已截断）':'');
@@ -28028,7 +28542,72 @@ renderCollections();
 showToast('已删除 '+(delBooks+delShorts)+' 个项目'+(delBooks?' ('+delBooks+'本长篇)':'')+(delShorts?' ('+delShorts+'篇短篇)':''));
 },true);
 }
-
+function batchExportMenu(){
+  if(batchSelected.size===0){showToast('请先选择要导出的项目');return;}
+  var html=
+    '<div style="display:flex;flex-direction:column;gap:10px">'+
+    '<button onclick="window._doBatchExport(\'txt\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left">'+
+    '<b><i class="fas fa-file-alt"></i> 导出为 TXT</b>'+
+    '<div style="font-size:10px;color:var(--text2);margin-top:3px">合并所有选中作品到一个纯文本文件</div></button>'+
+    '<button onclick="window._doBatchExport(\'res\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left">'+
+    '<b><i class="fas fa-box-open"></i> 导出为资源包</b>'+
+    '<div style="font-size:10px;color:var(--text2);margin-top:3px">打包为 .json 资源包，可分享或导入其他设备</div></button>'+
+    '</div>';
+  showDlg('📤 选择导出方式',html,function(){},false,true);
+  setTimeout(function(){
+    var ok=document.getElementById('dlgOkBtn');
+    if(ok)ok.style.display='none';
+    var p=document.getElementById('dlgMsg');
+    if(p){p.style.maxHeight='50vh';p.style.overflowY='auto';}
+  },50);
+  window._doBatchExport=function(type){
+    closeDlg();
+    setTimeout(function(){
+      if(type==='txt')batchExportTxt();
+      else if(type==='res')batchExportAsResPack();
+    },80);
+  };
+}
+function batchExportAsResPack(){
+  if(batchSelected.size===0){showToast('请先选择要导出的项目');return;}
+  _showResPackInfoForm(
+    {name:'收藏批量导出',author:userCard.name||'星叙用户'},
+    function(packName,packAuthor,packDesc){
+      var items=[];
+      var exportCount=0;
+      batchSelected.forEach(function(key){
+        var parts=key.split('_');
+        var type=parts[0];
+        var id=parts.slice(1).join('_');
+        if(type==='book'){
+          var book=cols.books.find(function(b){return b.id===id;});
+          if(book){
+            items.push({type:'work',name:'小说：'+(book.title||'未命名'),data:JSON.parse(JSON.stringify(book))});
+            exportCount++;
+          }
+        }else if(type==='short'){
+          var s=cols.shorts.find(function(x){return x.id===id;});
+          if(s){
+            items.push({type:'work',name:'短篇：'+(s.title||'未命名'),data:JSON.parse(JSON.stringify(s))});
+            exportCount++;
+          }
+        }
+      });
+      if(items.length===0){showToast('没有内容可导出');return;}
+      var pack={
+        _app:'syn_resource',_ver:APP_VER,
+        id:uid(),name:packName,
+        desc:packDesc||('共'+exportCount+'篇作品'),
+        author:packAuthor,
+        createdAt:new Date().toISOString(),
+        items:items
+      };
+      var jsonStr=JSON.stringify(pack,null,2);
+      var fileName='星叙_'+packName+'_'+new Date().toLocaleDateString().replace(/\//g,'-')+'.json';
+      _exportFileWithFallback(fileName,jsonStr,'application/json;charset=utf-8');
+    }
+  );
+}
 function batchExportTxt(){
 if(batchSelected.size===0){showToast('请先选择要导出的项目');return;}
 var allContent='';
@@ -29499,7 +30078,23 @@ chPickerHtml+
 '</div>';
 rwOv.onclick=function(e){if(e.target===rwOv)rwOv.remove();};
 document.body.appendChild(rwOv);
-setTimeout(function(){_edRwUpdatePicker();var ta=document.getElementById('rewriteReqInput');if(ta)ta.focus();},200);
+setTimeout(function(){
+  _edRwUpdatePicker();
+  var ta=document.getElementById('rewriteReqInput');if(ta)ta.focus();
+  var ov=document.getElementById('rewriteReqOv');if(!ov)return;
+  // 章节标签点击→自定义输入
+  var sl=document.getElementById('edRwSLabel');
+  var el=document.getElementById('edRwELabel');
+  if(sl){sl.style.cursor='pointer';sl.addEventListener('click',function(){_edRwCustomInput('s');});}
+  if(el){el.style.cursor='pointer';el.addEventListener('click',function(){_edRwCustomInput('e');});}
+  // 手机触摸支持（‹ › 按钮）
+  var stepBtns=ov.querySelectorAll('button[style*="width:36px"]');
+  var map=[['s',-1],['s',1],['e',-1],['e',1]];
+  stepBtns.forEach(function(btn,i){
+    if(i>=4)return;
+    btn.addEventListener('touchstart',function(ev){ev.preventDefault();_edRwStepCh(map[i][0],map[i][1]);},{passive:false});
+  });
+},200);
 }
 function _edRwStepCh(which,delta){
   var tot=curEd&&curEd.chapters?curEd.chapters.length:0;
@@ -29784,7 +30379,242 @@ function _exportFallbackCopy(){
 function exportToTxtFile(filename, content) {
   _exportFileWithFallback(filename,content,'text/plain;charset=utf-8');
 }
+// ── 资源包信息填写表单（分享/批量导出 公用）──
+function _showResPackInfoForm(defaults,onConfirm){
+  var dName=esc(defaults.name||'');
+  var dAuthor=esc(defaults.author||'');
+  var html=
+    '<div style="display:flex;flex-direction:column;gap:12px">'+
+    '<div>'+
+      '<div style="font-size:11px;color:var(--text2);margin-bottom:5px">资源包名称 <span style="color:var(--danger)">*</span></div>'+
+      '<input id="_rpName" type="text" value="'+dName+'" placeholder="给资源包起个名字" '+
+      'style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:13px;outline:none;box-sizing:border-box">'+
+    '</div>'+
+    '<div>'+
+      '<div style="font-size:11px;color:var(--text2);margin-bottom:5px">作者名称 <span style="color:var(--danger)">*</span></div>'+
+      '<input id="_rpAuthor" type="text" value="'+dAuthor+'" placeholder="你的名字或笔名" '+
+      'style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:13px;outline:none;box-sizing:border-box">'+
+    '</div>'+
+    '<div>'+
+      '<div style="font-size:11px;color:var(--text2);margin-bottom:5px">资源包简介 <span style="font-size:10px">(选填)</span></div>'+
+      '<input id="_rpDesc" type="text" placeholder="一句话描述这个资源包..." '+
+      'style="width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:13px;outline:none;box-sizing:border-box">'+
+    '</div>'+
+    '</div>';
+  window._resPackInfoConfirm=onConfirm;
+  showDlg('📦 资源包信息',html,function(){},false,true);
+  setTimeout(function(){
+    var okBtn=document.getElementById('dlgOkBtn');
+    if(okBtn){
+      okBtn.textContent='✓ 确认打包导出';
+      okBtn.onclick=function(){
+        var name=(document.getElementById('_rpName').value||'').trim();
+        var author=(document.getElementById('_rpAuthor').value||'').trim();
+        var desc=(document.getElementById('_rpDesc').value||'').trim();
+        if(!name){showToast('请填写资源包名称');return;}
+        if(!author){showToast('请填写作者名称');return;}
+        closeDlg();
+        if(window._resPackInfoConfirm){
+          var cb=window._resPackInfoConfirm;
+          window._resPackInfoConfirm=null;
+          cb(name,author,desc);
+        }
+      };
+    }
+    var p=document.getElementById('dlgMsg');
+    if(p){p.style.maxHeight='60vh';p.style.overflowY='auto';}
+  },50);
+}
 
+// ── Word (.doc) 内容构建 ──
+function buildWordContent(title,chapters,isAI){
+  var _e=function(s){
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  };
+  var paras=function(text){
+    var r='';
+    String(text||'').split('\n').forEach(function(line){
+      if(line.trim())r+='<p>'+_e(line)+'</p>\n';
+      else r+='<p class="bl">&nbsp;</p>\n';
+    });
+    return r;
+  };
+  var body='<h1>'+_e(title)+'</h1>\n';
+  if(Array.isArray(chapters)){
+    chapters.forEach(function(ch,i){
+      body+='<h2>第'+(i+1)+'章</h2>\n'+paras(ch);
+    });
+  }else{
+    body+=paras(chapters);
+  }
+  if(isAI){
+    body+='<p class="note">本文由「星叙」AI辅助创作 &nbsp;|&nbsp; 导出于 '+_e(new Date().toLocaleString())+'</p>\n';
+  }
+  return '<!DOCTYPE html>\n'+
+    '<html xmlns:o="urn:schemas-microsoft-com:office:office"\n'+
+    '  xmlns:w="urn:schemas-microsoft-com:office:word"\n'+
+    '  xmlns="http://www.w3.org/TR/REC-html40">\n'+
+    '<head><meta charset="UTF-8"><title>'+_e(title)+'</title>\n'+
+    '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View>'+
+    '<w:Zoom>90</w:Zoom></w:WordDocument></xml><![endif]-->\n'+
+    '<style>\n'+
+    'body{font-family:"Microsoft YaHei","宋体",SimSun,serif;margin:2.5cm 3cm;line-height:1.8;}\n'+
+    'h1{font-size:18pt;text-align:center;font-weight:bold;margin-bottom:1.5em;}\n'+
+    'h2{font-size:14pt;font-weight:bold;margin-top:2em;margin-bottom:0.8em;border-bottom:1pt solid #ccc;padding-bottom:4pt;}\n'+
+    'p{font-size:12pt;text-indent:2em;margin:0.4em 0;}\n'+
+    'p.bl{text-indent:0;margin:0.15em 0;}\n'+
+    'p.note{font-size:9pt;color:#888;text-align:center;margin-top:2em;border-top:1pt solid #ddd;padding-top:0.5em;text-indent:0;}\n'+
+    '</style></head>\n<body>\n'+body+'\n</body></html>';
+}
+
+// ── 极简 ZIP 生成器（STORED 无压缩，用于生成合规 EPUB 文件）──
+function _minimalZip(files){
+  var _tbl=(function(){
+    var t=new Uint32Array(256);
+    for(var i=0;i<256;i++){
+      var c=i;
+      for(var j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
+      t[i]=c;
+    }
+    return t;
+  })();
+  function _crc32(data){
+    var crc=0xFFFFFFFF;
+    for(var i=0;i<data.length;i++)crc=((crc>>>8)^_tbl[(crc^data[i])&0xFF])>>>0;
+    return(crc^0xFFFFFFFF)>>>0;
+  }
+  function u16(arr,off,v){arr[off]=v&0xFF;arr[off+1]=(v>>8)&0xFF;}
+  function u32(arr,off,v){arr[off]=v&0xFF;arr[off+1]=(v>>8)&0xFF;arr[off+2]=(v>>16)&0xFF;arr[off+3]=(v>>24)&0xFF;}
+  var enc=new TextEncoder();
+  var parts=[],cdInfos=[],offsets=[];
+  var pos=0;
+  files.forEach(function(file){
+    var nb=enc.encode(file.name);
+    var db=(file.data instanceof Uint8Array)?file.data:enc.encode(String(file.data));
+    var crc=_crc32(db);
+    var lh=new Uint8Array(30+nb.length);
+    lh[0]=0x50;lh[1]=0x4B;lh[2]=0x03;lh[3]=0x04;
+    u16(lh,4,20);u16(lh,6,0);u16(lh,8,0);u16(lh,10,0);u16(lh,12,0);
+    u32(lh,14,crc);u32(lh,18,db.length);u32(lh,22,db.length);
+    u16(lh,26,nb.length);u16(lh,28,0);
+    lh.set(nb,30);
+    offsets.push(pos);
+    pos+=30+nb.length+db.length;
+    parts.push(lh,db);
+    cdInfos.push({nb:nb,crc:crc,len:db.length});
+  });
+  var cdOff=pos,cdSize=0;
+  var cdArr=cdInfos.map(function(e,i){
+    var cd=new Uint8Array(46+e.nb.length);
+    cd[0]=0x50;cd[1]=0x4B;cd[2]=0x01;cd[3]=0x02;
+    u16(cd,4,20);u16(cd,6,20);u16(cd,8,0);u16(cd,10,0);u16(cd,12,0);u16(cd,14,0);
+    u32(cd,16,e.crc);u32(cd,20,e.len);u32(cd,24,e.len);
+    u16(cd,28,e.nb.length);u16(cd,30,0);u16(cd,32,0);
+    u16(cd,34,0);u16(cd,36,0);u32(cd,38,0);u32(cd,42,offsets[i]);
+    cd.set(e.nb,46);
+    cdSize+=cd.length;
+    return cd;
+  });
+  var eocd=new Uint8Array(22);
+  eocd[0]=0x50;eocd[1]=0x4B;eocd[2]=0x05;eocd[3]=0x06;
+  u16(eocd,4,0);u16(eocd,6,0);
+  u16(eocd,8,files.length);u16(eocd,10,files.length);
+  u32(eocd,12,cdSize);u32(eocd,16,cdOff);u16(eocd,20,0);
+  return new Blob(parts.concat(cdArr).concat([eocd]),{type:'application/epub+zip'});
+}
+
+// ── EPUB (.epub) 导出（EPUB2 格式，兼容掌阅/多看等阅读器）──
+function _exportEpubFile(filename,title,chapters,isAI){
+  var _e=function(s){
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  };
+  var bookId='xingxu-'+Date.now();
+  var paras=function(text){
+    var r='';
+    String(text||'').split('\n').forEach(function(line){
+      if(line.trim())r+='<p>'+_e(line)+'</p>\n';
+      else r+='<p class="bl"> </p>\n';
+    });
+    return r;
+  };
+  var body='<h1 id="start">'+_e(title)+'</h1>\n';
+  if(Array.isArray(chapters)){
+    chapters.forEach(function(ch,i){body+='<h2>第'+(i+1)+'章</h2>\n'+paras(ch);});
+  }else{
+    body+=paras(chapters);
+  }
+  if(isAI){body+='<p class="note">本文由「星叙」AI辅助创作</p>\n';}
+  var xhtml='<?xml version="1.0" encoding="UTF-8"?>\n'+
+    '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n'+
+    '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="zh-CN">\n<head>\n'+
+    '<meta charset="UTF-8"/><title>'+_e(title)+'</title>\n<style>\n'+
+    'body{font-family:serif;margin:1.5em;line-height:1.8;}\n'+
+    'h1{font-size:1.5em;text-align:center;margin-bottom:1em;}\n'+
+    'h2{font-size:1.2em;margin-top:1.5em;border-bottom:1px solid #ccc;padding-bottom:0.3em;}\n'+
+    'p{text-indent:2em;margin:0.4em 0;}\n'+
+    'p.bl{text-indent:0;margin:0.15em 0;}\n'+
+    'p.note{font-size:0.8em;color:#888;text-align:center;margin-top:2em;border-top:1px solid #ccc;padding-top:0.5em;text-indent:0;}\n'+
+    '</style>\n</head>\n<body>\n'+body+'</body>\n</html>';
+  var ncx='<?xml version="1.0" encoding="UTF-8"?>\n'+
+    '<!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd">\n'+
+    '<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1">\n'+
+    '<head><meta name="dtb:uid" content="'+bookId+'"/></head>\n'+
+    '<docTitle><text>'+_e(title)+'</text></docTitle>\n'+
+    '<navMap><navPoint id="p1" playOrder="1">'+
+    '<navLabel><text>'+_e(title)+'</text></navLabel>'+
+    '<content src="content.xhtml#start"/></navPoint></navMap>\n</ncx>';
+  var opf='<?xml version="1.0" encoding="UTF-8"?>\n'+
+    '<package version="2.0" xmlns="http://www.idpf.org/2007/opf" unique-identifier="uid">\n'+
+    '<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n'+
+    '<dc:title>'+_e(title)+'</dc:title>\n'+
+    '<dc:language>zh-CN</dc:language>\n'+
+    '<dc:identifier id="uid">'+bookId+'</dc:identifier>\n'+
+    '</metadata>\n<manifest>\n'+
+    '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>\n'+
+    '<item id="c1" href="content.xhtml" media-type="application/xhtml+xml"/>\n'+
+    '</manifest>\n<spine toc="ncx"><itemref idref="c1"/></spine>\n</package>';
+  var container='<?xml version="1.0" encoding="UTF-8"?>\n'+
+    '<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n'+
+    '<rootfiles><rootfile full-path="OEBPS/content.opf" '+
+    'media-type="application/oebps-package+xml"/></rootfiles>\n</container>';
+  var blob;
+  try{
+    blob=_minimalZip([
+      {name:'mimetype',data:'application/epub+zip'},
+      {name:'META-INF/container.xml',data:container},
+      {name:'OEBPS/content.opf',data:opf},
+      {name:'OEBPS/toc.ncx',data:ncx},
+      {name:'OEBPS/content.xhtml',data:xhtml}
+    ]);
+  }catch(e){
+    showToast('EPUB 生成失败：'+(e.message||'未知错误'));
+    return;
+  }
+  var downloaded=false;
+  try{
+    var url=URL.createObjectURL(blob);
+    var a=document.createElement('a');
+    a.href=url;a.download=filename;a.style.display='none';
+    document.body.appendChild(a);a.click();
+    setTimeout(function(){try{URL.revokeObjectURL(url);document.body.removeChild(a);}catch(ee){}},1000);
+    downloaded=true;
+  }catch(e){downloaded=false;}
+  var dlgHtml='<div style="font-size:12px;line-height:1.8;color:var(--text);margin-bottom:14px;">';
+  if(downloaded){
+    dlgHtml+='已尝试导出 EPUB 文件：<br><b style="color:var(--accent2);">'+esc(filename)+'</b><br>';
+    dlgHtml+='<span style="font-size:11px;color:var(--text2);">请检查手机「下载」目录，可用掌阅、多看等阅读器打开。</span>';
+  }else{
+    dlgHtml+='当前环境无法直接下载 EPUB，可改用「EPUB草稿(.html)」并用 Calibre 转换。';
+  }
+  dlgHtml+='</div>';
+  showDlg(downloaded?'📚 EPUB 导出完成':'📚 EPUB 导出提示',dlgHtml,function(){},false,true);
+  setTimeout(function(){
+    var ok=document.getElementById('dlgOkBtn');
+    if(ok)ok.textContent='✓ 已收到，关闭';
+    var p=document.getElementById('dlgMsg');
+    if(p)p.style.maxHeight='60vh';
+  },50);
+}
 function buildTxtContent(title,chapters,isAI){
 let content='';
 if(isAI){
@@ -30066,6 +30896,8 @@ var fmtHtml=
 '<div style="display:flex;flex-direction:column;gap:10px">'+
 '<button onclick="window._doExportFmt(\'txt\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left"><b><i class="fas fa-file"></i> TXT 纯文本</b><div style="font-size:10px;color:var(--text2);margin-top:3px">通用格式，任何设备均可打开</div></button>'+
 '<button onclick="window._doExportFmt(\'md\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left"><b><i class="fas fa-pen-nib"></i>️ Markdown (.md)</b><div style="font-size:10px;color:var(--text2);margin-top:3px">适合Obsidian、Typora等Markdown编辑器</div></button>'+
+'<button onclick="window._doExportFmt(\'word\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left"><b><i class="fas fa-file-word"></i> Word (.doc)</b><div style="font-size:10px;color:var(--text2);margin-top:3px">可用 WPS、Microsoft Word 直接打开</div></button>'+
+'<button onclick="window._doExportFmt(\'epubzip\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left"><b><i class="fas fa-book-open"></i> EPUB (.epub)</b><div style="font-size:10px;color:var(--text2);margin-top:3px">电子书格式，可用掌阅、多看阅读器打开</div></button>'+
 '<button onclick="window._doExportFmt(\'epub\')" style="padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;cursor:pointer;text-align:left"><b><i class="fas fa-book"></i> EPUB草稿 (.html)</b><div style="font-size:10px;color:var(--text2);margin-top:3px">电子书格式预览，可导入Calibre等工具转换为正式EPUB</div></button>'+
 '</div>';
 showDlg('📤 导出格式',fmtHtml,function(){},false,true);
@@ -30075,17 +30907,22 @@ var p=document.getElementById('dlgMsg');
 if(p){p.style.maxHeight='50vh';p.style.overflowY='auto';}
 },50);
 window._doExportFmt=function(fmt){
-closeDlg();
-if(fmt==='txt'){
-const content=buildTxtContent(title,chapters,isAI);
-exportToTxtFile(filePrefix+'.txt',content);
-}else if(fmt==='md'){
-const content=buildMdContent(title,chapters,isAI);
-exportToTxtFile(filePrefix+'.md',content);
-}else if(fmt==='epub'){
-const content=buildEpubDraftContent(title,chapters,isAI);
-exportToTxtFile(filePrefix+'.html',content);
-}
+  closeDlg();
+  if(fmt==='txt'){
+    var content=buildTxtContent(title,chapters,isAI);
+    exportToTxtFile(filePrefix+'.txt',content);
+  }else if(fmt==='md'){
+    var content=buildMdContent(title,chapters,isAI);
+    exportToTxtFile(filePrefix+'.md',content);
+  }else if(fmt==='word'){
+    var content=buildWordContent(title,chapters,isAI);
+    _exportFileWithFallback(filePrefix+'.doc',content,'application/msword');
+  }else if(fmt==='epubzip'){
+    _exportEpubFile(filePrefix+'.epub',title,chapters,isAI);
+  }else if(fmt==='epub'){
+    var content=buildEpubDraftContent(title,chapters,isAI);
+    exportToTxtFile(filePrefix+'.html',content);
+  }
 };
 }
 // 选择弹窗
@@ -30121,7 +30958,7 @@ rewriteArticle=curRd;
 var isLong=curRd.type==='long'&&Array.isArray(curRd.chapters)&&curRd.chapters.length>0;
 var totalChs=isLong?curRd.chapters.length:0;
 var typeText=isLong?'长篇（共'+totalChs+'章）':'短篇文章';
-document.getElementById('rewriteTitle').textContent='🔄 AI改写 · '+typeText;
+document.getElementById('rewriteTitle').innerHTML='<i class="fas fa-rotate-right"></i> AI改写 · '+esc(typeText);
 document.getElementById('rewriteRequirement').value='';
 document.getElementById('rewriteProgress').style.display='none';
 document.getElementById('rewriteBtns').style.display='flex';
@@ -30169,7 +31006,69 @@ function _rwRdUpdatePicker(){
     h.style.color=diff>1?'var(--accent2)':'var(--text2)';
   }
 }
-
+function _showChNumDlg(title,cur,tot,onOk){
+  var old=document.getElementById('_chNumDlg');if(old)old.remove();
+  var ov=document.createElement('div');
+  ov.id='_chNumDlg';
+  ov.style.cssText='display:flex;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.6);align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML=
+    '<div style="background:var(--card);border-radius:16px;padding:22px;width:100%;max-width:300px;border:1px solid var(--border);animation:fadeIn .2s ease">'+
+    '<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:14px">'+title+'</div>'+
+    '<input id="_chNumInput" type="number" inputmode="numeric" min="1" max="'+tot+'" value="'+cur+'"'+
+    ' style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:22px;font-weight:700;outline:none;box-sizing:border-box;text-align:center;-webkit-appearance:none">'+
+    '<div style="font-size:11px;color:var(--text2);text-align:center;margin:10px 0 16px">可选范围：第 1 章 ～ 第 '+tot+' 章</div>'+
+    '<div style="display:flex;gap:10px">'+
+    '<button id="_chNumCancel" style="flex:1;padding:12px;border-radius:12px;background:var(--card2);color:var(--text2);border:none;font-size:13px;font-weight:600;cursor:pointer">取消</button>'+
+    '<button id="_chNumOk" style="flex:1;padding:12px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;font-size:13px;font-weight:600;cursor:pointer">确定</button>'+
+    '</div></div>';
+  document.body.appendChild(ov);
+  ov.onclick=function(e){if(e.target===ov)ov.remove();};
+  document.getElementById('_chNumCancel').onclick=function(){ov.remove();};
+  document.getElementById('_chNumOk').onclick=function(){
+    var n=parseInt(document.getElementById('_chNumInput').value,10);
+    if(isNaN(n)||n<1||n>tot){showToast('请输入 1 ～ '+tot+' 之间的整数',2500);return;}
+    ov.remove();onOk(n);
+  };
+  setTimeout(function(){var f=document.getElementById('_chNumInput');if(f){f.focus();f.select();}},100);
+}
+function _rwRdCustomInput(which){
+  var tot=rewriteArticle&&rewriteArticle.chapters?rewriteArticle.chapters.length:0;
+  if(tot===0)return;
+  var label=which==='s'?'起始章节':'结束章节';
+  var cur=which==='s'?(_rwRdSI+1):(_rwRdEI+1);
+  _showChNumDlg('请输入'+label+'编号',cur,tot,function(n){
+    var idx=n-1;
+    if(which==='s'){
+      _rwRdSI=idx;
+      if(_rwRdEI<_rwRdSI)_rwRdEI=_rwRdSI;
+      if(_rwRdEI-_rwRdSI>=10)_rwRdEI=Math.min(_rwRdSI+9,tot-1);
+    }else{
+      _rwRdEI=idx;
+      if(_rwRdEI<_rwRdSI)_rwRdSI=_rwRdEI;
+      if(_rwRdEI-_rwRdSI>=10)_rwRdSI=Math.max(_rwRdEI-9,0);
+    }
+    _rwRdUpdatePicker();
+  });
+}
+function _edRwCustomInput(which){
+  var tot=curEd&&curEd.chapters?curEd.chapters.length:0;
+  if(tot===0)return;
+  var label=which==='s'?'起始章节':'结束章节';
+  var cur=which==='s'?(_edRwSI+1):(_edRwEI+1);
+  _showChNumDlg('请输入'+label+'编号',cur,tot,function(n){
+    var idx=n-1;
+    if(which==='s'){
+      _edRwSI=idx;
+      if(_edRwEI<_edRwSI)_edRwEI=_edRwSI;
+      if(_edRwEI-_edRwSI>=10)_edRwEI=Math.min(_edRwSI+9,tot-1);
+    }else{
+      _edRwEI=idx;
+      if(_edRwEI<_edRwSI)_edRwSI=_edRwEI;
+      if(_edRwEI-_edRwSI>=10)_edRwSI=Math.max(_edRwEI-9,0);
+    }
+    _edRwUpdatePicker();
+  });
+}
 function closeRewriteOv(){
   navPop('rewriteOv');
 document.getElementById('rewriteOv').classList.remove('show');
@@ -30987,7 +31886,7 @@ if(useStream){
     },
     (text)=>{
       btn.disabled=false;
-      btn.textContent='🔄 重新生成';
+      btn.textContent='重新生成';
       if(text){
         storyContent.value=text;
         storyArea.scrollIntoView({behavior:'smooth',block:'center'});
@@ -31002,7 +31901,7 @@ if(useStream){
 }else{
   const result=await callAPINonStream(messages);
   btn.disabled=false;
-  btn.textContent='🔄 重新生成';
+  btn.textContent='重新生成';
   if(result){
     storyContent.value=result;
     storyArea.scrollIntoView({behavior:'smooth',block:'center'});
@@ -31240,7 +32139,7 @@ const listDiv=document.getElementById('nameGenList');
 
 var result=await callToolAPINonStream(messages);
 btn.disabled=false;
-btn.textContent='🔄 重新生成';
+btn.textContent='重新生成';
 if(result){
 resultDiv.style.display='block';
 parseAndShowNames(result);
@@ -31588,7 +32487,7 @@ async function doStyleGeneExtract(){
   
   var result=await callToolAPINonStream([{role:'system',content:sysMsg},{role:'user',content:userMsg}]);
   btn.disabled=false;
-  btn.textContent='🔄 重新提取';
+  btn.textContent='重新提取';
   
   if(result){
     var cleaned=stripMetaThinking(result);
@@ -31693,6 +32592,7 @@ function saveSgAsPreset(){
 }
 // ==================== 丰富设定 ====================
 var _enrichSettingType='';
+var _enrichAppendMode=false;
 
 function openEnrichSetting(type){
   _enrichSettingType=type;
@@ -31743,7 +32643,7 @@ async function doEnrichSetting(){
   document.getElementById('enrichResult').style.display='block';
   document.getElementById('enrichActions').style.display='none';
   var resultEl=document.getElementById('enrichResultText');
-  resultEl.value='正在丰富设定...';
+  resultEl.value='正在生成...';
   var curContent='';
   if(_enrichSettingType==='world'){
     var gw=(document.getElementById('globalWorldDesc')&&document.getElementById('globalWorldDesc').value||'').trim();
@@ -31756,6 +32656,8 @@ async function doEnrichSetting(){
     var lr=(document.getElementById('ruleDesc')&&document.getElementById('ruleDesc').value||'').trim();
     curContent=[gr,lr].filter(Boolean).join('\n\n');
   }
+  // 原文超过200字时自动切换为追加模式，防止AI输出比原文字数还少的问题
+  _enrichAppendMode=curContent.length>200;
   var refCtx='';
   var refCharsEl=document.getElementById('enrichRef_chars');
   if(refCharsEl&&refCharsEl.checked){
@@ -31782,13 +32684,43 @@ async function doEnrichSetting(){
     if(rd)refCtx+='\n【规则设置】\n'+rd.substring(0,350)+'\n';
   }
   var typeName={world:'世界观设定',style:'文风设置',rule:'规则设置'}[_enrichSettingType]||'设定';
-  var sysMsg='你是一位专业创作顾问，精通小说各类设定的设计。\n\n【任务】根据用户的丰富需求，在原有'+typeName+'基础上扩充、完善内容。\n\n【原则】\n1. 不与原有内容矛盾\n2. 风格保持一致\n3. 直接输出丰富后的完整内容，不加说明语、不加"丰富后内容如下"等前缀\n4. 新增内容要自然融入';
-  if(refCtx)sysMsg+='\n\n【参考设定（保持一致性）】'+refCtx;
-  var userMsg='【当前'+typeName+'】\n'+(curContent||'（暂无，请新建）')+'\n\n【丰富需求】\n'+req+'\n\n请输出丰富后的完整'+typeName+'：';
+  var sysMsg,userMsg;
+  if(_enrichAppendMode){
+    // 追加模式：原文已较完整，AI只输出新增部分，彻底杜绝输出量少于原文的问题
+    sysMsg='你是一位专业创作顾问，精通小说各类设定的设计。\n\n'
+      +'【任务】用户已有一份较完整的'+typeName+'。请根据用户的补充需求，只生成新增部分，禁止重复或改写已有内容。\n\n'
+      +'【输出规则】\n'
+      +'1. 只输出新增内容，不得复述或摘抄原文任何片段\n'
+      +'2. 新增量要充足，覆盖用户需求的全部方面，不能蜻蜓点水\n'
+      +'3. 不与原有内容矛盾，风格和格式与原文保持一致\n'
+      +'4. 直接从新增内容正文开始，不加"新增如下""补充内容："等任何前缀或标题';
+    if(refCtx)sysMsg+='\n\n【参考设定（保持一致性）】'+refCtx;
+    userMsg='【现有'+typeName+'（只供参考，禁止重复）】\n'+curContent
+      +'\n\n【补充需求】\n'+req
+      +'\n\n请直接输出新增内容正文（不要重复原文）：';
+  }else{
+    // 新建/原文极少时：输出完整内容
+    sysMsg='你是一位专业创作顾问，精通小说各类设定的设计。\n\n'
+      +'【任务】根据用户的需求，生成一份完整的'+typeName+'。\n\n'
+      +'【输出规则】\n'
+      +'1. 直接输出内容正文，不加说明语或"内容如下"等前缀\n'
+      +'2. 结构清晰，内容丰富充实，不能语焉不详\n'
+      +'3. 风格统一，逻辑自洽';
+    if(refCtx)sysMsg+='\n\n【参考设定（保持一致性）】'+refCtx;
+    userMsg='【当前'+typeName+'】\n'+(curContent||'（暂无，请新建）')
+      +'\n\n【丰富需求】\n'+req
+      +'\n\n请输出完整'+typeName+'：';
+  }
   try{
     var result=await callToolAPINonStream([{role:'system',content:sysMsg},{role:'user',content:userMsg}]);
     if(result){
-      resultEl.value=result;
+      if(_enrichAppendMode){
+        resultEl.value='📌 追加内容（以下均为新增，不含原文）\n────────────────────────\n'+result;
+      }else{
+        resultEl.value=result;
+      }
+      var modeNote=document.getElementById('enrichModeNote');
+      if(modeNote)modeNote.style.display=_enrichAppendMode?'block':'none';
       btn.style.display='none';
       document.getElementById('enrichActions').style.display='block';
     }else{
@@ -31825,7 +32757,46 @@ function applyEnrichResult(){
     showToast('设定已更新 ✨');
   },true);
 }
-
+function appendEnrichResult(){
+  var raw=(document.getElementById('enrichResultText').value||'');
+  // 去掉追加模式的头部提示行后取正文
+  var result=raw.replace(/^📌[^\n]*\n────[^\n]*\n?/,'').trim();
+  if(!result){showToast('没有内容可追加');return;}
+  var typeLabel={world:'世界观',style:'文风',rule:'规则'}[_enrichSettingType]||'';
+  var appended=false;
+  if(_enrichSettingType==='world'){
+    var e1=document.getElementById('globalWorldDesc');
+    if(e1){
+      var cur1=(e1.value||'').trimEnd();
+      e1.value=cur1+(cur1?'\n\n':'')+result;
+      globalWorld=e1.value;
+      sv('bj_globalWorld',globalWorld);
+      try{limitTextarea(e1,3000,'gwCount');}catch(err){}
+      appended=true;
+    }
+  }else if(_enrichSettingType==='style'){
+    var e2=document.getElementById('styleDesc');
+    if(e2){
+      var cur2=(e2.value||'').trimEnd();
+      e2.value=cur2+(cur2?'\n\n':'')+result;
+      try{limitTextarea(e2,600,'stCount');saveLocalStyle();}catch(err){}
+      appended=true;
+    }
+  }else if(_enrichSettingType==='rule'){
+    var e3=document.getElementById('globalRuleDesc');
+    if(e3){
+      var cur3=(e3.value||'').trimEnd();
+      e3.value=cur3+(cur3?'\n\n':'')+result;
+      globalRule=e3.value;
+      sv('bj_globalRule',globalRule);
+      try{limitTextarea(e3,2000,'grCount');}catch(err){}
+      appended=true;
+    }
+  }
+  if(!appended){showToast('未找到对应的设定文本框');return;}
+  closeEnrichSetting();
+  showToast(typeLabel+'设定已追加 ✨');
+}
 function saveEnrichAsPreset(){
   var result=(document.getElementById('enrichResultText').value||'').trim();
   if(!result){showToast('没有内容可保存');return;}
@@ -32347,7 +33318,7 @@ async function doCharDesign(){
 
   var result = await callToolAPINonStream(messages);
   btn.disabled = false;
-  btn.textContent = '🔄 重新生成';
+  btn.textContent = '重新生成';
   if(result){
     var cleaned = stripMetaThinking(result);
     resultText.value = cleaned;
@@ -32621,7 +33592,7 @@ const listDiv=document.getElementById('branchList');
 
 var result=await callToolAPINonStream(messages);
 btn.disabled=false;
-btn.textContent='🔄 重新生成';
+btn.textContent='重新生成';
 if(result){
 resultDiv.style.display='block';
 parseBranchResult(result);
@@ -33739,6 +34710,15 @@ if(_batchContRemain>0&&_batchArticleId&&curRd.id!==_batchArticleId){
   return;
 }
 const ctx=articleContexts[curRd.id]||{};
+// 续写前自动保存上一章快照
+(function(){
+  try{
+    var _snIdx = curRd.chapters ? curRd.chapters.length - 1 : -1;
+    if(_snIdx >= 0 && curRd.id){
+      saveChapterSnapshot(curRd.id, _snIdx, '续写前·第'+(_snIdx+1)+'章');
+    }
+  }catch(e){}
+})();
 setIsGen(true);
 const btn=document.getElementById('btnCont');
 btn.disabled=true;
@@ -33751,7 +34731,7 @@ var _contSafetyTimer=setTimeout(function(){
     setIsGen(false);
     var _b1=document.getElementById('btnCont');
     var _b2=document.getElementById('btnSmartCont');
-    if(_b1){_b1.disabled=false;_b1.textContent='📝 续写下一章';}
+    if(_b1){_b1.disabled=false;_b1.innerHTML='<i class="fas fa-pen-nib"></i> 续写下一章';}
     if(_b2){_b2.disabled=false;_b2.innerHTML='<i class="fas fa-brain"></i> 智能续写';}
     showToast('生成超时，请重试',3000);
   }
@@ -33829,6 +34809,11 @@ if(ctx.estFacts){
 if(ctx.direction){
 userMsg+='【写作方向】\n'+ctx.direction+'\n\n';
 }
+// 6.5 书目素材模块（挂载于本书的素材，自动作为参考注入，无需手动引用）
+var _bmmText=_buildBookMatModuleText(curRd.id,300,1200);
+if(_bmmText){
+userMsg+='【素材库参考（请自然融入本章内容，不要生硬照抄）】\n'+_bmmText+'\n\n';
+}
 // 7. 章节大纲注入
 var _bookOutlines=ctx.bookChOutlines||[];
 if(ctx.sendAllOutlines&&_bookOutlines.length>0){
@@ -33895,7 +34880,7 @@ if(_bgTaskInfo){
 const rdContent=document.getElementById('rdContent');
 if(!useStream){
 const result=await callAPINonStream(messages);
-setIsGen(false);btn.disabled=false;btn.textContent='📝 继续连载下一章';
+setIsGen(false);btn.disabled=false;btn.textContent='继续连载下一章';
 clearTimeout(_contSafetyTimer);
 var smartBtn2=document.getElementById('btnSmartCont');if(smartBtn2){smartBtn2.disabled=false;smartBtn2.innerHTML='<i class="fas fa-brain"></i> 智能续写';}
 if(!result)return;
@@ -33936,7 +34921,7 @@ await callAPIStream(messages,
   }catch(e){}
 },
 (fullText)=>{
-setIsGen(false);btn.disabled=false;btn.textContent='📝 继续连载下一章';
+setIsGen(false);btn.disabled=false;btn.textContent='继续连载下一章';
 clearTimeout(_contSafetyTimer);
 var smartBtn2=document.getElementById('btnSmartCont');if(smartBtn2){smartBtn2.disabled=false;smartBtn2.innerHTML='<i class="fas fa-brain"></i> 智能续写';}
 if(!fullText){
@@ -34021,7 +35006,7 @@ if(_batchContRemain>0&&_batchArticleId&&curRd&&curRd.id===_batchArticleId){
 }
 },
 (errMsg)=>{
-setIsGen(false);btn.disabled=false;btn.textContent='📝 继续连载下一章';
+setIsGen(false);btn.disabled=false;btn.textContent='继续连载下一章';
 clearTimeout(_contSafetyTimer);
 var smartBtnErr=document.getElementById('btnSmartCont');if(smartBtnErr){smartBtnErr.disabled=false;smartBtnErr.innerHTML='<i class="fas fa-brain"></i> 智能续写';}
 _batchContRemain=0;_batchArticleId='';// 出错终止批量
@@ -35767,7 +36752,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 3. 问题排查：API报错、功能异常等技术问题的排查指引
 4. 情感陪伴：缓解卡文焦虑、鼓励坚持、庆祝完成
 
-═══════ 第三章：网页功能全景（v1.4.5）═════
+═══════ 第三章：网页功能全景（v1.4.6）═════
 
 【素材工坊（更多菜单入口）】
 - 进入方式：首页右上角「更多」按钮 → 素材工坊
@@ -35918,7 +36903,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
   · 搜索+跳页（内嵌在菜单中，输入关键词搜索本章，支持跳转到指定页码）
   · 🛠 工具箱（点击展开折叠）：
     笔记📝、朗读🔊、复制全文📋、导入创作✍、复制本章📄、字数统计📊、
-    伏笔🎯、时间线⏰、AI校对🔬、AI改写🔄（长篇支持选1-10章连续改写，步进器选范围，可随时停止）、番外篇📖
+    伏笔🎯、时间线⏰、AI校对🔬、AI改写🔄（长篇支持选1-10章连续改写，步进器选范围；点击章节名可直接输入目标章节编号快速跳转；可随时停止）、版本快照📸（自动保存最近10次AI操作前的章节状态，可随时回滚）、番外篇📖
   · 主题背景选择（7种：无/星辉紫/深海蓝/翡翠绿/暖阳橙/樱花粉/纯净墨）
   · 续写区域（仅长篇且已收藏时显示）：快速续写、🧠 智能续写（自动分析前情+角色状态+伏笔）、💎 精品续写（AI规划+正式创作两步走，关键章节专用）、上下文设置、撤销上一章
 - 底部状态栏：章节名、当前页/总页数、总字数
@@ -35948,7 +36933,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 工具栏展开后：
    · 基础编辑：Markdown工具栏、📖阅读模式（翻页式预览，支持Markdown渲染）、自动排版、排版设置（字号行高字距）、复制全文、导出（TXT / Markdown / EPUB草稿）、沉浸写作
   · AI辅助：AI评价、AI润色、AI重写、AI扩写、AI缩写
-  · 章节管理：查看总大纲、章节大纲、章节命名、保存版本、版本管理、删除本章。目录中支持拖拽排序（长按☰拖动手柄）
+  · 章节管理：查看总大纲、章节大纲、章节命名、保存版本、版本管理、删除本章（长按章节会弹出确认删除弹窗）。目录中支持拖拽排序（长按☰拖动手柄）
   · 其他：搜索定位、AI查错别字、撤回操作（最多30步）
 - 底部状态栏：点击可展开/收起详情，显示字数、目标字数进度条、阅读时间估算、Token估算（文本+系统提示词）、保存状态
 - 编辑器每8秒自动保存一次（如果有修改），手动修改2秒后也会自动保存
@@ -35959,6 +36944,22 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
   - 适合想要在特定氛围中专注写作的场景，有助于进入心流状态。
 
 （新增功能）页面加载动画，切换主页面或打开全屏功能时会短暂显示加载图标（设计图案来自星笺自己）；使用「星境幻境」皮肤时加载图标会变成专属人形图，文字有星光特效 氛围写作已修复多个稳定性问题，现在更可靠了
+（v1.4.6 新增功能）
+📸 章节版本快照：AI续写/改写时自动静默保存，最多10条超出自动删除最旧；阅读页工具箱「版本快照」可查看回滚
+⏰ 时间线升级：改为全屏弹窗，新增搜索栏，支持按章节名或故事内时间快速定位
+✏️ AI改写快速跳章：改写弹窗里点击章节名直接弹出自定义数字输入框（星叙风格，非浏览器原生弹窗）
+📖 番外篇全屏升级：全屏弹窗，底部按钮固定，章节需求输入框增加下拉手柄
+🧩 素材上下文模块：素材可作为"上下文模块"挂在小说上，续写时自动注入（工具箱番外篇旁边）
+⬆⬇ 置顶/置底快捷按钮：草稿/小说写作页面新增半透明磨砂浮动按钮，向下滑显置底、上滑显置顶；滚动条加粗
+📦 收藏分享统一资源包导出：长篇/短篇收藏菜单"分享"均改为资源包导出（含名称/作者/简介填写），和创作页一致
+📥 批量管理导出两种选项：批量管理可选"导出TXT"或"导出为资源包"
+📄 导出格式新增Word/EPUB：小说导出新增 .docx 和 .epub；Word含封面章节标题，EPUB含目录样式
+✨ 丰富功能新增"追加到原文"：世界观/文风/规则「丰富」结果可直接追加，不修改原文不保存草稿
+🗑 长按章节确认删除弹窗：防止误删
+🎨 图标统一为FA风格：功能性Emoji图标全面替换为Font Awesome统一风格
+✓ 修复AI改写弹窗崩溃（元素ID缺失）、章节选择器手机端无响应、移除多余分隔线
+
+（v1.4.5之前保留功能）页面加载动画，切换主页面或打开全屏功能时会短暂显示加载图标；氛围写作已修复多个稳定性问题，现在更可靠了
 注意：星笺皮肤解锁后永久保留，即使清空聊天记录也不会失去已获得的皮肤。只有「清除所有数据」才会重置。白雪天使的50次聊天是累计计数，清空对话不影响已累计的次数。
 
 【v1.3.4 新增功能补充】
@@ -36415,6 +37416,16 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 → 好感变化通知：AI回复后好感度变化≥2时，消息下方自动浮现彩色徽章（如「♥ 颜如玉 +6 → 58」），5秒后淡出
 → 出戏词检测：内置「玩家/AI助手/游戏角色」等词库，检测到出戏词时消息下方弹出橙色警告；「设置→内容过滤」可自定义词库
 → 世界状态Diff提示：每次AI回复后顶部短暂显示变化摘要，无需打开面板即可感知世界状态更新
+
+【v1.1.3 新功能——告诉用户穿书系统有了这些更新】
+→ 世界状态手动编辑：世界状态面板右上角有 ✏️ 编辑按钮，可直接修改AI误记的角色位置、好感度、时间、事件和关键物品；修改好感度后自动同步角色百科好感曲线；支持修改隐藏数值（如已开启成长系统）
+→ 自动事件快照：地点变化或任意角色好感单次变化 ≥ 8 时，系统自动静默创建存档快照；存档管理中显示黄色「事件」标签；最多保留10个，超出自动清理；创建时标题栏短暂闪绿色小圆点
+→ 角色关系双标签：角色百科详情页的关系标签现在最多可叠加 2 个（内置5种+自定义8字，合计不超过2个），更精准描述复杂角色关系
+→ 快捷短语使用追踪：发送后自动计数；使用 ≥ 3 次的短语显示徽章；未分组短语按频率自动排序，高频排最前；快捷短语管理页可查看各短语的历史使用次数
+→ 分支自定义命名：创建「如果当时」分支时新增命名输入框，可起专属名称（如"温柔结局线"）；书卡上显示自定义名称，便于区分多条平行支线
+→ Word / EPUB 导出：导出排版小说新增 Word（DOCX）和 EPUB 两种格式；Word 含封面和章节标题，可用WPS/Office打开编辑；EPUB 含目录样式，可在各阅读器中打开；首次使用自动加载组件（需联网）
+→ 关键事实自动提取开关：记忆管理新增「关键事实自动提取」开关；开启后每次AI总结时额外提取不可遗忘的关键事实（重大秘密/不可逆事件/关系变化），最多5条自动追加到关键事实区并去重
+→ 提示词注入优化：重构了系统设定的注入顺序，优先级更清晰（原著→人设→世界观→穿越者身份→关键事实→故事摘要→世界状态→背包→角色百科），可减少AI遗忘重要设定的情况
 ═══════ 第五章：输出约束 ═══════
 
 · 所有推理/分析过程在脑海里完成，不要在回答里写"思维链""推理过程"
@@ -36798,7 +37809,7 @@ function _getCondensedXjPrompt(){
   '编辑器：更多工具折叠栏里有AI评价/润色/重写/扩缩写/版本管理/章节大纲\n' +
   '角色模拟：独立对话模式，记忆系统(短期+长期)，支持访谈和剧场\n' +
   '精华压缩器：设定过长时压缩，保存为预设不覆盖原设定\n' +
-  '版本：v1.4.5\n\n' +
+  '版本：v1.4.6\n\n' +
   '【输出规则】不用**加粗**，不用-列表，不用markdown，说人话像朋友聊天。不暴露思维过程。\n';
 }
 async function xjSendAllPending(){
@@ -38863,6 +39874,10 @@ checkGoalReset();
 // 初始化网络状态检测
 if(!navigator.onLine){
   setTimeout(function(){applyOfflineMode(true);},1000);
+}else{
+  // 在线时确保清除离线样式
+  var _initStar=document.getElementById('hdrStar');
+  if(_initStar)_initStar.classList.remove('star-offline');
 }
 // 更新弹窗
 if(updatePopup&&lastSeenVer!==UPDATE_VER&&localStorage.getItem('bj_hasVisited')){
@@ -38872,77 +39887,77 @@ var updateMsg =
 '<div style="text-align:center;padding:20px 0 10px">' +
   '<img src="./Logo.png" style="width:100%;max-width:240px;height:auto;display:block;margin:0 auto;object-fit:contain;">' +
   '<div style="font-size:12px;color:var(--accent2);margin-top:10px;font-weight:600;letter-spacing:1px">' + APP_VER + '</div>' +
-  '<div style="font-size:10px;color:var(--text2);margin-top:4px">2026.6.20 更新</div>' +
+  '<div style="font-size:10px;color:var(--text2);margin-top:4px">2026.7.10 更新</div>' +
   '<div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:10px auto 0;border-radius:1px"></div>' +
 '</div>\n\n' +
 
 '<div style="background:linear-gradient(135deg,rgba(108,92,231,.12),rgba(162,155,254,.06));border:1px solid rgba(108,92,231,.25);border-radius:14px;padding:14px 16px;margin:8px 0 14px">' +
-  '<div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-sparkles" style="font-size:14px"></i> v1.4.5 本版更新</div>' +
+  '<div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-sparkles" style="font-size:14px"></i> v1.4.6 本版更新</div>' +
   '<div style="font-size:12px;line-height:2;color:var(--text)">' +
-  '<b>✦ 精品续写上线</b>：新增第三个续写按钮「💎 精品续写」，先 AI 规划本章剧情蓝图（可查看确认/取消），再按规划正式创作，显著提升章节连贯性与细节精度<br>' +
-  '<b>✦ 生成后一致性检测</b>（默认关闭）：设置 → 其他设置 → 续写质量反馈中可开启；续写完成后 AI 自动比对人设/伏笔/已确立事实，以绿色/橙色卡片提示是否存在冲突，可一键重新生成<br>' +
-  '<b>✦ 结构化角色状态快照</b>：智能续写升级为管道格式快照（角色名|位置|情绪|已知信息|关系|持有物），AI 续写时更难忽略状态约束，同时保留旧版文字状态兜底<br>' +
-  '<b>✦ 伏笔自动注入</b>：续写时自动读取伏笔追踪器中未回收的伏笔，无需手动导入（超过8条时只取最近8条）<br>' +
-  '<b>✦ 已确立事实字段</b>：上下文编辑器新增「已确立事实」输入框，写入不可逆的剧情事实（如某物已被摧毁），AI 续写时绝对不会违反；支持「导入已回收伏笔为事实」一键转化<br>' +
-  '<b>✦ AI改写章节自选</b>：阅读器工具箱「AI改写」支持选择1-10个连续章节改写，步进器选范围，不弹系统原生弹窗，可随时停止<br>' +
-  '<b>✦ API预设保存反重复参数</b>：保存API预设时自动包含频率惩罚/存在惩罚，切换预设时完整还原<br>' +
-  '<b>✦ 数据压缩</b>：数据管理页新增压缩功能，压缩冗余格式缩小存储占用，不删数据不影响使用<br>' +
-  '<b>✦ 清理更彻底</b>：清理旧数据/清空作坊时同步删除关联笔记和上下文，不留孤儿数据<br>' +
-  '<b>✦ 写作背景图恢复</b>：页面美化→背景图设置中恢复「写作背景」上传/清除入口，已设置的背景不受影响<br>' +
-  '<b>✦ 多章续写修复</b>：批量续写更稳定，不再静默跳章，章节间等待缩短至0.5秒，进度提示更清晰<br>' +
-  '<b>✦ 今日主题随机换题</b>：点击素材工坊每日灵感的主题标题，可随机切换当日主题<br>' +
-  '<b>✦ 目录摘要截断修复</b>：长篇目录中AI章节摘要过长时正确显示省略号，不再撑开布局<br>' +
-  '<b>✦ APK资源包导出修复</b>：安卓APK环境下资源包导出恢复正常<br>' +
+  '<b>✦ 章节版本快照</b>：AI续写/改写时自动静默保存快照，随时可回滚；最多保留10条，超出自动删除最旧的记录，让翻车变得不再可怕<br>' +
+  '<b>✦ 时间线全屏升级</b>：时间线弹窗改为全屏展示，新增搜索栏，支持按章节名或故事内时间快速定位<br>' +
+  '<b>✦ AI改写章节自定义输入</b>：点击已选定的章节名，弹出星叙风格的自定义数字输入框，直接跳到任意章节，不再需要一章一章地翻；输入无效时给出提示<br>' +
+  '<b>✦ 番外篇全屏升级</b>：番外篇页面改为全屏弹窗，底部按钮栏固定在最下方，章节需求输入框增加下拉手柄，交互更顺手<br>' +
+  '<b>✦ 素材上下文模块</b>：素材可直接作为"上下文模块"挂在小说上（工具箱番外篇旁边），每次续写时自动参考，素材与写作深度打通<br>' +
+  '<b>✦ 置顶/置底快捷按钮</b>：草稿和小说写作页面新增半透明磨砂置顶/置底浮动按钮，向下滑显示置底，上滑显示置顶；滚动条加粗，可拖动快速定位<br>' +
+  '<b>✦ 收藏页分享统一为资源包导出</b>：长篇/短篇收藏的小说菜单"分享"功能，现均改为将小说打包为资源包导出（含名称、作者、简介填写），和创作页一致<br>' +
+  '<b>✦ 批量管理新增导出选项</b>：我的收藏批量管理，导出时可选「导出为TXT」或「导出为资源包」<br>' +
+  '<b>✦ 资源打包统一填写表单</b>：所有资源打包操作（分享、批量导出、资源广场打包）均提供名称/作者/简介填写弹窗，导出内容更规范<br>' +
+  '<b>✦ 导出格式新增Word和EPUB</b>：小说导出新增 Word（.docx）和 EPUB 两种格式，EPUB 含目录和样式，Word 可用WPS/Office直接打开编辑<br>' +
+  '<b>✦ 丰富功能优化</b>：世界观/文风/规则页面的「丰富」功能，内容多时AI可直接追加输出，新增「追加到原文」按钮，不修改原文不保存草稿<br>' +
+  '<b>✦ 长按章节确认删除</b>：小说章节列表中长按添加的章节，会弹出确认删除弹窗，防止误操作<br>' +
+  '<b>✦ 图标风格统一</b>：页面内功能性 Emoji 图标全面替换为网页统一的 Font Awesome 图标风格，续写/重写按钮的图标显示更规范<br>' +
+  '<b>✓ 修复AI改写弹窗崩溃</b>：修复了因元素ID缺失导致AI改写弹窗无法打开的严重bug<br>' +
+  '<b>✓ 修复AI改写章节选择器</b>：修复了手机端章节选择器的‹›按钮点击无响应的问题，现可正常使用<br>' +
+  '<b>✓ 修复章节数输入弹窗</b>：将系统原生黑白弹窗替换为符合网页设计风格的自定义弹窗<br>' +
+  '<b>✓ 移除冗余分隔线</b>：AI改写弹窗中"从素材库引用创作素材"按钮与底部按钮组之间的分隔线已移除<br>' +
   '</div>' +
   '</div>' +
 
 '<div style="background:linear-gradient(135deg,rgba(46,213,115,.10),rgba(16,172,132,.05));border:1px solid rgba(46,213,115,.3);border-radius:14px;padding:14px 16px;margin:8px 0 14px">' +
   '<div style="font-size:13px;font-weight:700;color:#16a085;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-gem" style="font-size:14px"></i> 如何用好新功能</div>' +
   '<div style="font-size:12px;line-height:2;color:var(--text)">' +
-  '<b>💎 精品续写</b>（阅读页续写区，紫色按钮）<br>' +
-  '&nbsp;&nbsp;→ 第1步：AI 先生成本章创作规划（核心事件/禁止内容/开结尾方式），你可以查看后选择「继续」或「取消调整」<br>' +
-  '&nbsp;&nbsp;→ 第2步：AI 严格按规划创作正文，章节质量和连贯性明显优于快速续写<br>' +
-  '&nbsp;&nbsp;→ 耗时约为智能续写的 2 倍，Token 消耗更多，适合关键章节使用<br>' +
-  '<b>🔍 生成后一致性检测</b>（默认关闭，可在 设置→其他设置→续写质量反馈 中开启）<br>' +
-  '&nbsp;&nbsp;→ 续写完成后自动比对人物设定、未回收伏笔、已确立事实，发现冲突以橙色卡片呈现<br>' +
-  '&nbsp;&nbsp;→ 发现冲突后可点「重新生成」（删除当前章，重新智能续写）或「忽略，保留内容」<br>' +
-  '<b>🔒 已确立事实</b>（上下文设置 → 已确立事实 输入框）<br>' +
-  '&nbsp;&nbsp;→ 写下已发生、不可逆的剧情节点（如"青龙令已在第4章被摧毁"），AI 续写时绝对不会违反<br>' +
-  '&nbsp;&nbsp;→ 点「导入已回收伏笔为事实」可一键把伏笔追踪器里已回收的伏笔转为确立事实<br>' +
-  '<b>📌 伏笔自动注入</b>（无需任何操作，自动生效）<br>' +
-  '&nbsp;&nbsp;→ 续写时自动读取伏笔追踪器中所有未回收的伏笔并注入 AI 上下文，超过8条只取最近8条<br>' +
-  '&nbsp;&nbsp;→ 若你在上下文设置里已手动填写了伏笔，则以手动填写的为准，不自动覆盖<br>' +
-  '<b>📸 结构化角色状态快照</b>（智能续写 / 精品续写自动生成）<br>' +
-  '&nbsp;&nbsp;→ 自动分析最近两章，生成「角色名|当前位置|情绪状态|已知信息|关系|持有物」格式快照<br>' +
-  '&nbsp;&nbsp;→ AI 会优先遵守快照中的状态约束，大幅减少角色行为穿帮<br>' +
-  '<b>🔇 反重复参数</b>（API设置 → 反重复参数 滑块，默认关闭）<br>' +
-  '&nbsp;&nbsp;→ <b>频率惩罚</b>（frequency_penalty）：抑制同一词语反复出现，推荐 0.20~0.35<br>' +
-  '&nbsp;&nbsp;→ <b>出现惩罚</b>（presence_penalty）：鼓励引入新内容、减少段落绕圈，推荐 0.10~0.20<br>' +
-  '&nbsp;&nbsp;→ 两个值默认均为 0（关闭），点「一键应用推荐值」可快速配置；过高（>0.5）反而会让行文变奇怪<br>' +
-  '&nbsp;&nbsp;→ 仅作用于续写生成，不影响AI工具（评价/润色/摘要等）<br>' +
+  '<b><i class="fas fa-camera"></i> 章节版本快照</b>（阅读页工具箱 → 版本快照）<br>' +
+  '&nbsp;&nbsp;→ 每次AI续写/改写前系统会自动静默保存当前版本，无需手动操作<br>' +
+  '&nbsp;&nbsp;→ 在工具箱「版本快照」中可查看最近10条快照，点击可预览并一键回滚<br>' +
+  '&nbsp;&nbsp;→ 超过10条时自动删除最旧的一条，建议写到满意的章节后手动保存一个命名版本<br>' +
+  '<b><i class="fas fa-clock"></i> 时间线搜索</b>（阅读页工具箱 → 时间线）<br>' +
+  '&nbsp;&nbsp;→ 打开时间线后，顶部搜索框支持输入章节名或故事内时间（如"第3天"）快速定位<br>' +
+  '<b><i class="fas fa-rotate-right"></i> AI改写快速跳章</b>（阅读页 → 工具箱 → AI改写 → 章节名点击）<br>' +
+  '&nbsp;&nbsp;→ 改写弹窗里，点击中间的章节名称，弹出输入框直接输入目标章节编号，快速定位<br>' +
+  '&nbsp;&nbsp;→ 输入范围外的数字（如0、负数、超出总章节数）会给出提示，不会误跳<br>' +
+  '<b><i class="fas fa-box-open"></i> 素材上下文模块</b>（创作工具箱 → 番外篇旁边）<br>' +
+  '&nbsp;&nbsp;→ 点击"素材上下文"进入，为当前小说选择若干条素材，形成专属上下文模块<br>' +
+  '&nbsp;&nbsp;→ 每次续写时自动将勾选的素材内容注入AI上下文，无需每次手动引用<br>' +
+  '&nbsp;&nbsp;→ 适合固定要参考的世界细节、角色特征碎片、特殊设定说明等<br>' +
+  '<b><i class="fas fa-file-export"></i> Word / EPUB 导出</b>（阅读页工具箱 → 复制导出 → 导出小说）<br>' +
+  '&nbsp;&nbsp;→ 在格式选择时可选 Word（.docx）或 EPUB，首次使用自动加载组件，加载完无需再等待<br>' +
+  '&nbsp;&nbsp;→ Word版含封面页和章节标题，可用WPS/Office直接编辑；EPUB版含目录，适合传到电子书阅读器<br>' +
+  '<b><i class="fas fa-magic"></i> 设定丰富追加模式</b>（设置 → 世界观/文风/规则 → 右上角"丰富"）<br>' +
+  '&nbsp;&nbsp;→ 丰富内容较多时，AI输出内容顶部会注明"此为追加内容"<br>' +
+  '&nbsp;&nbsp;→ 新增「追加到原文」按钮，点击将AI输出直接拼接在原文末尾，不修改原文，不弹保存草稿<br>' +
   '</div>' +
 '</div>' +
 
 '<div style="background:linear-gradient(135deg,rgba(255,180,100,.10),rgba(255,140,60,.05));border:1px solid rgba(255,160,80,.3);border-radius:14px;padding:14px 16px;margin:8px 0 14px">' +
-  '<div style="font-size:13px;font-weight:700;color:#e8913a;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-book-open-reader" style="font-size:14px"></i> 穿书系统 v1.1.2 新功能</div>' +
-  '<div style="font-size:12px;line-height:2;color:var(--text)">' +
-    '<b>🎒 背包升级</b>：道具新增四档稀有度（普通/稀有/传说/关键），稀有度决定赠送好感增量（+3/+7/+15），关键道具自动保护不可赠送丢弃；道具编辑器支持自定义图标（40种）、使用文案、赠送好感值；AI文末出现「📦 获得道具」时底部自动出现一键收入操作条<br>' +
-    '<b>🗺️ 地点记忆</b>：世界状态新增地点追踪，AI每次回复后自动更新当前所在地点；地点变化时消息下方浮现提示条；世界状态面板新增「到访地点」区块，点击地点名可快速插入输入框<br>' +
-    '<b>📈 成长系统增强</b>：隐藏数值发生变化时消息下方浮现彩色变化徽章（如「黑化 +5」）；首次达到阈值弹出里程碑卡片并可一键融入故事；数值进度条下方新增历史趋势迷你折线图<br>' +
-    '<b>🤝 角色关系标签</b>：角色百科详情页新增关系标签选择（挚友/盟友/情敌/隐患/中立），支持自定义最多8字关系；标签显示在百科卡片上并注入AI上下文<br>' +
-    '<b>💬 名台词收藏</b>：长按AI消息新增「收藏金句」，可归属角色并打标签（感人/名场面/高能等）；角色百科弹层底部新增「名台词库」入口，支持标签过滤和导出分享<br>' +
-    '<b>🎙️ 角色语气锁定</b>：角色详情页底部新增语气锁定开关，填写说话风格描述后AI会在全旅途严格遵守该角色的语气，防止AI写崩性格<br>' +
-    '<b>♥ 好感变化通知</b>：AI回复后好感度变化≥2时，消息下方自动浮现彩色徽章（如「♥ 颜如玉 +6 → 58」），5秒后淡出<br>' +
-    '<b>⚠️ 出戏词检测</b>：内置「玩家/AI助手/游戏角色」等词库，AI回复包含出戏词时消息下方弹出橙色警告；「设置→内容过滤」可自定义词库<br>' +
-    '<b>🌍 世界状态Diff提示</b>：每次AI回复后顶部短暂显示「✦ 时间→xxx · 地点→xxx」变化摘要，无需打开面板也能感知世界状态更新<br>' +
-  '</div>' +
+  '<div style="font-size:13px;font-weight:700;color:#e8913a;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-book-open-reader" style="font-size:14px"></i> 穿书系统 v1.1.3 新功能</div>' +
+'<div style="font-size:12px;line-height:2;color:var(--text)">' +
+  '<b><i class="fas fa-pen"></i> 世界状态手动编辑</b>：世界状态面板右上角新增 ✏️ 编辑按钮，可直接修正AI误记的角色位置、好感度、时间、事件、关键物品；修改好感度后自动同步到角色百科好感曲线<br>' +
+  '<b><i class="fas fa-save"></i> 自动事件快照</b>：地点变化或任意角色好感单次变化 ≥ 8 时，系统自动静默创建存档快照，标题栏短暂闪绿色小圆点；存档管理中显示黄色「事件」标签，最多保留10个，超出自动清理最旧的<br>' +
+  '<b><i class="fas fa-tags"></i> 关系标签双叠加</b>：角色百科详情页的关系标签现在最多可以同时选 2 个（内置标签+自定义合计），更精准地描述复杂关系<br>' +
+  '<b><i class="fas fa-chart-bar"></i> 快捷短语使用追踪</b>：每次发送后自动计数；使用 ≥ 3 次的短语显示计数徽章；未分组短语按使用频率自动排序，高频短语排最前；短语管理页可查看各短语的历史使用次数<br>' +
+  '<b><i class="fas fa-code-branch"></i> 分支命名</b>：创建「如果当时」分支时新增命名输入框，可起专属名称（如"温柔结局线"），分支书卡上显示自定义名称便于区分多条平行线<br>' +
+  '<b><i class="fas fa-file-alt"></i> Word / EPUB 导出</b>：导出排版小说新增两种格式——Word（DOCX，可用WPS/Office打开编辑，含封面和章节标题）和EPUB（标准电子书，含目录样式），首次使用时自动加载组件<br>' +
+  '<b><i class="fas fa-lock"></i> 关键事实自动提取</b>：记忆管理中新增「自动提取开关」；开启后每次AI总结时额外分析对话，自动提取重大秘密/不可逆事件/关系变化并追加到关键事实区，每次最多5条自动去重<br>' +
+  '<b><i class="fas fa-bolt"></i> 提示词注入优化</b>：重构了设定注入顺序（原著→人设→世界观→穿越者身份→关键事实→故事摘要→世界状态→背包→角色百科），让AI更准确地理解优先级，减少设定遗忘<br>' +
+'</div>'
 '</div>' +
   '</div>' +
 '</div>' +
 
 '<div style="text-align:center;padding:8px 0;font-size:11px;color:var(--text2);line-height:1.8">' +
-  '星笺说：谢谢你一直在用星叙～<br>' +
-  '每一次打开这个页面，我都很开心 ✨' +
+  '星笺说：这次修了好多细节，你觉得顺手了一点吗？<br>' +
+  '有任何想法都可以来告诉我 ✨' +
 '</div>';
 
     showDlg('✨ 新版本更新', updateMsg, ()=>{
@@ -39229,6 +40244,12 @@ function updateOnlineStatus(){
 }
 
 function applyOfflineMode(offline){
+  // ✦ 标题星标：离线变黄
+  var hdrStar=document.getElementById('hdrStar');
+  if(hdrStar){
+    if(offline){hdrStar.classList.add('star-offline');}
+    else{hdrStar.classList.remove('star-offline');}
+  }
   // 统一管理所有需要网络的按钮
   var needNetworkBtns=[
     'btnGen','btnCont','btnSmartCont','btnTestApi','btnTestToolApi',
@@ -40588,51 +41609,20 @@ function openTimeline(){
     return;
   }
 
-  var timeline = getTimeline(curRd.id);
+  var ov = document.getElementById('timelineOv');
+  if(!ov)return;
 
-  // 创建弹窗
-  var existing = document.getElementById('timelineOv');
-  if(existing) existing.remove();
+  // 重置搜索状态
+  _tlSearchQ = '';
+  var si = document.getElementById('tlSearchInput');
+  if(si) si.value = '';
+  var sc = document.getElementById('tlSearchClear');
+  if(sc) sc.style.display = 'none';
 
-  var ov = document.createElement('div');
-  ov.id = 'timelineOv';
-  ov.style.cssText = 'display:flex;position:fixed;inset:0;z-index:800;background:rgba(0,0,0,.55);align-items:center;justify-content:center;padding:16px;animation:fadeIn .25s ease';
-  ov.onclick = function(e){if(e.target === ov) closeTimeline();};
+  var sub = document.getElementById('tlSubtitle');
+  if(sub) sub.textContent = '「' + (curRd.title || '') + '」· ' + curRd.chapters.length + '章';
 
-  var box = document.createElement('div');
-  box.style.cssText = 'background:var(--card);border-radius:18px;width:100%;max-width:480px;max-height:85vh;border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;animation:fadeIn .25s ease';
-
-  // 头部
-  var header = document.createElement('div');
-  header.style.cssText = 'padding:16px 18px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0';
-  header.innerHTML =
-    '<div><h3 style="font-size:15px;font-weight:700;margin:0"><i class="fas fa-clock"></i> 故事时间线</h3>' +
-    '<span style="font-size:10px;color:var(--text2)">「' + esc(curRd.title || '') + '」· ' + curRd.chapters.length + '章</span></div>' +
-    '<button onclick="closeTimeline()" style="background:none;border:none;color:var(--text2);font-size:18px;cursor:pointer;padding:4px 8px">✕</button>';
-  box.appendChild(header);
-
-  // 工具栏
-  var toolbar = document.createElement('div');
-  toolbar.style.cssText = 'padding:10px 18px;display:flex;gap:8px;border-bottom:1px solid var(--border);flex-shrink:0';
-  toolbar.innerHTML =
-    '<button onclick="addTimelineEntry()" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--accent);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;cursor:pointer;font-weight:600"><i class="fas fa-plus"></i> 添加时间节点</button>' +
-    '<button onclick="aiDetectTimeline()" id="aiTimelineBtn" style="flex:1;padding:8px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:12px;cursor:pointer"><i class="fas fa-robot"></i> AI识别时间线</button>';
-  box.appendChild(toolbar);
-
-  // 时间线内容区
-  var content = document.createElement('div');
-  content.id = 'timelineContent';
-  content.style.cssText = 'flex:1;overflow-y:auto;padding:16px 18px';
-  box.appendChild(content);
-
-  // 底部统计
-  var footer = document.createElement('div');
-  footer.id = 'timelineFooter';
-  footer.style.cssText = 'padding:10px 18px;border-top:1px solid var(--border);font-size:10px;color:var(--text2);flex-shrink:0';
-  box.appendChild(footer);
-
-  ov.appendChild(box);
-  document.body.appendChild(ov);
+  ov.classList.add('show');
   navPush('timelineOv');
 
   renderTimeline();
@@ -40640,17 +41630,51 @@ function openTimeline(){
 
 function closeTimeline(){
   var ov = document.getElementById('timelineOv');
-  if(ov) ov.remove();
+  if(ov) ov.classList.remove('show');
   navPop('timelineOv');
 }
 
 let _tlView = 'list'; // list | gantt
+var _tlSearchQ = ''; // 当前搜索关键词（按章节/故事内时间/事件描述匹配）
+var _tlSearchTimer = null;
+
+// 搜索框输入（防抖200ms）
+function filterTimeline(q){
+  clearTimeout(_tlSearchTimer);
+  _tlSearchTimer = setTimeout(function(){
+    _tlSearchQ = (q||'').trim();
+    var sc = document.getElementById('tlSearchClear');
+    if(sc) sc.style.display = _tlSearchQ ? 'block' : 'none';
+    renderTimeline();
+  },200);
+}
+function clearTlSearch(){
+  clearTimeout(_tlSearchTimer);
+  var si = document.getElementById('tlSearchInput');
+  if(si) si.value = '';
+  _tlSearchQ = '';
+  var sc = document.getElementById('tlSearchClear');
+  if(sc) sc.style.display = 'none';
+  renderTimeline();
+}
+// 判断单条时间线记录是否匹配当前搜索词（所在章节/章节名/故事内时间/事件描述）
+function _tlEntryMatches(entry){
+  if(!_tlSearchQ) return true;
+  var q = _tlSearchQ.toLowerCase();
+  var chLabel = '第' + ((entry.ch||0)+1) + '章';
+  var chName = (curRd && curRd.chNames && curRd.chNames[entry.ch]) ? curRd.chNames[entry.ch] : '';
+  return chLabel.toLowerCase().indexOf(q) !== -1 ||
+    chName.toLowerCase().indexOf(q) !== -1 ||
+    (entry.time||'').toLowerCase().indexOf(q) !== -1 ||
+    (entry.event||'').toLowerCase().indexOf(q) !== -1;
+}
 
 function renderTimeline(){
   if(!curRd) return;
   var timeline = getTimeline(curRd.id);
   var content = document.getElementById('timelineContent');
   var footer = document.getElementById('timelineFooter');
+  var toggleWrap = document.getElementById('tlViewToggleWrap');
   if(!content) return;
 
   if(timeline.length === 0){
@@ -40660,25 +41684,28 @@ function renderTimeline(){
         '还没有时间线记录<br>点击「<i class="fas fa-plus"></i> 添加时间节点」手动记录<br>或点击「<i class="fas fa-robot"></i> AI识别」自动分析' +
       '</div>';
     if(footer) footer.textContent = '共 0 个时间节点';
+    if(toggleWrap) toggleWrap.innerHTML = '';
     return;
   }
 
   // 按章节排序
   timeline.sort(function(a,b){ return (a.ch||0) - (b.ch||0); });
 
-  // 视图切换按钮
-  var viewHtml = '<div class="tl-view-toggle">' +
-    '<button class="tl-view-btn'+(_tlView==='list'?' act':'')+'" onclick="_tlView=\'list\';renderTimeline()"><i class="fas fa-list"></i> 列表</button>' +
-    '<button class="tl-view-btn'+(_tlView==='gantt'?' act':'')+'" onclick="_tlView=\'gantt\';renderTimeline()"><i class="fas fa-chart-bar"></i> 甘特图</button>' +
-    '</div>';
-
-  if(_tlView === 'gantt'){
-    renderTimelineGantt(content, timeline, viewHtml);
-  } else {
-    renderTimelineList(content, timeline, viewHtml);
+  // 视图切换按钮（固定在搜索栏下方，滚动/搜索时始终可见）
+  if(toggleWrap){
+    toggleWrap.innerHTML = '<div class="tl-view-toggle">' +
+      '<button class="tl-view-btn'+(_tlView==='list'?' act':'')+'" onclick="_tlView=\'list\';renderTimeline()"><i class="fas fa-list"></i> 列表</button>' +
+      '<button class="tl-view-btn'+(_tlView==='gantt'?' act':'')+'" onclick="_tlView=\'gantt\';renderTimeline()"><i class="fas fa-chart-bar"></i> 甘特图</button>' +
+      '</div>';
   }
 
-  // 统计
+  if(_tlView === 'gantt'){
+    renderTimelineGantt(content, timeline, '');
+  } else {
+    renderTimelineList(content, timeline, '');
+  }
+
+  // 统计（总数始终基于全部节点；命中数在搜索时单独显示）
   if(footer){
     var days = {};
     timeline.forEach(function(e){
@@ -40686,7 +41713,12 @@ function renderTimeline(){
       if(d) days[d] = true;
     });
     var dayCount = Object.keys(days).length;
-    footer.textContent = '共 ' + timeline.length + ' 个时间节点 · 跨越约 ' + dayCount + ' 个时间段';
+    if(_tlSearchQ){
+      var hitCount = timeline.filter(_tlEntryMatches).length;
+      footer.textContent = '找到 ' + hitCount + ' / ' + timeline.length + ' 个时间节点';
+    }else{
+      footer.textContent = '共 ' + timeline.length + ' 个时间节点 · 跨越约 ' + dayCount + ' 个时间段';
+    }
 
     var conflicts = detectTimeConflicts(timeline);
     if(conflicts.length > 0){
@@ -40704,7 +41736,10 @@ function renderTimelineList(content, timeline, viewHtml){
   html += '<div style="position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:1px"></div>';
 
   var lastDay = '';
+  var visibleCount = 0;
   timeline.forEach(function(entry, idx){
+    if(!_tlEntryMatches(entry))return; // 搜索过滤：不匹配则跳过，但idx仍是完整数组中的原始索引，编辑/删除按钮不会错位
+    visibleCount++;
     var chLabel = '第' + ((entry.ch||0)+1) + '章';
     var timeLabel = entry.time || '未标注时间';
     var eventText = entry.event || '';
@@ -40736,15 +41771,24 @@ function renderTimelineList(content, timeline, viewHtml){
   });
 
   html += '</div>';
+
+  if(visibleCount===0){
+    html = '<div style="text-align:center;padding:40px 20px;color:var(--text2);font-size:12px">'+
+      '<div style="font-size:36px;margin-bottom:12px;opacity:.4"><i class="fas fa-magnifying-glass"></i></div>'+
+      '没有找到匹配的时间节点'+
+    '</div>';
+  }
+
   content.innerHTML = html;
 }
 
 function renderTimelineGantt(content, timeline, viewHtml){
   var html = viewHtml;
 
-  // 收集所有章节号
+  // 收集所有（匹配搜索的）章节号，用于底部图例
   var chNums = [];
   timeline.forEach(function(e){
+    if(!_tlEntryMatches(e))return;
     var cn = e.ch||0;
     if(chNums.indexOf(cn) === -1) chNums.push(cn);
   });
@@ -40760,8 +41804,11 @@ function renderTimelineGantt(content, timeline, viewHtml){
   html += '<div style="width:50px;flex-shrink:0"></div>';
   html += '</div>';
 
-  // 甘特图行
+  // 甘特图行（搜索不匹配的行直接跳过，idx仍保持原始数组索引）
+  var visibleCount = 0;
   timeline.forEach(function(entry, idx){
+    if(!_tlEntryMatches(entry))return;
+    visibleCount++;
     var chNum = entry.ch||0;
     var colorIdx = chNum % 8;
     html += '<div class="tl-gantt-row" data-tl-idx="'+idx+'" id="tlRow_'+idx+'">';
@@ -40777,6 +41824,14 @@ function renderTimelineGantt(content, timeline, viewHtml){
   });
 
   html += '</div></div>';
+
+  if(visibleCount===0){
+    content.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--text2);font-size:12px">'+
+      '<div style="font-size:36px;margin-bottom:12px;opacity:.4"><i class="fas fa-magnifying-glass"></i></div>'+
+      '没有找到匹配的时间节点'+
+    '</div>';
+    return;
+  }
 
   // 章节颜色图例
   html += '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;padding:8px 0">';
@@ -45868,7 +46923,7 @@ function openFanwai(){
   fwAbortFlag = false;
 
   // 设置标题
-  document.getElementById('fanwaiTitle').textContent = '📖 继写番外篇 · 「' + (fwArticle.title||'') + '」';
+  document.getElementById('fanwaiTitle').innerHTML = '<i class="fas fa-book-open"></i> 继写番外篇 · 「' + esc(fwArticle.title||'') + '」';
   document.getElementById('fanwaiSubtitle').textContent = (fwArticle.type==='long'?'长篇 · '+((fwArticle.chapters||[]).length)+'章 · ':'短篇 · ') + getTotalWords(fwArticle) + '字';
 
   // 短篇自动填充摘要（发送完整内容，不再截断）
@@ -45922,18 +46977,39 @@ function renderFwOutlineList(){
   var container = document.getElementById('fwOutlineList');
   container.innerHTML = '';
   for(var i = 0; i < fwCount; i++){
-    var isDone = fwResults[i] && fwResults[i].trim();
-    var div = document.createElement('div');
-    div.style.cssText = 'background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px' + (isDone?';opacity:.6':'');
-    div.innerHTML =
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
-        '<span style="font-size:12px;font-weight:600;color:var(--accent2)">番外 第' + (i+1) + ' 篇' + (isDone?' <i class="fas fa-check-circle"></i>':'') + '</span>' +
-        '<span style="font-size:9px;color:var(--text2)">' + (isDone?countWords(fwResults[i])+'字 · 已生成':'待生成') + '</span>' +
-      '</div>' +
-      '<textarea data-fw-idx="' + i + '" placeholder="本篇番外的剧情梗概/方向（可选）&#10;&#10;例如：&#10;· 写男女主婚后的日常&#10;· 从配角视角重新讲述第3章的事件&#10;· 如果当初选择了另一条路会怎样" ' +
-      'style="width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:11px;min-height:60px;resize:vertical;font-family:inherit;line-height:1.6"' +
-      (isDone?' disabled':'') + '>' + esc(fwOutlines[i]||'') + '</textarea>';
-    container.appendChild(div);
+    var isDone = !!(fwResults[i] && fwResults[i].trim());
+    var card = document.createElement('div');
+    card.className = 'fw-ep-card';
+    if(isDone) card.style.opacity = '0.65';
+
+    var hdr = document.createElement('div');
+    hdr.className = 'fw-ep-hdr';
+    hdr.innerHTML =
+      '<span class="fw-ep-num">番外 第' + (i+1) + ' 篇' +
+        (isDone?' <i class="fas fa-check-circle" style="color:var(--success);font-size:12px"></i>':'') +
+      '</span>' +
+      '<span class="fw-ep-stat' + (isDone?' done':'') + '">' +
+        (isDone ? '<i class="fas fa-check"></i> ' + countWords(fwResults[i]) + '字 · 已生成' : '待生成') +
+      '</span>';
+
+    var body = document.createElement('div');
+    body.className = 'fw-ep-body';
+
+    var ta = document.createElement('textarea');
+    ta.className = 'fw-ep-ta';
+    ta.dataset.fwIdx = i;
+    ta.placeholder = '这篇番外的剧情方向（可选）\n\n例如：\n· 写男女主婚后的日常\n· 从配角视角重述第3章\n· 如果当初选择了另一条路';
+    ta.value = fwOutlines[i] || '';
+    if(isDone) ta.disabled = true;
+
+    var handle = document.createElement('div');
+    handle.className = 'tx-resize-handle';
+
+    body.appendChild(ta);
+    body.appendChild(handle);
+    card.appendChild(hdr);
+    card.appendChild(body);
+    container.appendChild(card);
   }
 }
 
@@ -45949,24 +47025,24 @@ function syncFwOutlinesFromUI(){
 function renderFwResultList(){
   var container = document.getElementById('fwResultList');
   container.innerHTML = '';
-  if(fwResults.length === 0) return;
+  if(!fwResults.some(function(t){return t&&t.trim();})) return;
   fwResults.forEach(function(text, i){
     if(!text || !text.trim()) return;
+    var preview = text.replace(/\n+/g,' ').trim().substring(0, 100);
     var card = document.createElement('div');
-    card.className = 'fanwai-card';
-    var preview = text.replace(/\n/g,' ').substring(0,120);
+    card.className = 'fw-result-card';
     card.innerHTML =
-      '<div class="fw-hdr">' +
-        '<span>番外 第' + (i+1) + ' 篇</span>' +
-        '<span class="fw-status done"><i class="fas fa-check-circle"></i> ' + countWords(text) + '字</span>' +
+      '<div class="fw-result-hdr">' +
+        '<span class="fw-result-num">✨ 番外 第' + (i+1) + ' 篇</span>' +
+        '<span class="fw-result-wc"><i class="fas fa-check-circle"></i> ' + countWords(text) + '字</span>' +
       '</div>' +
-      '<div class="fw-preview">' + esc(preview) + '...</div>' +
-      '<div class="fw-acts">' +
+      '<div class="fw-result-preview">' + esc(preview) + '…</div>' +
+      '<div class="fw-result-acts">' +
         '<button onclick="readFanwai(' + i + ')"><i class="fas fa-book-open"></i> 阅读</button>' +
-'<button onclick="copyFanwai(' + i + ')"><i class="fas fa-copy"></i> 复制</button>' +
-'<button onclick="saveFanwaiToCr(' + i + ')"><i class="fas fa-floppy-disk"></i> 保存草稿</button>' +
-'<button onclick="addFanwaiToCollection(' + i + ')"><i class="fas fa-heart"></i> 收藏</button>' +
-'<button class="danger" onclick="deleteFanwai(' + i + ')"><i class="fas fa-trash-alt"></i></button>' +
+        '<button onclick="copyFanwai(' + i + ')"><i class="fas fa-copy"></i> 复制</button>' +
+        '<button onclick="saveFanwaiToCr(' + i + ')"><i class="fas fa-floppy-disk"></i> 存草稿</button>' +
+        '<button onclick="addFanwaiToCollection(' + i + ')"><i class="fas fa-heart"></i> 收藏</button>' +
+        '<button class="danger" onclick="deleteFanwai(' + i + ')"><i class="fas fa-trash-alt"></i></button>' +
       '</div>';
     container.appendChild(card);
   });
@@ -47681,6 +48757,8 @@ setTimeout(function(){
         case 'favTagPickerOv': closeFavTagPicker(); break;
         // 各种浮层弹窗
         case 'contextEditorOv': closeContextEditor(); break;
+        case 'bookMatModuleOv': closeBookMatModule(); break;
+        case 'timelineOv': closeTimeline(); break;
         case 'foreshadowOv': closeForeshadow(); break;
         case 'outlineOv': closeOutlineGen(); break;
         case 'enrichSettingOv': closeEnrichSetting(); break;
@@ -49937,6 +51015,115 @@ function openMatPickerForFanwai(){
 }
 // ==================== 素材工坊 END ====================
 
+// ==================== 书目素材模块（素材↔小说自动挂载） ====================
+// 打开
+function openBookMatModule(){
+  if(!curRd||curRd.type!=='long'){showToast('请先打开一篇长篇文章');return;}
+  var titleEl=document.getElementById('bmmTitle');
+  if(titleEl)titleEl.innerHTML='<i class="fas fa-cubes"></i> '+_escH('「'+(curRd.title||'未命名')+'」素材模块');
+  renderBookMatModuleList();
+  var ov=document.getElementById('bookMatModuleOv');
+  if(!ov)return;
+  ov.classList.add('show');
+  navPush('bookMatModuleOv');
+}
+// 关闭
+function closeBookMatModule(){
+  navPop('bookMatModuleOv');
+  var ov=document.getElementById('bookMatModuleOv');
+  if(ov)ov.classList.remove('show');
+}
+// 渲染已挂载素材列表（自动清理已被删除的素材ID，避免脏数据残留）
+function renderBookMatModuleList(){
+  var listEl=document.getElementById('bmmList');
+  var countEl=document.getElementById('bmmCount');
+  if(!listEl||!curRd)return;
+  var ctx=articleContexts[curRd.id]||{};
+  var ids=Array.isArray(ctx.matModuleIds)?ctx.matModuleIds:[];
+  var allMats=ld('bj_materials',[])||[];
+  var valid=[];
+  var html='';
+  ids.forEach(function(id){
+    var m=allMats.find(function(x){return x.id===id;});
+    if(!m)return; // 素材已被删除，跳过且不再保留该ID
+    valid.push(id);
+    var c=m.type==='image'?(m.imgDesc||''):(m.content||'');
+    if(c.startsWith('data:'))c='';
+    var title=m.title||(c.slice(0,20))||'（无标题）';
+    var icon=m.type==='image'?'<i class="fas fa-image"></i>':'<i class="fas fa-font"></i>';
+    html+='<div class="bmm-item">'+
+      '<div class="bmm-item-icon">'+icon+'</div>'+
+      '<div style="flex:1;min-width:0">'+
+        '<div class="bmm-item-title">'+_escH(title)+'</div>'+
+        (c?'<div class="bmm-item-preview">'+_escH(c.slice(0,60))+'</div>':'')+
+      '</div>'+
+      '<button class="bmm-item-del" onclick="removeBookMatModuleItem(\''+id+'\')" title="移除"><i class="fas fa-times"></i></button>'+
+    '</div>';
+  });
+  // 若发现失效ID（对应素材已被删除），同步清理，避免脏数据反复触发查找
+  if(valid.length!==ids.length){
+    ctx.matModuleIds=valid;
+    articleContexts[curRd.id]=ctx;
+    sv('bj_articleContexts',articleContexts);
+  }
+  if(valid.length===0){
+    html='<div style="text-align:center;padding:40px 20px;color:var(--text2);font-size:12px">'+
+      '<div style="font-size:36px;margin-bottom:12px;opacity:.4"><i class="fas fa-cubes"></i></div>'+
+      '还没有挂载任何素材<br>点击上方「添加素材」，续写时将自动参考'+
+    '</div>';
+  }
+  listEl.innerHTML=html;
+  if(countEl)countEl.textContent='已挂载 '+valid.length+' 条素材';
+}
+// 添加素材（复用已有的素材选择器）
+function addBookMatModuleItem(){
+  if(!curRd){showToast('请先打开一篇长篇文章');return;}
+  openMatPicker(function(mat){
+    if(!curRd||!mat||!mat.id)return;
+    var ctx=articleContexts[curRd.id]||{};
+    var ids=Array.isArray(ctx.matModuleIds)?ctx.matModuleIds:[];
+    if(ids.indexOf(mat.id)!==-1){showToast('该素材已挂载，无需重复添加');return;}
+    ids.push(mat.id);
+    ctx.matModuleIds=ids;
+    articleContexts[curRd.id]=ctx;
+    sv('bj_articleContexts',articleContexts);
+    renderBookMatModuleList();
+    showToast('已挂载「'+(mat.title||'该素材')+'」✦');
+  },'选择要挂载的素材');
+}
+// 移除素材
+function removeBookMatModuleItem(id){
+  if(!curRd||!id)return;
+  var ctx=articleContexts[curRd.id]||{};
+  var ids=Array.isArray(ctx.matModuleIds)?ctx.matModuleIds:[];
+  ctx.matModuleIds=ids.filter(function(x){return x!==id;});
+  articleContexts[curRd.id]=ctx;
+  sv('bj_articleContexts',articleContexts);
+  renderBookMatModuleList();
+  showToast('已移除');
+}
+// 供续写/精品续写规划调用：拼接挂载素材的参考文本（单条截断+总长度截断，防止上下文过长）
+function _buildBookMatModuleText(articleId,maxEach,maxTotal){
+  if(!articleId)return'';
+  var ctx=articleContexts[articleId]||{};
+  var ids=Array.isArray(ctx.matModuleIds)?ctx.matModuleIds:[];
+  if(ids.length===0)return'';
+  var allMats=ld('bj_materials',[])||[];
+  var parts=[];
+  ids.forEach(function(id){
+    var m=allMats.find(function(x){return x.id===id;});
+    if(!m)return;
+    var c=m.type==='image'?(m.imgDesc||''):(m.content||'');
+    if(!c||c.startsWith('data:'))return;
+    parts.push('· '+c.slice(0,maxEach||300));
+  });
+  if(parts.length===0)return'';
+  var joined=parts.join('\n');
+  if(maxTotal&&joined.length>maxTotal)joined=joined.slice(0,maxTotal)+'…';
+  return joined;
+}
+// ==================== 书目素材模块 END ====================
+
 // ==================== QUALITY ENHANCE · 反幻觉续写质量增强 ====================
 
 // ── 功能一：结构化角色状态 V2 ──
@@ -50126,6 +51313,8 @@ async function premiumStep1Plan(){
   }
   if(ctx.estFacts)planContext+='【已确立事实（不可违反）】\n'+ctx.estFacts+'\n\n';
   if(ctx.direction)planContext+='【写作方向】\n'+ctx.direction+'\n\n';
+  var _bmmTextPlan=_buildBookMatModuleText(curRd.id,300,1200);
+  if(_bmmTextPlan)planContext+='【素材库参考】\n'+_bmmTextPlan+'\n\n';
   var chOutline=ctx.bookChOutlines&&ctx.bookChOutlines[nextChNum-1];
   if(chOutline)planContext+='【第'+nextChNum+'章大纲】\n'+chOutline+'\n\n';
   planContext+='【上一章结尾（最后500字）】\n'+lastCh.substring(Math.max(0,lastCh.length-500));
@@ -50190,7 +51379,350 @@ async function premiumStep2Write(plan){
   ctx.specialReq=origSpecialReq;
   sv('bj_articleContexts',articleContexts);
 }
+// ==================== 章节版本快照系统 ====================
+var _SNAP_MAX = 10;           // 每章最多10条快照
+var _snapPreviewId = null;    // 当前预览的快照ID
 
+// 生成存储键名
+function _snapKey(bookId, chIdx){
+  return 'bj_snap_' + bookId + '_' + chIdx;
+}
+
+// 保存一条快照（核心函数，外部调用）
+function saveChapterSnapshot(bookId, chIdx, label){
+  if(!bookId || chIdx < 0) return;
+  // 取章节内容
+  var art = cols.books.find(function(b){return b.id===bookId;});
+  if(!art) art = (ws||[]).find(function(a){return a.id===bookId;});
+  if(!art && curRd && curRd.id===bookId) art = curRd;
+  if(!art) return;
+  var content = '';
+  if(art.type==='long' && Array.isArray(art.chapters)){
+    content = art.chapters[chIdx] || '';
+  } else {
+    content = art.content || '';
+  }
+  if(!content || content.trim().length < 10) return;
+
+  var key = _snapKey(bookId, chIdx);
+  var list = ld(key, []);
+  if(!Array.isArray(list)) list = [];
+
+  // 内容完全相同就不重复存
+  if(list.length > 0 && list[0].content === content) return;
+
+  var snap = {
+    id: uid(),
+    content: content,
+    label: label || '手动存档',
+    time: new Date().toISOString()
+  };
+  list.unshift(snap);
+  // 超出上限时删最旧的
+  if(list.length > _SNAP_MAX) list.length = _SNAP_MAX;
+  sv(key, list);
+}
+
+// 手动存档（用户点击按钮触发）
+function manualSaveSnapshot(){
+  if(!curRd || curRd.type !== 'long'){
+    showToast('只有长篇章节才能手动存档');
+    return;
+  }
+  var chIdx = curCh;
+  var label = '手动存档·第' + (chIdx + 1) + '章';
+  saveChapterSnapshot(curRd.id, chIdx, label);
+  showToast('✅ 已存档第' + (chIdx + 1) + '章当前版本');
+}
+
+// 打开快照抽屉
+function openSnapshotDrawer(){
+  if(!curRd || curRd.type !== 'long'){
+    showToast('请先打开一篇长篇作品');
+    return;
+  }
+  var lbl = document.getElementById('snChapterLabel');
+  if(lbl) lbl.textContent = '第' + (curCh + 1) + '章';
+  renderSnapshotList();
+  document.getElementById('snapshotDrawerOv').classList.add('show');
+  navPush('snapshotDrawerOv');
+}
+
+// 关闭快照抽屉
+function closeSnapshotDrawer(){
+  navPop('snapshotDrawerOv');
+  document.getElementById('snapshotDrawerOv').classList.remove('show');
+}
+
+// 渲染快照列表
+function renderSnapshotList(){
+  if(!curRd) return;
+  var key = _snapKey(curRd.id, curCh);
+  var list = ld(key, []);
+  if(!Array.isArray(list)) list = [];
+  var container = document.getElementById('snapshotList');
+  if(!container) return;
+
+  if(list.length === 0){
+    container.innerHTML =
+      '<div class="sn-empty">' +
+        '<i class="fas fa-history" style="font-size:30px;margin-bottom:12px;opacity:.25;display:block"></i>' +
+        '这一章还没有历史版本<br>' +
+        '<span style="font-size:12px">续写/改写时会自动保存<br>也可以点「手动存档」留底</span>' +
+      '</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  list.forEach(function(snap){
+    var d = new Date(snap.time);
+    var timeStr =
+      (d.getMonth()+1) + '/' + d.getDate() + ' ' +
+      String(d.getHours()).padStart(2,'0') + ':' +
+      String(d.getMinutes()).padStart(2,'0');
+    var preview = (snap.content || '').replace(/\n+/g,' ').trim().substring(0, 36) + '…';
+    var wc = countWords(snap.content || '');
+
+    var item = document.createElement('div');
+    item.className = 'sn-item';
+    item.innerHTML =
+      '<div class="sn-item-main">' +
+        '<div class="sn-item-label">' + esc(snap.label) + '</div>' +
+        '<div class="sn-item-time"><i class="fas fa-clock" style="margin-right:3px;opacity:.55"></i>' +
+          timeStr + ' · ' + wc + ' 字' +
+        '</div>' +
+        '<div class="sn-item-preview">' + esc(preview) + '</div>' +
+      '</div>' +
+      '<button class="sn-del-btn" title="删除"><i class="fas fa-trash-alt"></i></button>';
+
+    // 点击行 → 预览
+    item.addEventListener('click', function(e){
+      if(e.target.closest('.sn-del-btn')) return;
+      previewSnapshot(snap.id);
+    });
+    // 点击删除按钮
+    item.querySelector('.sn-del-btn').addEventListener('click', function(e){
+      e.stopPropagation();
+      deleteSnapshotById(snap.id);
+    });
+
+    container.appendChild(item);
+  });
+}
+
+// 预览某个快照
+function previewSnapshot(snapId){
+  if(!curRd) return;
+  var key = _snapKey(curRd.id, curCh);
+  var list = ld(key, []);
+  if(!Array.isArray(list)) return;
+  var snap = list.find(function(s){ return s.id === snapId; });
+  if(!snap){ showToast('找不到该版本'); return; }
+
+  _snapPreviewId = snapId;
+  var titleEl = document.getElementById('snPreviewTitle');
+  var bodyEl  = document.getElementById('snPreviewBody');
+  if(titleEl) titleEl.textContent = snap.label;
+  if(bodyEl)  bodyEl.textContent  = snap.content;
+
+  document.getElementById('snapshotPreviewOv').classList.add('show');
+  navPush('snapshotPreviewOv');
+}
+
+// 关闭预览
+function closeSnapshotPreview(){
+  navPop('snapshotPreviewOv');
+  document.getElementById('snapshotPreviewOv').classList.remove('show');
+  _snapPreviewId = null;
+}
+
+// 确认恢复弹窗
+function _restoreSnapshotConfirm(){
+  if(!_snapPreviewId || !curRd) return;
+  var key = _snapKey(curRd.id, curCh);
+  var list = ld(key, []);
+  if(!Array.isArray(list)) return;
+  var snap = list.find(function(s){ return s.id === _snapPreviewId; });
+  if(!snap){ showToast('找不到该版本'); return; }
+
+  showDlg(
+    '确认恢复',
+    '将把第' + (curCh + 1) + '章恢复到「' + snap.label + '」版本\n\n' +
+    '当前内容会被替换（当前版本已自动存档备份）。\n\n确认恢复吗？',
+    function(){
+      _doRestoreSnapshot(snap);
+    },
+    true
+  );
+}
+
+// 执行恢复
+function _doRestoreSnapshot(snap){
+  if(!curRd || curRd.type !== 'long' || !Array.isArray(curRd.chapters)) return;
+
+  // 先把「当前版本」存一份，防止误操作
+  saveChapterSnapshot(curRd.id, curCh, '恢复前备份·第' + (curCh + 1) + '章');
+
+  // 写回
+  curRd.chapters[curCh] = snap.content;
+  syncArticle(curRd);
+  renderChContent();
+
+  // 如果翻页阅读器在运行，重新分页
+  try{
+    if(document.getElementById('rdModal').classList.contains('rd-reader-mode')){
+      _rdRepaginate();
+    }
+  }catch(e){}
+
+  closeSnapshotPreview();
+  closeSnapshotDrawer();
+  showToast('✅ 已恢复到「' + snap.label + '」版本', 3000);
+}
+
+// 删除某条快照
+function deleteSnapshotById(snapId){
+  if(!curRd) return;
+  var key = _snapKey(curRd.id, curCh);
+  var list = ld(key, []);
+  if(!Array.isArray(list)) return;
+  list = list.filter(function(s){ return s.id !== snapId; });
+  sv(key, list);
+  renderSnapshotList();
+  showToast('已删除该版本');
+}
+
+// 清空当前章节所有快照
+function clearChapterSnapshots(){
+  if(!curRd) return;
+  showDlg(
+    '清空确认',
+    '确定要清空第' + (curCh + 1) + '章的全部历史版本吗？此操作不可恢复。',
+    function(){
+      var key = _snapKey(curRd.id, curCh);
+      sv(key, []);
+      renderSnapshotList();
+      showToast('已清空该章历史版本');
+    },
+    true
+  );
+}
+// ==================== 编辑器置顶/置底悬浮按钮 ====================
+var _edScrollLastY = 0;
+var _edScrollHideTimer = null;
+var _edTouchStartY = 0;
+
+function _edScrollTo(dir){
+  var ta = document.getElementById('edTextarea');
+  if(!ta) return;
+  ta.scrollTo({top: dir === 'top' ? 0 : ta.scrollHeight, behavior:'smooth'});
+  var tb = document.getElementById('edScrollTop');
+  var bb = document.getElementById('edScrollBottom');
+  if(tb) tb.classList.remove('show');
+  if(bb) bb.classList.remove('show');
+}
+
+function _edShowScrollHint(dir){
+  var tb = document.getElementById('edScrollTop');
+  var bb = document.getElementById('edScrollBottom');
+  if(!tb || !bb) return;
+  tb.classList.remove('show');
+  bb.classList.remove('show');
+  if(dir === 'top') tb.classList.add('show');
+  else bb.classList.add('show');
+  clearTimeout(_edScrollHideTimer);
+  _edScrollHideTimer = setTimeout(function(){
+    tb.classList.remove('show');
+    bb.classList.remove('show');
+  }, 2800);
+}
+
+function _initEdScrollBtns(){
+  var ta = document.getElementById('edTextarea');
+  if(!ta) return;
+
+  // 滚动条拖动 & 滚动事件
+  ta.addEventListener('scroll', function(){
+    var sy = ta.scrollTop;
+    var dy = sy - _edScrollLastY;
+    _edScrollLastY = sy;
+    var atTop = sy < 80;
+    var atBot = ta.scrollHeight - sy - ta.clientHeight < 80;
+    if(dy > 2 && !atBot) _edShowScrollHint('bottom');
+    else if(dy < -2 && !atTop) _edShowScrollHint('top');
+  }, {passive:true});
+
+  // 手指在文字上滑动时检测
+  ta.addEventListener('touchstart', function(e){
+    if(e.touches.length > 0) _edTouchStartY = e.touches[0].clientY;
+  }, {passive:true});
+
+  ta.addEventListener('touchmove', function(e){
+    if(!e.touches.length) return;
+    var dy = _edTouchStartY - e.touches[0].clientY;
+    var sy = ta.scrollTop;
+    var atTop = sy < 80;
+    var atBot = ta.scrollHeight - sy - ta.clientHeight < 80;
+    if(dy > 12 && !atBot) _edShowScrollHint('bottom');
+    else if(dy < -12 && !atTop) _edShowScrollHint('top');
+  }, {passive:true});
+}
+// ==================== 输入框右下角拖拽扩大 ====================
+(function _initTxResize(){
+  document.addEventListener('pointerdown', function(e){
+    var handle = e.target.closest('.tx-resize-handle');
+    if(!handle) return;
+
+    // 找关联 textarea：先找 .tx-wrap 内的，再找前兄弟节点，最后找父级内
+    var ta = null;
+    var wrap = handle.closest('.tx-wrap');
+    if(wrap){
+      ta = wrap.querySelector('textarea');
+    }
+    if(!ta){
+      var sib = handle.previousElementSibling;
+      while(sib){
+        if(sib.tagName === 'TEXTAREA'){ ta = sib; break; }
+        sib = sib.previousElementSibling;
+      }
+    }
+    if(!ta && handle.parentElement){
+      ta = handle.parentElement.querySelector('textarea');
+    }
+    if(!ta) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    var startY = e.clientY;
+    var startH = ta.getBoundingClientRect().height;
+    handle.style.opacity = '0.6';
+
+    function onMove(ev){
+      var dy = ev.clientY - startY;
+      var newH = Math.max(60, startH + dy);
+      ta.style.height = newH + 'px';
+      ta.style.minHeight = newH + 'px';
+    }
+    function onUp(){
+      handle.style.opacity = '';
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+    }
+    document.addEventListener('pointermove', onMove, {passive:false});
+    document.addEventListener('pointerup', onUp);
+  }, {passive:false});
+})();
+var _edScrollBtnsInited = false;
+(function _waitForEdTextarea(){
+  var ta = document.getElementById('edTextarea');
+  if(ta && !_edScrollBtnsInited){
+    _edScrollBtnsInited = true;
+    _initEdScrollBtns();
+  } else if(!_edScrollBtnsInited){
+    setTimeout(_waitForEdTextarea, 500);
+  }
+})();
 // 初始化一致性检测开关 UI
 (function(){
   try{updateConsistencyCheckUI();}catch(e){}

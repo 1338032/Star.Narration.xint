@@ -3014,7 +3014,7 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
       </div>
     </div>
     <div style="text-align:center;padding:8px 0 4px;font-size:11px;color:var(--text2)">
-      穿书系统 v1.1.2 · 星叙 配套
+      穿书系统 v1.1.3 · 星叙 配套
     </div>
   </div>
 </div>
@@ -3529,6 +3529,16 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
         <li><strong>清除所有对话</strong>：删除全部对话记录、摘要、存档和书签，但保留设定绑定，重新开始故事</li>
         <li><strong>删除旅途</strong>：在书架卡片菜单操作，完全删除旅途，相关绑定自动解除</li>
       </ul>
+  
+      <h3>🌍 世界状态手动编辑详解</h3>
+      <p>手动编辑功能让你完全掌控故事世界的状态：</p>
+      <ul>
+        <li><strong>修正AI偏差</strong>：AI有时会弄错角色位置或好感度数值，手动编辑可以立即纠正</li>
+        <li><strong>强制设定</strong>：想让某个角色好感度直接到80？直接改数字即可，AI下次回复会基于新数值</li>
+        <li><strong>补充遗漏</strong>：AI没追踪到的物品或角色，可以手动添加到世界状态中</li>
+        <li><strong>隐藏数值</strong>：如果开启了隐藏数值系统，编辑页面底部会显示各数值的输入框，可直接修改</li>
+        <li>修改完成后点「保存」，世界状态立即生效，AI下次回复就会按新状态来写</li>
+      </ul>
 
       <h3>🖼️ 封面管理</h3>
       <ul>
@@ -3642,6 +3652,78 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
         <li>点击组名胶囊，弹出该组所有短语，点击直接发送</li>
         <li>不填分组的短语仍然直接显示在胶囊栏</li>
         <li>建议将常用的短语不分组直接显示，不常用的归入分组节省空间</li>
+      </ul>
+
+      <h3>🌍 世界状态手动编辑</h3>
+      <p>AI自动追踪的世界状态偶尔可能有偏差，现在可以手动修正：</p>
+      <ul>
+        <li>打开<strong>世界状态面板</strong>（对话框左侧 + 按钮 → 世界状态）</li>
+        <li>点击右上角的<strong>✏️ 编辑按钮</strong>进入编辑模式</li>
+        <li>可修改：<strong>当前时间、当前地点、当前事件、人物状态、关键物品、隐藏数值</strong></li>
+        <li>人物状态每行一人，格式：<code>姓名，位置=xxx，态度=xxx，好感=数字</code></li>
+        <li>关键物品每行一个，格式：<code>物品名=持有者</code></li>
+        <li>修改好感度后会自动同步到角色百科的好感曲线</li>
+        <li>点击「保存」生效，「取消」恢复原状</li>
+      </ul>
+
+      <h3>💾 自动事件快照</h3>
+      <p>当故事中发生重要事件时，系统会自动创建轻量级存档快照：</p>
+      <ul>
+        <li><strong>地点变化</strong>：主角移动到新地点时自动快照</li>
+        <li><strong>好感大幅变化</strong>：任何角色好感度单次变化 ≥ 8 时自动快照</li>
+        <li>事件快照在存档管理中显示黄色 <strong>「事件」</strong> 标签</li>
+        <li>最多保留 <strong>10个</strong> 事件快照，超出自动删除最旧的</li>
+        <li>同一事件30秒内不重复创建</li>
+        <li>创建时标题栏会短暂闪烁绿色小圆点，静默完成不打断阅读</li>
+      </ul>
+
+      <h3>🏷️ 角色关系标签（双标签）</h3>
+      <p>每个角色现在最多可以叠加 <strong>2个</strong> 关系标签：</p>
+      <ul>
+        <li>内置5种：<i class="fas fa-handshake"></i> 挚友 / <i class="fas fa-shield-halved"></i> 盟友 / <i class="fas fa-heart-crack"></i> 情敌 / <i class="fas fa-triangle-exclamation"></i> 隐患 / <i class="fas fa-minus"></i> 中立</li>
+        <li>再次点击已选标签可取消</li>
+        <li>底部输入框可设置自定义关系（最多8字），自定义标签占用1个名额</li>
+        <li>总计最多2个标签（内置+自定义合计）</li>
+        <li>标签显示在角色百科列表卡片上，并写入AI上下文</li>
+      </ul>
+
+      <h3>📊 快捷短语使用追踪</h3>
+      <p>快捷短语现在会记录使用次数，自动优化排列顺序：</p>
+      <ul>
+        <li>每次点击发送后，该短语的使用次数 +1</li>
+        <li>使用次数 ≥ 3 的短语在胶囊上显示计数徽章</li>
+        <li>未分组的短语按使用频率<strong>从高到低</strong>排列，高频短语排在前面</li>
+        <li>前5个高频短语直接显示在胶囊栏，其余折叠到「更多」组中</li>
+        <li>在快捷短语管理页面可以看到每个短语的使用次数</li>
+      </ul>
+
+      <h3>📄 Word / EPUB 导出</h3>
+      <p>导出排版小说现在支持4种格式：</p>
+      <ul>
+        <li><strong>HTML</strong>：精美排版网页，可直接在浏览器打开</li>
+        <li><strong>Markdown</strong>：通用文本格式，可在写作平台发布</li>
+        <li><strong>Word (DOCX)</strong>：可用 WPS / Office 打开编辑，自动排版含封面和章节标题</li>
+        <li><strong>EPUB</strong>：标准电子书格式，可在各阅读器中打开，含目录和样式</li>
+        <li>Word 和 EPUB 格式需要加载 JSZip 组件（首次使用时自动加载，需联网）</li>
+      </ul>
+
+      <h3>🔒 关键事实自动提取</h3>
+      <p>在记忆管理中，关键事实锁定区域新增了<strong>自动提取开关</strong>：</p>
+      <ul>
+        <li>开启后，每次自动总结时会额外分析故事摘要，提取不可遗忘的关键事实</li>
+        <li>自动提取的事实会追加到关键事实区域，不会重复已有内容</li>
+        <li>提取标准：已揭露的重大秘密、不可逆转的事件、人物关系根本性变化</li>
+        <li>每次最多提取5条，自动去重</li>
+        <li>可手动编辑或删除自动提取的内容</li>
+      </ul>
+
+      <h3>🌳 分支命名与管理</h3>
+      <p>通过「如果当时」创建的分支旅途现在可以自定义名称：</p>
+      <ul>
+        <li>创建分支时会弹出输入框，可起专属名称（如"颜如玉支线·温柔结局"）</li>
+        <li>分支旅途的书卡上显示 <strong>「⑂ 分支自《书名》」</strong> 紫色标签</li>
+        <li>分支会完整复制原旅途的角色百科、背包、名台词库等数据</li>
+        <li>在时间线侧栏的「分支树」标签页中，可看到所有平行支线并快速切换</li>
       </ul>
 
       <h3>📥 EPUB 电子书导入</h3>
@@ -3892,12 +3974,6 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
       <button class="modal-close" onclick="TB.closeModal('modal-memory')"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body" id="memory-body"></div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="TB.closeModal('modal-memory')">关闭</button>
-      <button class="btn-primary" onclick="TB.aiSummarize()">
-        <i class="fas fa-wand-magic-sparkles"></i> AI 生成摘要
-      </button>
-    </div>
   </div>
 </div>
 
@@ -4176,7 +4252,10 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
   <div class="world-state-sheet">
     <div class="ws-header">
       <h3><i class="fas fa-globe" style="color:var(--success)"></i> 世界状态</h3>
-      <button onclick="TB.closeWorldState()"><i class="fas fa-times"></i></button>
+      <div style="display:flex;gap:4px">
+        <button onclick="TB.editWorldState()" title="编辑"><i class="fas fa-pen" style="font-size:14px"></i></button>
+        <button onclick="TB.closeWorldState()"><i class="fas fa-times"></i></button>
+      </div>
     </div>
     <div class="ws-body" id="wsBody">
       <div class="ws-empty">
@@ -4386,7 +4465,7 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
 /*
 ╔══════════════════════════════════════════════════════════════════
 ║  穿书系统 chuanshu.html — JS 结构目录
-║  文件共约 17400 行 | HTML+CSS: 1~4383 | JS: 4384~17405
+║  文件共约 17600 行 | HTML+CSS: 1~4383 | JS: 4384~17600
 ║  入口对象：TB = (function(){ ... })()  ← 第 4430 行
 ╠══════════════════════════════════════════════════════════════════
 ║ [A] 基础设施                        4387 ~ 4464
@@ -4434,124 +4513,173 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
 ║
 ║ [G] AI 生成核心                     7162 ~ 7977
 ║   AI开场 _genOpening               7107
-║   AI回复/流式 _genResponse          7167
+║   暂停一下 triggerPauseMode         7165
+║   AI回复/流式 _genResponse/_streamAI 7195
 ║   prompt构建 _buildMessages         7482
-║   智能节选上下文                     7544
+║   智能节选上下文 _buildSmartExcerpt 7544
 ║   记忆管理 aiSummarize             7783
+║   自动提取关键事实 _autoExtractKeyFacts 7850
 ║
 ║ [H] 系统提示词专家模式              7978 ~ 8201
 ║   openSysPromptEditor              7978
 ║
 ║ [I] 旅途管理面板                    8202 ~ 9028
 ║   旅途选项/统计 openJourneyOpts     8202
-║   回复长度控制                       8243
+║   回复长度控制 setReplyLength       8243
 ║   剧情回顾 genRecap                 8268
 ║   消息搜索 openMsgSearch            8276
 ║   添加旅途 openAddModal             8511
+║   EPUB导入 handleEpubFile          8580
 ║   置顶 togglePin                   8978
 ║   删除旅途 confirmDelete            9000
 ║
 ║ [J] 设置 & 配置                     9029 ~ 10091
 ║   API设置 saveApiSettings           9029
+║   模型列表拉取 fetchModels/filterModels 9120
 ║   身份设置 saveAndCloseIdentity     9297
+║   身份预设 openIdentityPresets      9330
 ║   绑定设定 saveBindings             9415
 ║   关联管理 openAssocModal           9548
 ║   美化设置 saveBeauty              9676
+║   气泡模式 setBubbleStyle/setBubbleColor 9780
+║   世界状态编辑 editWorldState       9800
 ║
 ║ [K] 引导 & 快捷键 & 预设           10092 ~ 10947
 ║   上手引导 showOnboard             10092
 ║   快捷键功能 insertShortcut        10101
-║   长按拖动排序                      10234
+║   快捷短语分组 togglePhraseGroup   10180
+║   长按拖动排序（含touchcancel）     10234
 ║   快捷键管理弹窗                    10347
 ║   本地写作预设 addLocalPreset      10511
+║   快速绑定 quickBindPreset         10600
 ║   openModal 统一入口               10819
 ║
 ║ [L] 弹窗工具                       10948 ~ 11045
 ║   自定义选择器 tbSelect            10948
-║   自定义对话框 tbConfirm           10988
+║   自定义对话框 tbConfirm/tbPrompt  10988
 ║   Toast tbToast                   11034
 ║
 ║ [M] 导出 & 阅读器                  11046 ~ 11419
 ║   导出排版小说 openExportNovel     11046
-║   小说阅读模式 openReader          11241
+║   导出格式 HTML/Markdown/Word/EPUB 11100
+║   Word生成 _buildDocxZip           11280
+║   EPUB生成 _buildEpubZip           11320
+║   小说阅读模式 openReader          11360
+║   阅读器目录 openReaderToc         11380
 ║
 ║ [N] 存档 & 书签 & 时间线           11420 ~ 11975
 ║   存档点 createSavePoint          11420
-║   自动定时存档                      11471
+║   自动定时存档 _startAutoSaveTimer 11471
+║   自动事件快照 _autoEventSnapshot  11500
 ║   对话回收站 openTrashBin          11520
 ║   书签系统 toggleBookmark         11674
 ║   时间线抽屉 openTimeline          11729
+║   分支树 _renderBranchTree         11780
+║   分支旅途切换 switchToBranch      11850
 ║
 ║ [O] 工具功能                       11976 ~ 12511
 ║   字数格式化                        11976
 ║   消息搜索 doMsgSearch             11983
 ║   回复长度 setReplyLength          11986
+║   全局回复长度 toggleGlobalReplyLength 12020
 ║   剧情回顾生成 genRecap            12059
-║   快捷短语 addPhrase/sendQuickPhrase 12311
+║   剧情回顾弹窗 _showRecapPopup     12090
+║   快捷短语管理 addPhrase/editPhrase 12311
+║   快捷短语使用次数追踪             12345
+║   快捷短语拖动排序                  12380
 ║
 ║ [P] 数据导出/导入                  12512 ~ 12690
 ║   exportAllData / importAllData   12512
+║   导出确认弹窗 _tbShowExportDlg    12560
 ║
 ║ [Q] 特色互动系统                   12691 ~ 13822
-║   好感度养成事件卡                  12692
-║   命运转盘 startCardDuel           12866
+║   好感度养成事件卡（含随机化模板池）12692
+║   好感度选项模板                    12730
+║   命运转盘随机事件（动态概率）     12866
 ║   AI卡牌对决系统                   12977
+║   对决AI出牌 _aiPickCard           13100
+║   对决结算 _resolveDuel            13200
+║   对决写入故事 applyDuelResult     13400
+║   对决关键词检测 _checkDuelTrigger 13500
+║   回复本段 replyToMsg              13550
 ║
 ║ [R] 隐藏数值系统（成长系统）       13824 ~ 14128
 ║   _getHiddenStatsConfig           13844
 ║   openHiddenStatsModal            13863
+║   数值自定义（图标/颜色/范围/作用域）13900
 ║   _buildHiddenStatsPrompt         14075
 ║   _parseHiddenStats               14099
 ║
 ║ [S] 背包/道具系统                  14130 ~ 14322
 ║   openBackpack / _renderBackpackBody 14139
+║   道具稀有度（普通/稀有/传说/关键）14160
 ║   giftItem / useItem / removeItem 14201
 ║   _buildBackpackPrompt            14307
 ║
 ║ [T] 角色百科系统                   14324 ~ 15189
-║   _buildCharaWikiPrompt           14324
+║   _buildCharaWikiPrompt（含语气锁定）14324
+║   前作角色自动导入 _importPrevBookChars 14360
 ║   openCharaWiki / _renderCharaWikiBody 14375
+║   角色卡牌网格（竖向2列）          14400
 ║   openCharaDetail                 14485
+║   角色标签增删改 addCharaTag       14700
+║   经典台词/简介编辑                14740
+║   写入AI/写入下一本开关            14780
 ║   分类标签/百科批量操作             14869
 ║
 ║ [U] 新功能模块（v1.1.x）           15191 ~ 15932
 ║   成长数值变化通知 _notifyHiddenStatsDelta 15222
 ║   里程碑事件 _checkHsThresholds   15254
-║   sparkline趋势图                  15322
-║   地点变化通知                      15343
+║   sparkline趋势图 _renderHsSparkline 15322
+║   地点变化通知 _showLocationChangeHint 15343
 ║   地点记忆 _recordVisitedLocation 15366
 ║   一键收入背包 _detectNewItems     15405
 ║   道具编辑弹层 _openItemEditor     15461
-║   FIX-1 WS缺失警告                15637
-║   FIX-2 好感变化通知               15660
-║   FIX-3 世界状态Diff Toast        15693
-║   FIX-5 出戏词检测                 15715
-║   OPT-1~5 体验优化                15741
+║   道具图标选择器（40种emoji）       15490
+║   FIX-1 WS缺失警告 _showWsWarnBadge 15637
+║   FIX-2 好感变化通知 _notifyFavorDelta 15660
+║   FIX-3 世界状态Diff Toast         15693
+║   FIX-5 出戏词检测 _detectBreakingWords 15715
+║   FIX-5 自定义出戏词编辑器         15740
+║   OPT-1 跳过动画 skipAnimation     15760
+║   OPT-2 输入历史 toggleInputHistory 15770
+║   OPT-3 好感速览 toggleFavorPeek   15800
+║   OPT-4 静默存档指示 _flashAutosaveDot 15830
+║   OPT-5 自动事件快照 _autoEventSnapshot 15850
 ║
 ║ [V] 关系标签 & 名台词 & 语气锁定  15935 ~ 16268
-║   _REL_TYPES / setRelationType    15938
+║   _REL_TYPES（5种内置+自定义）     15938
+║   setRelationType（最多2个标签）    15970
+║   saveCustomRelType               16000
 ║   _renderRelChip                  16017
 ║   名台词收藏 collectQuote         16035
 ║   名台词库 openQuoteLibrary       16128
-║   语气锁定 toggleVoiceLock        16233
+║   名台词导出 _exportQuotes         16200
+║   语气锁定 toggleVoiceLock/saveVoiceStyle 16233
 ║
 ║ [W] 公开接口 & 加号弹窗           16269 ~ 16598
 ║   return { ... }  公开API         16269
-║   togglePlusPopup                 16580
+║   togglePlusPopup / _closePlusPopup 16580
+║   快捷短语分组展开 togglePhraseGroup 16590
 ║
 ║ [X] 灵感 & 剧情辅助               16599 ~ 17006
 ║   灵感骰子 genInspiration         16644
 ║   剧情建议 genPlotAdvice          16751
+║   灵感/剧情建议填入输入框          16900
 ║   @提及 checkAtMention            16921
 ║
 ║ [Y] 世界状态面板                   17007 ~ 17314
 ║   showWorldState / _renderWorldStateBody 17008
-║   _parseAndStoreWorldState        17152
+║   世界状态编辑 editWorldState/saveEditWorldState 17050
+║   _parseAndStoreWorldState（含中文等号容错）17152
 ║   全屏 toggleFullscreen           17289
 ║
-║ [Z] 启动 & viewport修正           17319 ~ 17405
+║ [Z] 启动 & viewport修正           17319 ~ 17600
 ║   window.TB = TB / 初始化         17319
+║   Esc键盘快捷键                    17350
+║   全屏变化监听                     17380
 ║   visualViewport键盘监听          17390
+║   range滑块样式初始化              17400
 ╚══════════════════════════════════════════════════════════════════
 */
 // ==================== 常量 ====================
@@ -5800,17 +5928,15 @@ var _tmLpTimer = null;
     var msg = (j.messages || [])[idx];
     if (!msg) return;
 
-    // 收集上下文：前几条消息
+    // 收集近期对话上下文（与短期记忆一致）
     var histMsgs = (j.messages || []).filter(function (m) { return !m.isTimeMark; });
-    var contextSlice = [];
+    var rounds = Math.min(j.contextRounds || 20, MAX_CONTEXT_ROUNDS);
     var targetInHist = -1;
     for (var ci = 0; ci < histMsgs.length; ci++) {
       if (histMsgs[ci] === msg) { targetInHist = ci; break; }
     }
-    // 取目标前6条 + 目标本身作为上下文
-    var startC = Math.max(0, targetInHist - 6);
-    contextSlice = histMsgs.slice(startC, targetInHist);
-
+    var contextStart = Math.max(0, targetInHist - rounds * 2);
+    var contextSlice = histMsgs.slice(contextStart, targetInHist);
     var contextText = contextSlice.map(function (m) {
       var role = m.role === 'ai' ? '[叙事]' : '[玩家行动]';
       return role + ' ' + m.content.replace(/<!--WS[\s\S]*?WS-->/g, '').trim().slice(0, 300);
@@ -5819,21 +5945,79 @@ var _tmLpTimer = null;
     var originalClean = _rewriteOriginal.replace(/<!--WS[\s\S]*?WS-->/g, '').trim();
     var extraReqStr = (extraReq || '').trim();
 
-    var sysPrompt = '你是为这部穿书故事服务的叙事润色师。任务：根据上下文，重写指定的叙事段落。\n\n' +
-      '【绝对不能改的】\n' +
-      '❌ 情节走向和关键事件\n' +
-      '❌ 对话内容（可以改对话标签，不能改角色说的话）\n' +
-      '❌ 人物性格和行为逻辑\n' +
-      '❌ 已在对话中确立的事实（时间/地点/人物关系，不包括原著剧情）\n\n' +
-      '【必须做到的】\n' +
-      '① 字数与原文相近（±20%）\n' +
-      '② 改变叙事角度、措辞方式或修辞手法，写出新鲜感\n' +
-      '③ 保持故事的整体氛围和文风\n\n' +
-      '【输出铁律】\n' +
+    // 构建设定上下文（与正常回复保持一致）
+    function _resolvePresetForRewrite(type, val) {
+      if (!val) return '';
+      if (val.indexOf('local_') === 0) {
+        var lidx = parseInt(val.slice(6));
+        var lp = (_localPresets[type] || [])[lidx];
+        return lp ? (lp.content || '') : '';
+      }
+      if (val.indexOf('bj_') === 0) {
+        var bidx = parseInt(val.slice(3));
+        var bjArr = _getBJPresets(type);
+        var bp = bjArr[bidx];
+        if (!bp) return '';
+        if (type === 'char') {
+          var cpArr = [];
+          (bp.characters||[]).forEach(function(c){if(c&&c.name){var s=c.name;if(c.traits&&c.traits.length)s+='（'+c.traits.join('、')+'）';if(c.desc)s+='：'+c.desc;cpArr.push(s);}});
+          return cpArr.join('\n');
+        }
+        return bp.desc || bp.content || '';
+      }
+      return '';
+    }
+    var seriesBinding = {};
+    if (j.associations && j.associations.length > 1) {
+      seriesBinding = _bindings['series_' + j.associations[0]] || {};
+    }
+    var bookBinding = _bindings[j.novelId] || {};
+    function _gbv(field) { return bookBinding[field] !== undefined ? bookBinding[field] : seriesBinding[field]; }
+    var charText = _resolvePresetForRewrite('char', _gbv('charVal'));
+    var worldText = _resolvePresetForRewrite('world', _gbv('worldVal'));
+    var styleText = _resolvePresetForRewrite('style', _gbv('styleVal'));
+
+    // 原著节选
+    var excerpt = '';
+    if (j.useNovelSummary && j.novelSummary) {
+      excerpt = j.novelSummary.slice(0, 2000);
+    } else if (j.novelContent) {
+      excerpt = j.novelContent.slice(0, 3000);
+    }
+
+    // 组装设定段落
+    var settingParts = [];
+    if (excerpt) settingParts.push('## 原著参考（节选）\n' + excerpt);
+    if (charText) settingParts.push('## 人物设定\n' + charText);
+    if (worldText) settingParts.push('## 世界观\n' + worldText);
+    if (_settings.userIdentity) settingParts.push('## 穿越者身份\n' + _settings.userIdentity);
+    if (j.memorySummary) settingParts.push('## 故事摘要\n' + j.memorySummary);
+    if (j.lockedFacts) settingParts.push('## 关键事实\n' + j.lockedFacts);
+    var charaPrompt = _buildCharaWikiPrompt(j);
+    if (charaPrompt) settingParts.push(charaPrompt);
+    var backpackPrompt = _buildBackpackPrompt(j);
+    if (backpackPrompt) settingParts.push(backpackPrompt);
+    var settingBlock = settingParts.length > 0 ? '\n\n' + settingParts.join('\n\n') : '';
+
+    var sysPrompt = '你是小说《' + j.novelTitle + '》的叙事润色师。任务：根据上下文和设定，重写指定的叙事段落。\n\n' +
+      '## 文风\n' + (styleText || '保持原文风格') + '\n\n' +
+      '## 绝对不能改的\n' +
+      '- 情节走向和关键事件\n' +
+      '- 对话内容（可以改对话标签，不能改角色说的话）\n' +
+      '- 人物性格和行为逻辑\n' +
+      '- 已确立的事实（时间/地点/人物关系）\n\n' +
+      '## 必须做到的\n' +
+      '1. 字数与原文相近（±20%）\n' +
+      '2. 改变叙事角度、措辞方式或修辞手法\n' +
+      '3. 严格遵守人物设定和世界观\n' +
+      '4. 人物言行必须符合角色百科中的性格描述\n\n' +
+      '## 输出铁律\n' +
       '- 直接输出重写后的纯叙事文本，第一个字就是正文\n' +
       '- 不加任何标题、说明或分析过程\n' +
-      (_rewriteVersions.length > 0 ? '7. 注意：这是第' + (_rewriteVersions.length + 1) + '次重写，请尝试与之前完全不同的写法和视角\n' : '') +
-      (extraReqStr ? '\n【用户额外要求（必须严格遵守）】：\n' + extraReqStr + '\n' : '');
+      (_rewriteVersions.length > 0 ? '- 这是第' + (_rewriteVersions.length + 1) + '次重写，请尝试与之前完全不同的写法和视角\n' : '') +
+      (extraReqStr ? '\n## 用户额外要求（必须严格遵守）\n' + extraReqStr + '\n' : '') +
+      _buildHiddenStatsPrompt(j) +
+      settingBlock;
 
     var url = api.url.replace(/\/$/, '') + '/chat/completions';
 
@@ -5848,7 +6032,7 @@ var _tmLpTimer = null;
         model: api.model || 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: sysPrompt },
-          { role: 'user', content: '上下文：\n' + contextText + '\n\n需要重写的原文：\n' + originalClean + '\n\n请直接输出重写后的内容：' }
+          { role: 'user', content: '近期对话上下文：\n' + contextText + '\n\n需要重写的原文（' + originalClean.length + '字）：\n' + originalClean + '\n\n请严格按照设定重写，直接输出正文：' }
         ],
         max_tokens: Math.max(400, Math.min(1200, Math.round(originalClean.length * 1.5))),
         temperature: 0.95,
@@ -6412,6 +6596,10 @@ function showChapterSnapshot(idx) {
         if (j.visitedLocations) newJourney.visitedLocations = JSON.parse(JSON.stringify(j.visitedLocations));
         if (j.backpack) newJourney.backpack = JSON.parse(JSON.stringify(j.backpack));
         if (j.inputHistory) newJourney.inputHistory = j.inputHistory.slice();
+        if (j.charaWiki) newJourney.charaWiki = JSON.parse(JSON.stringify(j.charaWiki));
+        if (j._charaCategories) newJourney._charaCategories = JSON.parse(JSON.stringify(j._charaCategories));
+        if (j.collectedQuotes) newJourney.collectedQuotes = JSON.parse(JSON.stringify(j.collectedQuotes));
+        if (j._favorEventsSeen) newJourney._favorEventsSeen = JSON.parse(JSON.stringify(j._favorEventsSeen));
 
         _journeys.unshift(newJourney);
         _saveJourneys();
@@ -7344,14 +7532,15 @@ function deleteCurrentVersion(idx) {
       return;
     }
     _isGenerating = true;
-    var _saSendBtn = document.getElementById('chat-send');
     _skipAnimation = false;
-    var _saStopBtn = document.getElementById('chat-stop-btn');
-    if (_saStopBtn) _saStopBtn.classList.add('show');
-    var _saSkipBtn = document.getElementById('chat-skip-btn');
-    if (_saSkipBtn) _saSkipBtn.classList.add('show');
-    if (_saStopBtn) _saStopBtn.classList.add('show');
     _abortCtrl = new AbortController();
+
+    var _saStopBtn = document.getElementById('chat-stop-btn');
+    var _saSkipBtn = document.getElementById('chat-skip-btn');
+    // ★ Fix: 移除第二次重复的 classList.add('show')，各按钮只调用一次
+    if (_saStopBtn) _saStopBtn.classList.add('show');
+    if (_saSkipBtn) _saSkipBtn.classList.add('show');
+
     var accumulated = '';
     var messages = _buildMessages(j, extraInstruction, isOpening);
     var url = api.url.replace(/\/$/, '') + '/chat/completions';
@@ -7502,23 +7691,40 @@ function deleteCurrentVersion(idx) {
     _checkFavorEvents(j);
     _updateFavorPeekBtn();
     // FIX-1 WS 缺失检测
-    if (j._wsFailCount && j._wsFailCount >= 3 && j.status !== 'stopped') {
+    if (j._wsFailCount && j._wsFailCount >= 2 && j.status !== 'stopped') {
       _showWsWarnBadge(placeholder, j._wsFailCount);
     }
     // FIX-2 好感变化通知
     _notifyFavorDelta(j, _prevChars, placeholder);
+    // 好感大幅变化时自动创建事件快照
+    if (j.worldState && j.worldState.characters && _prevChars.length > 0) {
+      j.worldState.characters.forEach(function(nc) {
+        if (nc.favor < 0) return;
+        for (var _fci = 0; _fci < _prevChars.length; _fci++) {
+          if (_prevChars[_fci].name === nc.name && _prevChars[_fci].favor >= 0) {
+            var _fDelta = nc.favor - _prevChars[_fci].favor;
+            if (Math.abs(_fDelta) >= 8) {
+              _autoEventSnapshot(j, nc.name + ' 好感' + (_fDelta > 0 ? '+' : '') + _fDelta + '→' + nc.favor);
+            }
+            break;
+          }
+        }
+      });
+    }
     // FIX-3 世界状态 diff toast（仅 WS 有更新时）
     if (!j._wsFailCount || j._wsFailCount === 0) {
       _showWsDiffToast(j, _wsSnapshot, _prevChars);
     }
     // 2.1 数值变化通知
     _notifyHiddenStatsDelta(j, _hsSnapshot, placeholder);
-    // 3.3 地点变化通知
+        // 3.3 地点变化通知
+    var _detectedLoc = null;
     if (window._newLocationDetected) {
-      var _detectedLoc = window._newLocationDetected;
+      _detectedLoc = window._newLocationDetected;
       window._newLocationDetected = null;
       _showLocationChangeHint(_detectedLoc, placeholder);
       if (navigator.vibrate) navigator.vibrate(15);
+      _autoEventSnapshot(j, '到达 ' + _detectedLoc);
     }
     // 4.1 一键收入背包提示
     var _newItems = _detectNewItems(content);
@@ -7591,6 +7797,16 @@ function deleteCurrentVersion(idx) {
     }
   }
 
+  function _toggleAutoExtractFacts() {
+    var j = _getJourney(_curJourneyId);
+    if (!j) return;
+    j.autoExtractFacts = !j.autoExtractFacts;
+    _saveJourneys();
+    // 刷新弹窗
+    openMemoryModal();
+    tbToast(j.autoExtractFacts ? '已开启自动提取关键事实' : '已关闭自动提取关键事实');
+  }
+
   function _autoSummarize(j) {
     if (_autoSummarizing) return;
     var api = _getActiveApi();
@@ -7598,12 +7814,31 @@ function deleteCurrentVersion(idx) {
     var histMsgs = (j.messages || []).filter(function (m) { return !m.isTimeMark; });
     if (histMsgs.length < 10) return;
     _autoSummarizing = true;
-    var chatText = histMsgs.slice(-40).map(function (m) {
-      return (m.role === 'ai' ? '[故事]' : '[用户]') + ' ' + m.content;
+    var autoSumRounds = Math.min(j.contextRounds || 20, MAX_CONTEXT_ROUNDS);
+    var autoSumSlice = Math.min(histMsgs.length, autoSumRounds * 2);
+    var chatText = histMsgs.slice(-autoSumSlice).map(function (m) {
+      var tag = m.role === 'ai' ? '[故事]' : '[用户]';
+      return tag + ' ' + m.content.replace(/<!--WS[\s\S]*?WS-->/g, '').trim();
     }).join('\n\n');
+    var existingCount = j.memorySummary ? j.memorySummary.split('\n').filter(function(l){return l.trim();}).length : 0;
     var promptMsgs = [
-      { role: 'system', content: '你是故事记录员。任务：将下方最新对话提炼成一条简短记录，追加到故事档案中。\n\n输出格式（严格遵守，只输出这一条记录，不要输出其他任何内容）：\n【第N段】时间/地点：……；关键事件：……；人物变化：……；悬念：……\n\n要求：100字以内，客观记录，不加评论。' },
-      { role: 'user', content: '当前档案共 ' + (j.memorySummary ? j.memorySummary.split('\n').filter(function(l){return l.trim();}).length : 0) + ' 条记录。\n\n最新对话内容：\n\n' + chatText + '\n\n请只输出新追加的这一条记录。' }
+      { role: 'system', content: '你是故事记录员。任务：精确提炼下方对话中的新剧情进展，追加到故事档案中。\n\n' +
+        '## 提炼标准（必须全部覆盖）\n' +
+        '- 时间推进：故事时间从何时推进到何时\n' +
+        '- 地点变化：场景转移情况\n' +
+        '- 关键事件：重要决策、冲突、发现、转折\n' +
+        '- 人物变化：态度/关系/状态的具体变化\n' +
+        '- 悬念伏笔：未解决的问题或暗示\n\n' +
+        '## 准确性要求\n' +
+        '- 人名必须与对话完全一致\n' +
+        '- 事件因果关系必须准确，不得臆测\n' +
+        '- 只记录明确发生的事\n\n' +
+        '## 输出格式\n' +
+        '只输出一条记录：\n' +
+        '【第' + (existingCount + 1) + '段】时间/地点：……；事件：……；人物：……；悬念：……\n\n' +
+        '80~150字。客观记录，不加评论。' },
+      { role: 'user', content: (j.memorySummary ? '已有档案（' + existingCount + '条，不要重复）：\n' + j.memorySummary + '\n\n' : '') +
+        '本次对话内容（' + Math.ceil(autoSumSlice / 2) + '轮）：\n\n' + chatText + '\n\n请只输出这一条新记录：' }
     ];
     var url = api.url.replace(/\/$/, '') + '/chat/completions';
     fetch(url, {
@@ -7636,6 +7871,10 @@ function deleteCurrentVersion(idx) {
       j.lastAutoSummaryAt = new Date().toISOString();
       j.updatedAt = new Date().toISOString();
       _saveJourneys();
+      // 自动提取关键事实
+      if (j.autoExtractFacts) {
+        _autoExtractKeyFacts(j);
+      }
       var summaryEl = document.getElementById('memory-summary');
       if (summaryEl) summaryEl.value = j.memorySummary;
       var brainIcon = document.getElementById('brain-icon');
@@ -7645,13 +7884,78 @@ function deleteCurrentVersion(idx) {
     }).catch(function () { /* 后台静默失败 */ }).finally(function () { _autoSummarizing = false; });
   }
 
+  function _autoExtractKeyFacts(j) {
+    var api = _getActiveApi();
+    if (!api || !api.url || !api.key) return;
+    var summary = j.memorySummary || '';
+    if (!summary || summary.length < 30) return;
+    var existingFacts = j.lockedFacts || '';
+    var url = api.url.replace(/\/$/, '') + '/chat/completions';
+    var promptMsgs = [
+      { role: 'system', content: '你是故事记录员。从下方的故事摘要中提取【绝对不能遗忘的关键事实】。\n\n' +
+        '【提取标准】只提取以下类型：\n' +
+        '- 已经揭露的重大秘密（如"男主已知女主真实身份"）\n' +
+        '- 不可逆转的事件（如"信物已交给二哥""师父已阵亡"）\n' +
+        '- 人物关系的根本性变化（如"与XX正式决裂"）\n' +
+        '- 影响后续剧情的关键设定（如"穿越者已获得xx能力"）\n\n' +
+        '【已有的关键事实（不要重复）】\n' + (existingFacts || '（暂无）') + '\n\n' +
+        '【输出格式】\n' +
+        '- 每行一条，用"· "开头\n' +
+        '- 只输出新的事实，不要重复已有的\n' +
+        '- 如果没有新的关键事实，只输出"无新增"\n' +
+        '- 每条10~25字，客观陈述，不加评论\n' +
+        '- 最多输出5条新事实' },
+      { role: 'user', content: '故事摘要：\n' + summary + '\n\n请提取新的关键事实：' }
+    ];
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api.key },
+      body: JSON.stringify({ model: api.model || 'gpt-3.5-turbo', messages: promptMsgs, max_tokens: 250, temperature: 0.3 })
+    }).then(function(res) {
+      if (!res.ok) return;
+      return res.json();
+    }).then(function(data) {
+      if (!data) return;
+      var result = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+      if (!result) return;
+      var trimmed = result.trim();
+      if (trimmed === '无新增' || trimmed.indexOf('无新增') !== -1) return;
+      // 提取有效行
+      var newLines = trimmed.split('\n').map(function(l) { return l.trim(); }).filter(function(l) {
+        return l && l.length >= 4 && l !== '无新增';
+      });
+      if (newLines.length === 0) return;
+      // 去重：检查已有事实中是否包含相似内容
+      var existingArr = existingFacts.split('\n').map(function(l) { return l.trim().replace(/^[·\-\*]\s*/, ''); }).filter(Boolean);
+      var uniqueNew = newLines.filter(function(newLine) {
+        var cleanNew = newLine.replace(/^[·\-\*]\s*/, '').trim();
+        return !existingArr.some(function(existing) {
+          return existing === cleanNew || existing.indexOf(cleanNew) !== -1 || cleanNew.indexOf(existing) !== -1;
+        });
+      });
+      if (uniqueNew.length === 0) return;
+      // 追加到关键事实
+      var appended = existingFacts ? existingFacts.trim() + '\n' + uniqueNew.join('\n') : uniqueNew.join('\n');
+      j.lockedFacts = appended;
+      j.updatedAt = new Date().toISOString();
+      _saveJourneys();
+      // 更新UI（如果记忆弹窗正在显示）
+      var factsEl = document.getElementById('locked-facts');
+      if (factsEl) factsEl.value = appended;
+      tbToast('🔒 已自动提取 ' + uniqueNew.length + ' 条关键事实');
+    }).catch(function() { /* 静默失败 */ });
+  }
+
   function stopGen() {
     if (_abortCtrl) _abortCtrl.abort();
   }
 
   // ── 构建消息 ──
   function _buildMessages(j, extraInstruction, isOpening) {
-    // 解析绑定值，支持 'local_N' 和 'bj_N' 格式
+    // ══════════════════════════════════════════════════
+    // [A] 解析绑定预设（人设 / 世界观 / 文风）
+    // ══════════════════════════════════════════════════
+
     function resolvePreset(type, val) {
       if (!val) return '';
       if (val.indexOf('local_') === 0) {
@@ -7711,7 +8015,10 @@ function deleteCurrentVersion(idx) {
     var worldText = resolvePreset('world', getBindVal('worldVal'));
     var styleText = resolvePreset('style', getBindVal('styleVal'));
 
-    // ── 智能节选原文：根据当前进度选取相关段落 ──
+// ══════════════════════════════════════════════════
+    // [B] 智能节选原著（按进度滑窗）
+    // ══════════════════════════════════════════════════
+
     var excerpt = '';
     if (j.useNovelSummary && j.novelSummary) {
       excerpt = '【以下为全书梗概，非原文】\n\n' + j.novelSummary;
@@ -7720,7 +8027,9 @@ function deleteCurrentVersion(idx) {
       excerpt = _buildSmartExcerpt(content, j);
     }
 
-    // ── 构造记忆锚点：从摘要中提取关键信息 ──
+// ══════════════════════════════════════════════════
+    // [C] 记忆锚点（故事摘要 + 故事阶段提示）
+    // ══════════════════════════════════════════════════
     var memoryAnchor = '';
     if (j.memorySummary) {
       memoryAnchor = j.memorySummary;
@@ -7732,6 +8041,10 @@ function deleteCurrentVersion(idx) {
     if (totalMsgs <= 6) stageHint = '当前处于故事开篇阶段，注重铺垫氛围和人物登场。';
     else if (totalMsgs <= 30) stageHint = '当前处于故事发展阶段，推进情节矛盾和人物关系变化。';
     else stageHint = '当前处于故事深入阶段，前期铺垫应开始收束，注意前后呼应。';
+ // ══════════════════════════════════════════════════
+ // [D] 世界状态速览（仅注入最近一次已更新的状态）
+ // ══════════════════════════════════════════════════
+
     var worldStateHint = '';
     if (j.worldState && j.worldState.updatedAt) {
       var wsIsRecent = false;
@@ -7765,7 +8078,10 @@ function deleteCurrentVersion(idx) {
         worldStateHint = wsParts.join('\n');
       }
     }
-// ── 专家模式：如果有自定义系统提示词，直接使用 ──
+    // ══════════════════════════════════════════════════
+    // [E] 专家模式：有自定义 sysPrompt 时直接使用
+    // ══════════════════════════════════════════════════
+
     if (j.customSysPrompt && j.customSysPrompt.trim()) {
       var customMsgs = [{ role: 'system', content: j.customSysPrompt }];
       // 仍然附带原著信息和记忆
@@ -7791,7 +8107,10 @@ function deleteCurrentVersion(idx) {
       }
       return customMsgs;
     }
-        // ── 第一条 system：核心叙事规则（精简版）──
+    // ══════════════════════════════════════════════════
+    // [F] 默认模式：sysCore — 叙事铁律 + WS 标签格式
+    // ══════════════════════════════════════════════════
+
     var sysCore = [
       '# 穿书叙事引擎',
       '',
@@ -7824,7 +8143,12 @@ function deleteCurrentVersion(idx) {
       _buildHiddenStatsPrompt(j),
     ].filter(Boolean).join('\n');
 
-    // ── 第二条 system：设定细节（靠近对话区发送，优先级更高）──
+    // ══════════════════════════════════════════════════
+    // [G] sysDetail — 设定细节注入（靠近对话区，模型注意力更高）
+    //     顺序：原著 → 人设 → 世界观 → 穿越者身份 → 用户设定说明
+    //          → 关键事实 → 故事摘要 → 前作传承 → 世界状态 → 背包 → 角色百科
+    // ══════════════════════════════════════════════════
+
     var sysDetailParts = [];
     if (excerpt) sysDetailParts.push('## 原著参考\n' + excerpt);
     if (charText) sysDetailParts.push('## 人物设定\n' + charText);
@@ -7840,6 +8164,9 @@ function deleteCurrentVersion(idx) {
     var charaPrompt = _buildCharaWikiPrompt(j);
     if (charaPrompt) sysDetailParts.push(charaPrompt);
     var sysDetail = sysDetailParts.length > 0 ? sysDetailParts.join('\n\n') : '';
+    // ══════════════════════════════════════════════════
+    // [H] 组装最终 messages 数组
+    // ══════════════════════════════════════════════════
 
     var msgs = [{ role: 'system', content: sysCore }];
 
@@ -7853,7 +8180,7 @@ function deleteCurrentVersion(idx) {
       var histMsgs = (j.messages || []).filter(function (m) { return !m.isTimeMark; });
       var rounds = Math.min(j.contextRounds || 20, MAX_CONTEXT_ROUNDS);
 
-      // ── 智能上下文窗口：按 token 预算截取 ──
+// ── 智能 token 预算截取 ──
       var TOKEN_BUDGET = rounds * 400; // 每轮约 400 token（中文约 1.5 token/字）
       var recentSlice = [];
       var tokenUsed = 0;
@@ -7865,7 +8192,7 @@ function deleteCurrentVersion(idx) {
         tokenUsed += estTokens;
       }
 
-      // 如果历史消息被截断，注入连贯性锚点
+// ── 历史被截断时注入连贯性锚点 ──
       if (histMsgs.length > rounds * 2) {
         var anchorParts = [];
         if (memoryAnchor) anchorParts.push('故事摘要见上方，严格遵守已确立事实。');
@@ -7892,7 +8219,7 @@ function deleteCurrentVersion(idx) {
         }
         msgs.push({ role: m.role === 'ai' ? 'assistant' : 'user', content: msgContent });
       });
-      // 在最后一条用户消息后追加隐式约束（防止AI代替用户行动）
+// ── 最后一条为用户消息时追加约束 ──
       var lastInSlice = recentSlice[recentSlice.length - 1];
       if (lastInSlice && lastInSlice.role === 'user') {
         msgs.push({ role: 'system', content: '[约束] 只描写其他角色的反应和环境变化。不代写穿越者的后续动作、台词或心理。在适当处停笔，等待用户下一次输入。不要重复上一条回复已经描写过的场景或台词。保持人物性格一致性。' });
@@ -8009,6 +8336,15 @@ function deleteCurrentVersion(idx) {
         '<label class="form-label"><i class="fas fa-lock" style="color:var(--accent2);margin-right:4px"></i>关键事实锁定（永不遗忘）</label>' +
         '<textarea class="form-textarea" id="locked-facts" style="min-height:80px" placeholder="每行写一条关键事实，例如：&#10;· 男主已知女主真实身份&#10;· 信物已经交给了二哥&#10;· 当前时间是穿越后第三年春">' + _esc(lockedFacts) + '</textarea>' +
         '<div class="form-hint">写在这里的内容会始终发送给AI，即使对话超出上下文窗口也不会遗忘。每行一条，简洁明了。</div>' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding:10px 12px;background:rgba(108,92,231,.06);border:1px solid rgba(108,92,231,.15);border-radius:10px">' +
+          '<div style="flex:1">' +
+            '<div style="font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:5px"><i class="fas fa-wand-magic-sparkles" style="color:var(--accent2);font-size:11px"></i>自动提取关键事实</div>' +
+            '<div style="font-size:10px;color:var(--text2);margin-top:2px;line-height:1.5">每次自动总结时，从长期记忆中提取关键事实到此处</div>' +
+          '</div>' +
+          '<div onclick="TB._toggleAutoExtractFacts()" style="width:40px;height:22px;border-radius:11px;background:' + (j.autoExtractFacts ? 'var(--accent)' : 'var(--border)') + ';position:relative;cursor:pointer;transition:background .2s;flex-shrink:0">' +
+            '<div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;' + (j.autoExtractFacts ? 'right:2px' : 'left:2px') + ';transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div>' +
+          '</div>' +
+        '</div>' +
       '</div>' +
       '<div class="form-group">' +
         '<label class="form-label">对话显示条数（优化加载性能）</label>' +
@@ -8058,12 +8394,33 @@ function deleteCurrentVersion(idx) {
     if (btn) { btn.disabled = true; btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>'; }
     var summaryEl = document.getElementById('memory-summary');
     var prevSummary = summaryEl ? summaryEl.value : (j.memorySummary || '');
-    var chatText = histMsgs.slice(-40).map(function (m) {
-      return (m.role === 'ai' ? '[故事]' : '[用户]') + ' ' + m.content;
+    var sumRounds = Math.min(j.contextRounds || 20, MAX_CONTEXT_ROUNDS);
+    var sumSliceCount = Math.min(histMsgs.length, sumRounds * 2);
+    var chatText = histMsgs.slice(-sumSliceCount).map(function (m) {
+      var tag = m.role === 'ai' ? '[故事]' : '[用户]';
+      return tag + ' ' + m.content.replace(/<!--WS[\s\S]*?WS-->/g, '').trim();
     }).join('\n\n');
+    var existingCount = prevSummary ? prevSummary.split('\n').filter(function(l){return l.trim();}).length : 0;
     var promptMsgs = [
-      { role: 'system', content: '你是故事记录员。任务：将下方最新对话提炼成一条简短记录，追加到故事档案中。\n\n输出格式（严格遵守，只输出这一条记录，不要输出其他任何内容）：\n【第N段】时间/地点：……；关键事件：……；人物变化：……；悬念：……\n\n要求：100字以内，客观记录，不加评论。' },
-      { role: 'user', content: '当前档案共 ' + (prevSummary ? prevSummary.split('\n').filter(function(l){return l.trim();}).length : 0) + ' 条记录。\n\n最新对话内容：\n\n' + chatText + '\n\n请只输出新追加的这一条记录。' }
+      { role: 'system', content: '你是故事记录员。任务：精确提炼下方对话中的新剧情进展，追加到故事档案中。\n\n' +
+        '## 提炼标准（必须全部覆盖）\n' +
+        '- 时间推进：故事时间从何时推进到何时\n' +
+        '- 地点变化：场景从哪里转到哪里\n' +
+        '- 关键事件：发生了什么重要的事（决策、冲突、发现、转折）\n' +
+        '- 人物变化：谁的态度/关系/状态发生了变化，具体怎么变的\n' +
+        '- 悬念伏笔：留下了什么未解决的问题或暗示\n' +
+        '- 物品变动：获得或失去了什么重要物品\n\n' +
+        '## 准确性要求\n' +
+        '- 人名必须与对话中完全一致，不得写错或遗漏\n' +
+        '- 事件的因果关系必须准确，不得颠倒或臆测\n' +
+        '- 只记录对话中明确发生的事，不推测未发生的内容\n' +
+        '- 对话中的关键台词如果揭示了重要信息，用引号标注原文\n\n' +
+        '## 输出格式（严格遵守）\n' +
+        '只输出一条记录，格式为：\n' +
+        '【第' + (existingCount + 1) + '段】时间/地点：……；事件：……；人物：……；悬念：……\n\n' +
+        '字数要求：80~150字。客观记录，不加评论。不要输出其他任何内容。' },
+      { role: 'user', content: (prevSummary ? '已有档案（' + existingCount + '条记录，不要与以下内容重复）：\n' + prevSummary + '\n\n' : '') +
+        '本次需要总结的对话内容（共' + Math.ceil(sumSliceCount / 2) + '轮）：\n\n' + chatText + '\n\n请只输出这一条新记录：' }
     ];
     var url = api.url.replace(/\/$/, '') + '/chat/completions';
     fetch(url, {
@@ -10289,7 +10646,8 @@ function setBubbleStyle(mode) {
         ' onclick="TB.insertShortcut(' + i + ')"' +
         ' ontouchstart="TB._scTouchStart(event,' + i + ')"' +
         ' ontouchmove="TB._scTouchMove(event)"' +
-        ' ontouchend="TB._scTouchEnd(event,' + i + ')">' +
+        ' ontouchend="TB._scTouchEnd(event,' + i + ')"' +
+        ' ontouchcancel="TB._scTouchEnd(event,' + i + ')">' +
         _esc(sc.name) +
         '</div>';
     }).join('');
@@ -10317,16 +10675,37 @@ function setBubbleStyle(mode) {
         '<i class="fas fa-chevron-down" style="font-size:9px;opacity:.6"></i>' +
         '</div>';
     });
-    // 无分组的：直接显示
-    ungrouped.forEach(function (item) {
+    // 无分组的：按使用频率排序，高频在前
+    ungrouped.sort(function(a, b) {
+      var ca = a.phrase.useCount || 0;
+      var cb = b.phrase.useCount || 0;
+      return cb - ca;
+    });
+    // 前5个直接显示，超出的折叠到"更多"
+    var SHOW_LIMIT = 5;
+    var visiblePhrases = ungrouped.slice(0, SHOW_LIMIT);
+    var hiddenPhrases = ungrouped.slice(SHOW_LIMIT);
+
+    visiblePhrases.forEach(function (item) {
+      var countBadge = (item.phrase.useCount && item.phrase.useCount >= 3)
+        ? '<span style="font-size:9px;opacity:.5;margin-left:2px">' + item.phrase.useCount + '</span>'
+        : '';
       html += '<div class="qp-pill" data-ph-idx="' + item.idx + '"' +
         ' onclick="TB.sendQuickPhrase(' + item.idx + ')"' +
         ' ontouchstart="TB._phTouchStart(event,' + item.idx + ')"' +
         ' ontouchmove="TB._phTouchMove(event)"' +
-        ' ontouchend="TB._phTouchEnd(event)">' +
-        '<i class="fas fa-bolt"></i>' + _esc(item.phrase.name) +
+        ' ontouchend="TB._phTouchEnd(event)"' +
+        ' ontouchcancel="TB._phTouchEnd(event)">' +
+        '<i class="fas fa-bolt"></i>' + _esc(item.phrase.name) + countBadge +
         '</div>';
     });
+    // 超出的折叠
+    if (hiddenPhrases.length > 0) {
+      html += '<div class="qp-group-pill" onclick="TB.togglePhraseGroup(\'__more__\')">' +
+        '<i class="fas fa-ellipsis" style="font-size:10px"></i>更多' +
+        '<span style="font-size:9px;opacity:.6;margin-left:2px">' + hiddenPhrases.length + '</span>' +
+        '</div>';
+    }
     bar.innerHTML = html;
   }
 
@@ -11020,6 +11399,7 @@ function _showQuickBindSheet(type, localIdx) {
     return _journeys.find(function (j) { return j.id === id; }) || null;
   }
 
+  // ── 存储（带防抖，借鉴星叙 sv() 模式）──
   var _saveTimer = null;
   var _saveDirty = false;
 
@@ -11029,11 +11409,12 @@ function _showQuickBindSheet(type, localIdx) {
       _doSaveJourneys();
       return;
     }
+    // ★ Change: 50ms 批量写入，减少低端手机每次 AI 回复后的序列化开销
     if (_saveTimer) return;
     _saveTimer = setTimeout(function() {
       _saveTimer = null;
       if (_saveDirty) _doSaveJourneys();
-    }, 300);
+    }, 50);
   }
 
   function _doSaveJourneys() {
@@ -11041,14 +11422,15 @@ function _showQuickBindSheet(type, localIdx) {
     try {
       tbSet(TB_JOURNEY_KEY, _journeys);
     } catch (e) {
-      _journeys.forEach(function (j) {
+      // 空间不足时自动压缩原著内容（最大占用字段）
+      _journeys.forEach(function(j) {
         if (j.novelContent && j.novelContent.length > 30000) {
           j.novelContent = j.novelContent.slice(0, 30000);
         }
       });
       try {
         tbSet(TB_JOURNEY_KEY, _journeys);
-        tbToast('空间不足，已自动压缩');
+        tbToast('存储空间不足，已自动压缩原著');
       } catch (e2) {
         tbToast('存储失败，请清理部分旅途');
       }
@@ -11218,7 +11600,6 @@ function _renderMarkdown(text) {
     var msgs = (j.messages || []);
     if (msgs.length === 0) return [];
 
-    // 优先使用用户手动创建的章节标记来分章
     var chapterMarks = [];
     for (var ci = 0; ci < msgs.length; ci++) {
       if (msgs[ci].isChapterMark) {
@@ -11229,21 +11610,31 @@ function _renderMarkdown(text) {
     var chapters = [];
 
     if (chapterMarks.length > 0) {
-      // 有手动章节标记：按标记分章
       var segments = [];
-      // 第一段：从开始到第一个标记
-      segments.push({ name: chapterMarks[0].name, startIdx: 0, endIdx: chapterMarks[0].idx });
-      // 中间段
-      for (var si = 0; si < chapterMarks.length; si++) {
-        var nextEnd = (si + 1 < chapterMarks.length) ? chapterMarks[si + 1].idx : msgs.length;
-        if (si === 0 && chapterMarks[0].idx === 0) {
-          segments[0].endIdx = nextEnd;
-          continue;
-        }
-        segments.push({ name: chapterMarks[si].name, startIdx: chapterMarks[si].idx, endIdx: nextEnd });
+
+      // ★ Fix: 序章（第一个标记之前的内容）单独处理，命名与章节标记分离
+      if (chapterMarks[0].idx > 0) {
+        // 有序章内容（第一个标记之前存在 AI 消息）
+        segments.push({
+          name: j.customTitle || j.novelTitle || '序章',
+          startIdx: 0,
+          endIdx: chapterMarks[0].idx
+        });
       }
 
-      segments.forEach(function (seg, segIdx) {
+      // 各章节：每个标记到下一个标记（或末尾）
+      for (var si = 0; si < chapterMarks.length; si++) {
+        var nextEnd = (si + 1 < chapterMarks.length)
+          ? chapterMarks[si + 1].idx
+          : msgs.length;
+        segments.push({
+          name: chapterMarks[si].name,
+          startIdx: chapterMarks[si].idx,
+          endIdx: nextEnd
+        });
+      }
+
+      segments.forEach(function(seg) {
         var content = '';
         for (var mi = seg.startIdx; mi < seg.endIdx; mi++) {
           var m = msgs[mi];
@@ -11258,21 +11649,18 @@ function _renderMarkdown(text) {
         }
       });
     } else {
-      // 无手动标记：按字数自动分章（原有逻辑）
+      // 无手动标记：按字数自动分章（原有逻辑不变）
       var CHARS_PER_CHAPTER = 3000;
       var chapterNum = 1;
       var currentContent = '';
-      var aiMsgs = msgs.filter(function (m) { return !m.isTimeMark && m.role === 'ai'; });
+      var aiMsgs = msgs.filter(function(m) { return !m.isTimeMark && m.role === 'ai'; });
       for (var i = 0; i < aiMsgs.length; i++) {
-        var msgText = aiMsgs[i].content.replace(/<!--WS[\s\S]*?WS-->/g, '').trim();
-        if (!msgText) continue;
+        var msgText2 = aiMsgs[i].content.replace(/<!--WS[\s\S]*?WS-->/g, '').trim();
+        if (!msgText2) continue;
         if (currentContent) currentContent += '\n\n';
-        currentContent += msgText;
+        currentContent += msgText2;
         if (currentContent.length >= CHARS_PER_CHAPTER || i === aiMsgs.length - 1) {
-          chapters.push({
-            title: '第' + _toChinese(chapterNum) + '章',
-            content: currentContent
-          });
+          chapters.push({ title: '第' + _toChinese(chapterNum) + '章', content: currentContent });
           chapterNum++;
           currentContent = '';
         }
@@ -11320,6 +11708,16 @@ function _renderMarkdown(text) {
           '<div class="settings-item-text"><div class="settings-item-title">Markdown 格式</div><div class="settings-item-desc">通用文本格式，可在各写作平台直接发布</div></div>' +
           '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
         '</div>' +
+        '<div class="settings-item" style="border-radius:12px;background:var(--card2);border:1px solid var(--border)" onclick="TB.doExportNovel(\'' + id + '\',\'docx\')">' +
+          '<div class="settings-item-icon" style="background:rgba(142,68,173,.12)"><i class="fas fa-file-word" style="color:#8e44ad"></i></div>' +
+          '<div class="settings-item-text"><div class="settings-item-title">Word 文档</div><div class="settings-item-desc">DOCX格式，可用WPS/Office打开编辑</div></div>' +
+          '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
+        '</div>' +
+        '<div class="settings-item" style="border-radius:12px;background:var(--card2);border:1px solid var(--border)" onclick="TB.doExportNovel(\'' + id + '\',\'epub\')">' +
+          '<div class="settings-item-icon" style="background:rgba(39,174,96,.12)"><i class="fas fa-book" style="color:#27ae60"></i></div>' +
+          '<div class="settings-item-text"><div class="settings-item-title">EPUB 电子书</div><div class="settings-item-desc">标准电子书格式，可在阅读器中打开</div></div>' +
+          '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
+        '</div>' +
       '</div>';
     closeModal('modal-journey-opts');
     openModal('modal-export-novel');
@@ -11332,6 +11730,10 @@ function _renderMarkdown(text) {
     if (chapters.length === 0) { tbToast('无内容可导出'); return; }
     var title = j.novelTitle || '穿书故事';
     var dateStr = new Date().toLocaleDateString();
+
+    var blob = null;
+    var filename = '';
+    var mimeType = '';
 
     if (format === 'html') {
       var htmlContent = '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0">\n<title>' + _esc(title) + '</title>\n<style>\n' +
@@ -11359,24 +11761,19 @@ function _renderMarkdown(text) {
             htmlContent += '<div class="time-node">⏱ ' + _esc(timeMatch[1]) + '</div>\n';
           }
           if (p.trim()) {
-          var lines = p.split('\n');
-          lines.forEach(function (line) {
-            if (line.trim()) htmlContent += '<p>' + _renderMarkdown(line.trim()) + '</p>';
-          });
-        }
+            var lines = p.split('\n');
+            lines.forEach(function (line) {
+              if (line.trim()) htmlContent += '<p>' + _renderMarkdown(line.trim()) + '</p>';
+            });
+          }
         });
       });
       htmlContent += '<div class="footer">本作品由 <a href="#">星叙 · 穿书系统</a> 生成<br>创作者：心田<br>本文包含AI辅助创作内容</div>\n';
       htmlContent += '</body>\n</html>';
-
-      var blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = title + '_排版小说_' + dateStr + '.html';
-      a.click();
-      URL.revokeObjectURL(a.href);
-      tbToast('HTML小说已导出');
-    } else {
+      blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      filename = title + '_排版小说_' + dateStr + '.html';
+      mimeType = 'text/html';
+    } else if (format === 'md') {
       var mdContent = '# ' + title + '\n\n';
       mdContent += '> 创作者：心田  \n> 工具：星叙 · 穿书系统  \n> 导出日期：' + dateStr + '  \n> 共 ' + chapters.length + ' 章\n\n---\n\n';
       chapters.forEach(function (ch) {
@@ -11396,16 +11793,213 @@ function _renderMarkdown(text) {
         });
       });
       mdContent += '---\n\n*本作品由 星叙 · 穿书系统 生成*  \n*创作者：心田*  \n*本文包含AI辅助创作内容*\n';
-
-      var blob2 = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
-      var a2 = document.createElement('a');
-      a2.href = URL.createObjectURL(blob2);
-      a2.download = title + '_排版小说_' + dateStr + '.md';
-      a2.click();
-      URL.revokeObjectURL(a2.href);
-      tbToast('Markdown小说已导出');
+      blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+      filename = title + '_排版小说_' + dateStr + '.md';
+      mimeType = 'text/markdown';
+    } else if (format === 'docx') {
+      // Word DOCX 格式：使用简化的 Office XML 生成
+      var docBody = '';
+      // 封面
+      docBody += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="600"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="56"/></w:rPr><w:t>' + _escXml(title) + '</w:t></w:r></w:p>';
+      docBody += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:after="200"/></w:pPr><w:r><w:rPr><w:color w:val="999999"/><w:sz w:val="22"/></w:rPr><w:t>创作者：心田 | 星叙·穿书系统 | ' + dateStr + ' | 共' + chapters.length + '章</w:t></w:r></w:p>';
+      docBody += '<w:p><w:pPr><w:spacing w:after="400"/></w:pPr><w:r><w:t></w:t></w:r></w:p>';
+      chapters.forEach(function(ch) {
+        // 章节标题（Heading1）
+        docBody += '<w:p><w:pPr><w:pStyle w:val="Heading1"/><w:spacing w:before="480" w:after="240"/></w:pPr><w:r><w:rPr><w:b/><w:sz w:val="36"/><w:color w:val="6C5CE7"/></w:rPr><w:t>' + _escXml(ch.title) + '</w:t></w:r></w:p>';
+        var paragraphs = ch.content.split(/\n{2,}/);
+        paragraphs.forEach(function(p) {
+          p = p.trim();
+          if (!p) return;
+          var timeMatch = p.match(/【时间节点[：:]([^】]+)】/);
+          if (timeMatch) {
+            p = p.replace(/【时间节点[：:]([^】]+)】/, '');
+            docBody += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="200" w:after="200"/></w:pPr><w:r><w:rPr><w:i/><w:color w:val="6C5CE7"/><w:sz w:val="22"/></w:rPr><w:t>⏱ ' + _escXml(timeMatch[1]) + '</w:t></w:r></w:p>';
+          }
+          if (p.trim()) {
+            var lines2 = p.split('\n');
+            lines2.forEach(function(line) {
+              line = line.trim();
+              if (!line) return;
+              docBody += '<w:p><w:pPr><w:ind w:firstLine="480"/><w:spacing w:line="480" w:lineRule="auto"/></w:pPr><w:r><w:rPr><w:sz w:val="24"/></w:rPr><w:t xml:space="preserve">' + _escXml(line) + '</w:t></w:r></w:p>';
+            });
+          }
+        });
+      });
+      // 页脚
+      docBody += '<w:p><w:pPr><w:jc w:val="center"/><w:spacing w:before="600"/></w:pPr><w:r><w:rPr><w:color w:val="999999"/><w:sz w:val="20"/></w:rPr><w:t>本作品由 星叙·穿书系统 生成 | 创作者：心田</w:t></w:r></w:p>';
+      var docXml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' +
+        '<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:mv="urn:schemas-microsoft-com:mac:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="w14 wp14">' +
+        '<w:body>' + docBody + '</w:body></w:document>';
+      var contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+      var rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+      // 使用 JSZip 打包
+      if (typeof JSZip === 'undefined') {
+        tbToast('正在加载组件...');
+        var script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        script.onload = function() { _buildDocxZip(contentTypes, rels, docXml, title, dateStr); };
+        script.onerror = function() { tbToast('组件加载失败，请检查网络'); };
+        document.head.appendChild(script);
+        closeModal('modal-export-novel');
+        return;
+      }
+      _buildDocxZip(contentTypes, rels, docXml, title, dateStr);
+      closeModal('modal-export-novel');
+      return;
+    } else if (format === 'epub') {
+      // EPUB 格式
+      var epubChapters = chapters;
+      if (typeof JSZip === 'undefined') {
+        tbToast('正在加载组件...');
+        var script2 = document.createElement('script');
+        script2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+        script2.onload = function() { _buildEpubZip(epubChapters, title, dateStr); };
+        script2.onerror = function() { tbToast('组件加载失败，请检查网络'); };
+        document.head.appendChild(script2);
+        closeModal('modal-export-novel');
+        return;
+      }
+      _buildEpubZip(epubChapters, title, dateStr);
+      closeModal('modal-export-novel');
+      return;
     }
-    closeModal('modal-export-novel');
+
+    if (blob) {
+      _doExportFile(blob, filename, format);
+      closeModal('modal-export-novel');
+    }
+  }
+
+  function _escXml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;');
+  }
+
+  function _buildDocxZip(contentTypes, rels, docXml, title, dateStr) {
+    var zip = new JSZip();
+    zip.file('[Content_Types].xml', contentTypes);
+    zip.folder('_rels').file('.rels', rels);
+    zip.folder('word').file('document.xml', docXml);
+    zip.generateAsync({ type: 'blob', mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' }).then(function(blob) {
+      _doExportFile(blob, title + '_排版小说_' + dateStr + '.docx', 'docx');
+    }).catch(function(e) { tbToast('Word生成失败：' + e.message); });
+  }
+
+  function _buildEpubZip(chapters, title, dateStr) {
+    var zip = new JSZip();
+    var uuid = 'urn:uuid:' + Date.now() + '-' + Math.random().toString(36).slice(2,10);
+    // mimetype（必须无压缩，是EPUB文件第一个条目）
+    zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
+    // META-INF/container.xml
+    zip.folder('META-INF').file('container.xml',
+      '<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles></container>');
+    var oebps = zip.folder('OEBPS');
+    // 样式
+    oebps.file('style.css', 'body{font-family:"Noto Serif SC",serif;line-height:2;color:#333;padding:20px;}h1{text-align:center;font-size:1.8em;margin:40px 0 20px;color:#6c5ce7;}h2{font-size:1.3em;color:#6c5ce7;margin:30px 0 15px;border-bottom:1px solid #ddd;padding-bottom:8px;}p{text-indent:2em;margin:0 0 12px;}');
+    // 各章节 XHTML
+    var manifest = '';
+    var spine = '';
+    var toc = '';
+    // 封面页
+    var coverHtml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>' + _escXml(title) + '</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body><h1>' + _escXml(title) + '</h1><p style="text-align:center;color:#999">创作者：心田<br/>星叙·穿书系统<br/>' + dateStr + '<br/>共' + chapters.length + '章</p></body></html>';
+    oebps.file('cover.xhtml', coverHtml);
+    manifest += '<item id="cover" href="cover.xhtml" media-type="application/xhtml+xml"/>';
+    spine += '<itemref idref="cover"/>';
+    chapters.forEach(function(ch, ci) {
+      var chId = 'ch' + ci;
+      var chFile = chId + '.xhtml';
+      var body2 = '<h2>' + _escXml(ch.title) + '</h2>';
+      var paras = ch.content.split(/\n{2,}/);
+      paras.forEach(function(p) {
+        p = p.trim();
+        if (!p) return;
+        var lines3 = p.split('\n');
+        lines3.forEach(function(line) {
+          line = line.trim();
+          if (line) body2 += '<p>' + _escXml(line) + '</p>';
+        });
+      });
+      var xhtml = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>' + _escXml(ch.title) + '</title><link rel="stylesheet" type="text/css" href="style.css"/></head><body>' + body2 + '</body></html>';
+      oebps.file(chFile, xhtml);
+      manifest += '<item id="' + chId + '" href="' + chFile + '" media-type="application/xhtml+xml"/>';
+      spine += '<itemref idref="' + chId + '"/>';
+      toc += '<navPoint id="nav-' + chId + '" playOrder="' + (ci + 2) + '"><navLabel><text>' + _escXml(ch.title) + '</text></navLabel><content src="' + chFile + '"/></navPoint>';
+    });
+    manifest += '<item id="css" href="style.css" media-type="text/css"/>';
+    manifest += '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>';
+    // content.opf
+    var opf = '<?xml version="1.0" encoding="UTF-8"?><package xmlns="http://www.idpf.org/2007/opf" unique-identifier="BookId" version="2.0"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:title>' + _escXml(title) + '</dc:title><dc:creator>心田</dc:creator><dc:language>zh-CN</dc:language><dc:identifier id="BookId">' + uuid + '</dc:identifier></metadata><manifest>' + manifest + '</manifest><spine toc="ncx">' + spine + '</spine></package>';
+    oebps.file('content.opf', opf);
+    // toc.ncx
+    var ncx = '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE ncx PUBLIC "-//NISO//DTD ncx 2005-1//EN" "http://www.daisy.org/z3986/2005/ncx-2005-1.dtd"><ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="' + uuid + '"/></head><docTitle><text>' + _escXml(title) + '</text></docTitle><navMap><navPoint id="nav-cover" playOrder="1"><navLabel><text>封面</text></navLabel><content src="cover.xhtml"/></navPoint>' + toc + '</navMap></ncx>';
+    oebps.file('toc.ncx', ncx);
+    zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' }).then(function(blob) {
+      _doExportFile(blob, title + '_排版小说_' + dateStr + '.epub', 'epub');
+    }).catch(function(e) { tbToast('EPUB生成失败：' + e.message); });
+  }
+
+  function _doExportFile(blob, filename, format) {
+    var formatLabels = { html: 'HTML', md: 'Markdown', docx: 'Word', epub: 'EPUB' };
+    var formatLabel = formatLabels[format] || format;
+    // 尝试下载
+    var downloaded = false;
+    try {
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function() {
+        if (a.parentNode) document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+      }, 1000);
+      downloaded = true;
+    } catch (e) { downloaded = false; }
+
+    // 弹窗确认
+    var old = document.getElementById('_tbExportNovelDlg');
+    if (old) old.remove();
+    var ov = document.createElement('div');
+    ov.id = '_tbExportNovelDlg';
+    ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.68);display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)';
+    ov.innerHTML =
+      '<div style="background:var(--card);border-radius:18px;width:100%;max-width:360px;padding:22px 20px;border:1px solid var(--border);box-shadow:0 20px 60px rgba(0,0,0,.5)">' +
+        '<div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px">📖 ' + formatLabel + ' 导出完成</div>' +
+        '<div style="font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:18px">' +
+          '文件「<b style="color:var(--text)">' + _esc(filename) + '</b>」已导出。<br><br>请检查手机<b style="color:var(--text)">下载文件夹</b>或浏览器下载记录。' +
+        '</div>' +
+        '<div style="display:flex;gap:9px">' +
+          '<button id="_tbExpNCancel" style="flex:1;padding:12px;border-radius:11px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:13px;cursor:pointer">📋 没收到？复制内容</button>' +
+          '<button id="_tbExpNOk" style="flex:1;padding:12px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:13px;font-weight:700;cursor:pointer">✅ 已收到</button>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    document.getElementById('_tbExpNOk').onclick = function() { ov.remove(); };
+    document.getElementById('_tbExpNCancel').onclick = function() {
+      // 非二进制格式可以复制文本内容
+      if (format === 'html' || format === 'md') {
+        var reader = new FileReader();
+        reader.onload = function(ev) {
+          var text = ev.target.result;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(function() { tbToast('✅ 内容已复制到剪贴板'); ov.remove(); }).catch(function() { _tbExecCopy(text, function(ok) { tbToast(ok ? '✅ 已复制' : '复制失败'); ov.remove(); }); });
+          } else {
+            _tbExecCopy(text, function(ok) { tbToast(ok ? '✅ 已复制' : '复制失败'); ov.remove(); });
+          }
+        };
+        reader.readAsText(blob);
+      } else {
+        // 二进制格式（docx/epub）无法直接复制，尝试分享
+        if (navigator.share) {
+          var file = new File([blob], filename, { type: blob.type });
+          navigator.share({ files: [file], title: filename }).then(function() { ov.remove(); }).catch(function() { tbToast('分享已取消'); });
+        } else {
+          tbToast('二进制文件无法复制到剪贴板，请重试下载');
+        }
+      }
+    };
+    ov.addEventListener('click', function(e) { if (e.target === ov) ov.remove(); });
   }
 
   // ── 小说阅读模式 ──
@@ -11626,7 +12220,7 @@ function _renderMarkdown(text) {
         return '<div class="save-list-item">' +
           '<div class="sli-num">' + (i + 1) + '</div>' +
           '<div class="sli-info">' +
-            '<div class="sli-name">' + _esc(sp.name || '存档 ' + (i + 1)) + (sp._isAuto ? ' <span style="font-size:10px;color:var(--text2);background:rgba(108,92,231,.15);border-radius:6px;padding:1px 6px;margin-left:4px">自动</span>' : '') + '</div>' +
+            '<div class="sli-name">' + _esc(sp.name || '存档 ' + (i + 1)) + (sp._isAuto ? ' <span style="font-size:10px;color:var(--text2);background:rgba(108,92,231,.15);border-radius:6px;padding:1px 6px;margin-left:4px">自动</span>' : '') + (sp._isEventSnapshot ? ' <span style="font-size:10px;color:#fdcb6e;background:rgba(253,203,110,.15);border-radius:6px;padding:1px 6px;margin-left:4px">事件</span>' : '') + '</div>' +
             '<div class="sli-meta"><span><i class="fas fa-clock" style="margin-right:3px"></i>' + timeStr + '</span><span>' + msgCount + ' 条对话</span></div>' +
             (sp.note ? '<div class="sli-preview" style="color:var(--accent2);font-style:italic">📌 ' + _esc(sp.note) + '</div>' : '') +
             (preview ? '<div class="sli-preview">' + _esc(preview) + '</div>' : '') +
@@ -12011,17 +12605,88 @@ function _renderMarkdown(text) {
     html += '</div>'; // branch-tree
     html += '</div>'; // branch-tree-wrap
 
+    // ── 分支旅途列表 ──
+    var branchJourneys = _journeys.filter(function(bj) {
+      return bj._branchFrom && bj._branchFrom.journeyId === j.id && bj.id !== j.id;
+    });
+    // 也找从当前旅途分支出去的（当前旅途本身是别人的分支时，找同源兄弟）
+    var sourceId = j._branchFrom ? j._branchFrom.journeyId : j.id;
+    var siblingBranches = _journeys.filter(function(bj) {
+      if (bj.id === j.id) return false;
+      // 从同一源头分支出来的
+      if (bj._branchFrom && bj._branchFrom.journeyId === sourceId) return true;
+      // 或者当前旅途是从 bj 分支出来的
+      if (j._branchFrom && j._branchFrom.journeyId === bj.id) return true;
+      return false;
+    });
+    // 合并去重
+    var allBranches = [];
+    var branchIdSet = {};
+    branchJourneys.concat(siblingBranches).forEach(function(bj) {
+      if (!branchIdSet[bj.id]) { branchIdSet[bj.id] = true; allBranches.push(bj); }
+    });
+
+    if (allBranches.length > 0) {
+      var branchColors = ['#a29bfe','#74b9ff','#fd79a8','#fdcb6e','#55efc4','#fab1a0'];
+      html += '<div style="margin-top:16px;padding:0 16px">';
+      html += '<div class="branch-tree-title"><i class="fas fa-code-branch"></i> 平行支线（' + allBranches.length + '条）</div>';
+      allBranches.forEach(function(bj, bi) {
+        var color = branchColors[bi % branchColors.length];
+        var bjMsgCount = (bj.messages || []).filter(function(m){return !m.isTimeMark;}).length;
+        var bjTitle = bj.customTitle || bj.novelTitle;
+        var bjStatus = bj.status === 'stopped' ? '已结束' : '进行中';
+        var fromPreview = bj._branchFrom && bj._branchFrom.forkPreview ? bj._branchFrom.forkPreview : '';
+        var branchedAt = bj._branchFrom && bj._branchFrom.branchedAt
+          ? new Date(bj._branchFrom.branchedAt).toLocaleString('zh-CN',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})
+          : '';
+        html += '<div onclick="TB.switchToBranch(\'' + bj.id + '\')" style="display:flex;align-items:flex-start;gap:10px;padding:12px;margin-bottom:8px;' +
+          'background:rgba(' + _hexToRgb(color) + ',.06);border:1px solid rgba(' + _hexToRgb(color) + ',.25);border-left:4px solid ' + color + ';' +
+          'border-radius:0 12px 12px 0;cursor:pointer;transition:all .18s">' +
+          '<div style="width:10px;height:10px;border-radius:50%;background:' + color + ';flex-shrink:0;margin-top:4px;box-shadow:0 0 6px ' + color + '55"></div>' +
+          '<div style="flex:1;min-width:0">' +
+            '<div style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(bjTitle) + '</div>' +
+            '<div style="font-size:10px;color:var(--text2);margin-top:3px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">' +
+              '<span>' + bjMsgCount + '条对话</span>' +
+              '<span style="color:' + (bj.status === 'stopped' ? 'var(--danger)' : 'var(--success)') + '">' + bjStatus + '</span>' +
+              (branchedAt ? '<span>分支于 ' + branchedAt + '</span>' : '') +
+            '</div>' +
+            (fromPreview ? '<div style="font-size:10px;color:var(--text2);margin-top:3px;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">岔路口："' + _esc(fromPreview) + '"</div>' : '') +
+          '</div>' +
+          '<i class="fas fa-arrow-right" style="color:' + color + ';font-size:11px;flex-shrink:0;margin-top:4px"></i>' +
+        '</div>';
+      });
+      html += '</div>';
+    }
+
     // 底部说明
     html += '<div style="padding:8px 20px 16px;text-align:center">' +
       '<div style="font-size:10px;color:var(--text2);line-height:1.7">' +
         '点击存档节点可加载该分支<br>' +
         '◀ 标记为当前所在位置' +
+        (allBranches.length > 0 ? '<br>点击支线卡片可跳转到对应旅途' : '') +
       '</div>' +
     '</div>';
 
     body.innerHTML = html;
   }
+function _hexToRgb(hex) {
+    var r = parseInt(hex.slice(1,3),16);
+    var g = parseInt(hex.slice(3,5),16);
+    var b = parseInt(hex.slice(5,7),16);
+    return r+','+g+','+b;
+  }
 
+  function switchToBranch(branchId) {
+    var bj = _getJourney(branchId);
+    if (!bj) { tbToast('该分支旅途不存在'); return; }
+    closeTimeline();
+    tbConfirm('切换到分支「' + (bj.customTitle || bj.novelTitle) + '」？\n当前旅途进度已自动保存。', function() {
+      _doExitChat();
+      setTimeout(function() {
+        openJourney(branchId);
+      }, 300);
+    });
+  }
   function closeTimeline() {
     document.getElementById('tlBackdrop').classList.remove('show');
     document.getElementById('tlDrawer').classList.remove('open');
@@ -12499,6 +13164,12 @@ function _renderMarkdown(text) {
     if (_isGenerating) { tbToast('正在生成中，请稍候'); return; }
     var j = _getJourney(_curJourneyId);
     if (!j || j.status === 'stopped') { tbToast('此旅途已结束'); return; }
+    // 记录使用次数
+    if (!p.useCount) p.useCount = 0;
+    p.useCount++;
+    p.lastUsedAt = new Date().toISOString();
+    tbSet(TB_PHRASES_KEY, _phrases);
+    _renderShortcutBar();
     var content = p.content || p.name;
     if (!j.messages) j.messages = [];
     j.messages.push({ role: 'user', content: content, ts: new Date().toISOString() });
@@ -12526,6 +13197,7 @@ function _renderMarkdown(text) {
           '<div style="flex:1;min-width:0">' +
             '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:6px"><i class="fas fa-bolt" style="color:var(--success);font-size:10px"></i>' + _esc(p.name) + (p.group ? '<span style="font-size:9px;padding:1px 6px;border-radius:6px;background:rgba(81,207,102,.1);color:var(--success);margin-left:4px">' + _esc(p.group) + '</span>' : '') + '</div>' +
             '<div style="font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(displayContent) + (p.content && p.content.length > 40 ? '…' : '') + '</div>' +
+           (p.useCount ? '<div style="font-size:10px;color:var(--accent2);margin-top:2px;opacity:.6"><i class="fas fa-fire" style="font-size:9px;margin-right:3px"></i>已使用 ' + p.useCount + ' 次</div>' : '') +
           '</div>' +
           '<div style="display:flex;gap:6px;flex-shrink:0">' +
             '<button onclick="TB.editPhrase(' + i + ')" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(108,92,231,.3);background:rgba(108,92,231,.08);color:var(--accent2);font-size:11px;cursor:pointer"><i class="fas fa-pen"></i></button>' +
@@ -12661,13 +13333,21 @@ function _initPhraseManageDrag() {
     if (_phraseEditIdx === -1) {
       _phrases.push({ name: name, content: content, group: group });
     } else {
-      _phrases[_phraseEditIdx] = { name: name, content: content, group: group };
+      // ★ Fix: 保留已有的使用次数和最后使用时间，只更新可编辑字段
+      var existing = _phrases[_phraseEditIdx] || {};
+      _phrases[_phraseEditIdx] = {
+        name: name,
+        content: content,
+        group: group,
+        useCount: existing.useCount || 0,
+        lastUsedAt: existing.lastUsedAt || null
+      };
     }
     tbSet(TB_PHRASES_KEY, _phrases);
     document.getElementById('modal-phrase-edit').classList.remove('show');
     _renderPhrasesBody();
     _renderShortcutBar();
-    tbToast('短语已保存');
+    tbToast(_phraseEditIdx === -1 ? '短语已创建' : '短语已保存');
   }
 
   function deletePhrase(idx) {
@@ -12866,23 +13546,52 @@ function _initPhraseManageDrag() {
   var _favorEventIcons = { 20: '💌', 40: '🌸', 60: '💎', 80: '❤️‍🔥' };
   var _favorEventTitles = { 20: '初识之缘', 40: '渐生情愫', 60: '心意相通', 80: '至死不渝' };
 
+  // 随机化标题和图标，每次触发时从池中随机选一个
+  var _favorEventIconPool = {
+    20: ['💌','🌟','🤝','✨','🌱'],
+    40: ['🌸','🌙','☂️','🍵','💐'],
+    60: ['💎','🔐','🌊','🦋','💫'],
+    80: ['❤️‍🔥','💍','🌹','⚡','🏔️']
+  };
+  var _favorEventTitlePool = {
+    20: ['初识之缘','萍水相逢','缘起一瞬','第一道光','陌生的温暖'],
+    40: ['渐生情愫','心有所牵','不期而遇的关切','雨中的伞','悄然靠近'],
+    60: ['心意相通','无言的默契','不可替代','交付信任','月下心事'],
+    80: ['至死不渝','命运共生','唯一的选择','星辰与海','你是我的结局']
+  };
+
   // 好感度事件模板（按阈值分组）
   var _favorEventTemplates = {
     20: [
       { story: '对方第一次主动向你微笑，那一瞬间你感到心跳漏了半拍。或许这段缘分，才刚刚开始。', reward: '解锁专属称呼' },
-      { story: '你们不经意间谈到了同一本书，对方惊讶地看着你，眼神里多了几分好奇。', reward: '好感+5 额外加成' }
+      { story: '你们不经意间谈到了同一本书，对方惊讶地看着你，眼神里多了几分好奇。', reward: '好感+5 额外加成' },
+      { story: '对方从背后叫住你，递过来一壶水："你忘了这个。"语气平淡，却让你心头一暖。', reward: '初步信任建立' },
+      { story: '你受了轻伤，对方皱着眉走过来，动作生硬地帮你包扎。"别乱动，笨手笨脚的。"嘴上嫌弃，手却很轻。', reward: '态度从冷淡变为关注' },
+      { story: '夜色中你独自坐在屋顶，对方不知何时坐到了旁边。谁都没有说话，但那份沉默比什么都舒服。', reward: '开启独处触发对话' }
     ],
     40: [
       { story: '对方悄悄为你留了一盏灯。你推门看到微光的那一刻，忽然觉得这漫长的旅途也没那么孤单了。', reward: '解锁私密对话选项' },
-      { story: '一场突如其来的雨，对方撑伞挡在了你头顶。衣袖湿了大半，却只是笑着说"没事"。', reward: '对方态度变为"关切"' }
+      { story: '一场突如其来的雨，对方撑伞挡在了你头顶。衣袖湿了大半，却只是笑着说"没事"。', reward: '对方态度变为关切' },
+      { story: '你生病了，对方端来一碗药。"趁热喝，我盯着你喝完。"那认真的表情让你不敢反抗。', reward: '获得角色专属药方道具' },
+      { story: '对方把自己的外套披在你肩上，你刚想说什么，对方已经转身走了。只留下衣料上淡淡的气息。', reward: '好感度稳定加速' },
+      { story: '你无意间提起了家乡的一道菜，第二天对方竟然真的做了出来。味道不太对，但你吃得很认真。', reward: '解锁日常互动事件' },
+      { story: '对方在众人面前为你说了一句公道话，你看向对方时，对方别过头去，耳根微红。', reward: '公开关系升级' }
     ],
     60: [
       { story: '"如果有一天你要离开这里……"对方没有说完，只是握紧了你的手。这份沉默比千言万语更重。', reward: '解锁隐藏剧情线' },
-      { story: '对方将自己最珍贵的信物交到你手中。"收好它，这是我唯一能给你的承诺。"', reward: '获得关键道具' }
+      { story: '对方将自己最珍贵的信物交到你手中。"收好它，这是我唯一能给你的承诺。"', reward: '获得关键道具' },
+      { story: '月下，对方忽然叫了你的名字。你转过头，对方欲言又止，最终只是低声说："……没什么，早点休息。"', reward: '触发心事剧情线' },
+      { story: '你险些坠崖的那一刻，对方飞扑过来一把抓住你的手腕。"你要是敢死，我绝不原谅你。"眼眶通红。', reward: '建立生死羁绊' },
+      { story: '对方第一次在你面前落泪。不是因为悲伤，而是因为终于有人愿意听完那些从未对人说过的话。', reward: '解锁角色核心秘密' },
+      { story: '大雪纷飞的夜里，对方靠着你的肩膀睡着了。呼吸均匀，眉头舒展，是你从未见过的安心模样。', reward: '进入深度信任阶段' }
     ],
     80: [
       { story: '面对生死抉择，对方毫不犹豫地挡在你身前。"我说过，不会让任何人伤害你。"', reward: '解锁终极结局路线' },
-      { story: '"无论这本书的结局写了什么，我选择和你在一起的结局。"对方的眼里映着星光，也映着你。', reward: '达成最高羁绊' }
+      { story: '"无论这本书的结局写了什么，我选择和你在一起的结局。"对方的眼里映着星光，也映着你。', reward: '达成最高羁绊' },
+      { story: '对方把一把钥匙放进你掌心。"这是我房间的钥匙。以后无论什么时候，都可以来。"', reward: '解锁专属空间' },
+      { story: '"我从来没对任何人说过这句话。"对方直视你的眼睛，"谢谢你出现在我的故事里。"', reward: '触发告白事件' },
+      { story: '你中了致命的毒，对方不顾一切地为你吸毒。你挣扎着说"你会死的"，对方只是笑："死在你前面，总比看着你死好。"', reward: '命运绑定·共生' },
+      { story: '对方在你耳边说了一句只有你们两个人才懂的暗号。那是很久以前一次偶然对话里你随口编的——原来对方一直记得。', reward: '完美记忆·心意相通' }
     ]
   };
 
@@ -12890,23 +13599,27 @@ function _initPhraseManageDrag() {
   var _favorChoiceTemplates = {
     20: [
       { text: '回以微笑，向对方走近一步', icon: 'fa-face-smile', iconBg: 'rgba(81,207,102,.15)', iconColor: '#51cf66', effect: '好感+3', favorDelta: 3 },
-      { text: '点头致意，保持适当距离', icon: 'fa-handshake', iconBg: 'rgba(253,203,110,.15)', iconColor: '#fdcb6e', effect: '关系稳定', favorDelta: 1 },
+      { text: '认真地说"以后有事可以找我"', icon: 'fa-handshake', iconBg: 'rgba(108,92,231,.12)', iconColor: '#a29bfe', effect: '好感+4，建立信任', favorDelta: 4 },
+      { text: '点头致意，保持适当距离', icon: 'fa-hand', iconBg: 'rgba(253,203,110,.15)', iconColor: '#fdcb6e', effect: '关系稳定', favorDelta: 1 },
       { text: '假装没注意到，转身离开', icon: 'fa-person-walking-arrow-right', iconBg: 'rgba(255,107,107,.12)', iconColor: '#ff6b6b', effect: '好感-2', favorDelta: -2 }
     ],
     40: [
       { text: '轻声说"谢谢你一直在"', icon: 'fa-heart', iconBg: 'rgba(255,107,107,.12)', iconColor: '#ff6b6b', effect: '好感+5', favorDelta: 5 },
-      { text: '递上自己的外衣给对方披上', icon: 'fa-shirt', iconBg: 'rgba(108,92,231,.12)', iconColor: '#a29bfe', effect: '好感+3', favorDelta: 3 },
-      { text: '淡淡地说"不用特意照顾我"', icon: 'fa-mask', iconBg: 'rgba(253,203,110,.12)', iconColor: '#fdcb6e', effect: '好感+0', favorDelta: 0 }
+      { text: '递上自己的外衣给对方披上', icon: 'fa-shirt', iconBg: 'rgba(108,92,231,.12)', iconColor: '#a29bfe', effect: '好感+3，触发感动', favorDelta: 3 },
+      { text: '"下次换我来照顾你。"', icon: 'fa-hand-holding-heart', iconBg: 'rgba(81,207,102,.12)', iconColor: '#51cf66', effect: '好感+6，许下承诺', favorDelta: 6 },
+      { text: '淡淡地说"不用特意照顾我"', icon: 'fa-mask', iconBg: 'rgba(253,203,110,.12)', iconColor: '#fdcb6e', effect: '好感+0，对方略感失落', favorDelta: 0 }
     ],
     60: [
       { text: '紧紧握住对方的手，"我不会离开"', icon: 'fa-hand-holding-heart', iconBg: 'rgba(255,107,107,.15)', iconColor: '#ff6b6b', effect: '好感+8', favorDelta: 8 },
       { text: '收下信物，郑重放入怀中', icon: 'fa-gem', iconBg: 'rgba(108,92,231,.15)', iconColor: '#a29bfe', effect: '好感+5，获得道具', favorDelta: 5 },
-      { text: '"我需要时间想想"', icon: 'fa-clock', iconBg: 'rgba(253,203,110,.12)', iconColor: '#fdcb6e', effect: '好感+1', favorDelta: 1 }
+      { text: '伸手擦去对方眼角的泪', icon: 'fa-droplet', iconBg: 'rgba(81,207,102,.12)', iconColor: '#51cf66', effect: '好感+7，深度共情', favorDelta: 7 },
+      { text: '"我需要时间想想"', icon: 'fa-clock', iconBg: 'rgba(253,203,110,.12)', iconColor: '#fdcb6e', effect: '好感+1，对方理解但有些失落', favorDelta: 1 }
     ],
     80: [
       { text: '"我也选择你。"', icon: 'fa-ring', iconBg: 'rgba(255,107,107,.18)', iconColor: '#ff6b6b', effect: '好感+10，达成羁绊', favorDelta: 10 },
       { text: '什么都不说，只是紧紧拥抱', icon: 'fa-heart-pulse', iconBg: 'rgba(108,92,231,.15)', iconColor: '#a29bfe', effect: '好感+8', favorDelta: 8 },
-      { text: '"你值得更好的结局"', icon: 'fa-star', iconBg: 'rgba(253,203,110,.15)', iconColor: '#fdcb6e', effect: '好感+3', favorDelta: 3 }
+      { text: '"就算整个世界是假的，你是真的就够了。"', icon: 'fa-star', iconBg: 'rgba(81,207,102,.15)', iconColor: '#51cf66', effect: '好感+12，穿书者觉醒', favorDelta: 12 },
+      { text: '"你值得更好的结局"', icon: 'fa-feather', iconBg: 'rgba(253,203,110,.15)', iconColor: '#fdcb6e', effect: '好感+3，对方若有所思', favorDelta: 3 }
     ]
   };
 
@@ -12949,8 +13662,10 @@ function _initPhraseManageDrag() {
     var template = templates[Math.floor(Math.random() * templates.length)];
     if (!template) return;
     var choices = _favorChoiceTemplates[threshold] || [];
-    var icon = _favorEventIcons[threshold] || '💖';
-    var title = _favorEventTitles[threshold] || '好感事件';
+    var iconPool = _favorEventIconPool[threshold] || [_favorEventIcons[threshold] || '💖'];
+    var titlePool = _favorEventTitlePool[threshold] || [_favorEventTitles[threshold] || '好感事件'];
+    var icon = iconPool[Math.floor(Math.random() * iconPool.length)];
+    var title = titlePool[Math.floor(Math.random() * titlePool.length)];
 
     var heroEl = document.getElementById('favorEventHero');
     var bodyEl = document.getElementById('favorEventBody');
@@ -12959,7 +13674,12 @@ function _initPhraseManageDrag() {
     heroEl.innerHTML =
       '<div class="fe-icon">' + icon + '</div>' +
       '<h3>' + title + '</h3>' +
-      '<div class="fe-char"><i class="fas fa-user" style="margin-right:4px"></i>' + _esc(character.name) + ' · 好感度达到 ' + threshold + '</div>';
+      '<div class="fe-char">' +
+        '<i class="fas fa-user" style="margin-right:4px"></i>' + _esc(character.name) +
+        ' · <span style="color:' + (threshold >= 80 ? '#ff6b6b' : threshold >= 60 ? '#a29bfe' : threshold >= 40 ? '#fdcb6e' : '#51cf66') + '">' +
+        '♥ ' + threshold + ' ' + (threshold >= 80 ? '至高羁绊' : threshold >= 60 ? '深度信任' : threshold >= 40 ? '情感升温' : '初步好感') +
+        '</span>' +
+      '</div>';
 
     var storyText = template.story.replace(/对方/g, character.name);
     var choicesHtml = '';
@@ -13004,6 +13724,20 @@ function _initPhraseManageDrag() {
         }
       });
       if (found) {
+        // 同步角色百科中的好感数据和历史
+        var _wiki = _getCharaWiki(j);
+        _wiki.forEach(function(wch) {
+          if (wch.name === charName) {
+            var newFavor = 0;
+            j.worldState.characters.forEach(function(wsc) {
+              if (wsc.name === charName) newFavor = wsc.favor;
+            });
+            wch.favor = newFavor;
+            if (!wch.favorHistory) wch.favorHistory = [];
+            wch.favorHistory.push({ ts: new Date().toISOString(), val: newFavor });
+            if (wch.favorHistory.length > 50) wch.favorHistory = wch.favorHistory.slice(-50);
+          }
+        });
         j.updatedAt = new Date().toISOString();
         _saveJourneys();
       }
@@ -13037,18 +13771,46 @@ function _initPhraseManageDrag() {
   // ══════════════════════════════════════
 
   var _fateEvents = [
+    // ── 神秘类 ──
     { icon: '📜', title: '一封无名信', type: 'mystery', typeLabel: '神秘', desc: '你在路上捡到一封密封的信件，上面没有署名，但蜡封上的图案似曾相识。要打开看看吗？', action: '我捡起那封无名信，犹豫了一瞬，还是决定拆开蜡封。' },
-    { icon: '🌧️', title: '突如其来的暴雨', type: 'neutral', typeLabel: '日常', desc: '天色骤然暗下来，豆大的雨点砸了下来。你被困在了一处陌生的屋檐下——而屋里似乎有人。', action: '暴雨突至，我不得不躲进最近的建筑避雨。推开门，发现里面居然有人。' },
     { icon: '👀', title: '陌生人的注视', type: 'mystery', typeLabel: '神秘', desc: '你感觉到身后有一道视线。回头看去，一个从未见过的人正盯着你，嘴角挂着意味深长的微笑。', action: '我察觉到身后有人在注视着我，猛地回过头去。' },
-    { icon: '🎭', title: '面具舞会', type: 'luck', typeLabel: '幸运', desc: '一张精致的邀请函不知何时出现在你的枕边：今夜的面具舞会，神秘嘉宾将揭示一个关于你的秘密。', action: '我发现了枕边的面具舞会邀请函，决定今夜赴约。' },
-    { icon: '⚔️', title: '路遇劫匪', type: 'crisis', typeLabel: '危机', desc: '前方的道路被几个面目不善的人堵住了。他们看起来不像善茬，而你身后已经无路可退。', action: '我被几个劫匪堵住了去路，看来无法避免正面冲突了。' },
-    { icon: '🦊', title: '林中奇遇', type: 'luck', typeLabel: '幸运', desc: '一只通体雪白的小狐狸蹲在路边看着你，它嘴里叼着一枚闪闪发光的玉佩。那似乎是一件灵器。', action: '一只白色小狐狸拦住了我的路，它嘴里叼着的东西引起了我的注意。' },
     { icon: '💫', title: '午夜幻梦', type: 'mystery', typeLabel: '神秘', desc: '你做了一个奇怪的梦：书中的某个角色出现在梦里，对你说了一句话——"时间不多了，快做出选择。"', action: '从一个诡异的梦中惊醒，梦中有人对我说"时间不多了"。我决定立刻采取行动。' },
-    { icon: '🔑', title: '遗失的钥匙', type: 'neutral', typeLabel: '日常', desc: '你在角落发现了一把古旧的铜钥匙，上面刻着奇怪的花纹。这把钥匙能打开什么？', action: '我捡到了一把刻有神秘花纹的古铜钥匙，这一定能打开某个重要的地方。' },
     { icon: '🔮', title: '算命先生的预言', type: 'mystery', typeLabel: '神秘', desc: '一个路边的瞎眼老者拉住你的袖子："年轻人，你不属于这个世界——但你能改变它的结局。"', action: '一个瞎眼老者突然拉住我，说出了一个让我心惊的预言。' },
+    { icon: '🪞', title: '镜中异象', type: 'mystery', typeLabel: '神秘', desc: '你路过一面铜镜，镜中映出的却不是你的脸——而是原著主角的面容。镜中人似乎在对你说话。', action: '我停下脚步凝视铜镜，镜中映出的不是我的脸，我试着靠近仔细辨认。' },
+    { icon: '📖', title: '浮现的文字', type: 'mystery', typeLabel: '神秘', desc: '你的手背上突然浮现出一行极淡的文字，像是烫印上去的："第七章，结局可改。"几秒后文字消失了。', action: '我惊讶地看着手背上浮现又消失的文字——"第七章，结局可改"。这究竟意味着什么？' },
+    { icon: '🕯️', title: '地下密室', type: 'mystery', typeLabel: '神秘', desc: '你无意间触动了墙壁上的一块松砖，一道暗门缓缓打开，里面传来微弱的烛光和低沉的诵经声。', action: '暗门打开了，我深吸一口气，弯腰走进了这条隐秘的通道。' },
+    { icon: '🦉', title: '猫头鹰的信', type: 'mystery', typeLabel: '神秘', desc: '一只猫头鹰在深夜扣响了你的窗户。它脚上绑着一个小竹筒，里面有一张纸条：只写了一个地名和一个时辰。', action: '我打开猫头鹰送来的竹筒，纸条上的地名和时辰让我心生警觉，决定前往一探究竟。' },
+
+    // ── 幸运类 ──
+    { icon: '🎭', title: '面具舞会', type: 'luck', typeLabel: '幸运', desc: '一张精致的邀请函不知何时出现在你的枕边：今夜的面具舞会，神秘嘉宾将揭示一个关于你的秘密。', action: '我发现了枕边的面具舞会邀请函，决定今夜赴约。' },
+    { icon: '🦊', title: '林中奇遇', type: 'luck', typeLabel: '幸运', desc: '一只通体雪白的小狐狸蹲在路边看着你，它嘴里叼着一枚闪闪发光的玉佩。那似乎是一件灵器。', action: '一只白色小狐狸拦住了我的路，它嘴里叼着的东西引起了我的注意。' },
     { icon: '🎪', title: '流动的戏班', type: 'luck', typeLabel: '幸运', desc: '镇上来了一个流动戏班，今晚的剧目名叫《穿越者》。你隐约觉得这出戏在讲你的故事。', action: '我去看了戏班的演出，越看越觉得这出戏在影射我自己的经历。' },
+    { icon: '🌺', title: '意外的礼物', type: 'luck', typeLabel: '幸运', desc: '桌上不知何时多了一束花和一张纸条。纸条上只有四个字："小心身后。"', action: '我发现桌上多了神秘的花束和一张写着"小心身后"的纸条，警觉地环顾四周。' },
+    { icon: '💰', title: '失而复得', type: 'luck', typeLabel: '幸运', desc: '你在翻旧衣服时，口袋里掉出一枚古币。拿到光下一看，币面刻着的图案竟与你昨晚梦中看到的一模一样。', action: '我捡起那枚古币，心中涌上一种强烈的既视感，这枚币一定有特殊含义。' },
+    { icon: '🍀', title: '贵人相助', type: 'luck', typeLabel: '幸运', desc: '一个你从未见过的人在你最困难的时候伸出援手。他只说了一句："有人托我照顾你。"便转身离去。', action: '那个陌生的恩人帮完我就消失了。"有人托我照顾你"——到底是谁？我决定查清楚。' },
+    { icon: '🎁', title: '秘密宝箱', type: 'luck', typeLabel: '幸运', desc: '你在河边洗脸时，水底闪过一道金光。摸上来一看，是一个精致的小铜箱，上面刻着复杂的机关锁。', action: '我从河底捞起了一个铜箱，上面的机关锁看起来很精密，我开始仔细研究如何打开它。' },
+    { icon: '🌈', title: '意外的盟友', type: 'luck', typeLabel: '幸运', desc: '你原以为的敌人，私下送来一封密信："我们有共同的敌人。三更，老槐树下见。"', action: '我反复确认了密信的内容，决定三更赴约，去见这个意想不到的"盟友"。' },
+
+    // ── 危机类 ──
+    { icon: '⚔️', title: '路遇劫匪', type: 'crisis', typeLabel: '危机', desc: '前方的道路被几个面目不善的人堵住了。他们看起来不像善茬，而你身后已经无路可退。', action: '我被几个劫匪堵住了去路，看来无法避免正面冲突了。' },
     { icon: '💀', title: '深夜的脚步声', type: 'crisis', typeLabel: '危机', desc: '半夜，你被一阵诡异的脚步声惊醒。有人——或者有什么东西——正在你的门外徘徊。', action: '深夜被诡异的脚步声惊醒，我屏住呼吸，悄悄摸向门边。' },
-    { icon: '🌺', title: '意外的礼物', type: 'luck', typeLabel: '幸运', desc: '桌上不知何时多了一束花和一张纸条。纸条上只有四个字："小心身后。"', action: '我发现桌上多了神秘的花束和一张写着"小心身后"的纸条，警觉地环顾四周。' }
+    { icon: '🔥', title: '突发大火', type: 'crisis', typeLabel: '危机', desc: '你闻到焦糊味时已经晚了——隔壁的房间着火了，浓烟正从门缝里涌进来。更糟的是，你听到里面有人在喊救命。', action: '火势蔓延得很快，我用湿布捂住口鼻，决定冲进去救人。' },
+    { icon: '🗡️', title: '暗杀者的刀', type: 'crisis', typeLabel: '危机', desc: '一柄飞刀擦着你的耳朵钉在了柱子上。刀柄上缠着一条黑布，那是暗杀组织的标记。你被盯上了。', action: '飞刀差点要了我的命。我拔下柱子上的刀，仔细辨认上面的暗杀标记。有人要我死。' },
+    { icon: '⛓️', title: '被诬陷了', type: 'crisis', typeLabel: '危机', desc: '你一觉醒来，发现自己被锁在牢房里。门外的守卫说你昨夜犯了大罪，但你完全不记得发生了什么。', action: '我在牢房中醒来，完全不记得是怎么进来的。守卫口中的"大罪"到底是什么？' },
+    { icon: '🌊', title: '山洪暴发', type: 'crisis', typeLabel: '危机', desc: '雨下了三天三夜，山洪终于来了。河水以肉眼可见的速度暴涨，你和几个人被困在一座快要被淹没的矮丘上。', action: '山洪把退路全部切断了。我必须在水位没过这座矮丘之前找到逃生办法。' },
+    { icon: '☠️', title: '中毒了', type: 'crisis', typeLabel: '危机', desc: '午饭后你开始头晕目眩、四肢发软。你意识到——刚才的茶被下了毒。视线模糊之前，你看到了一个人影在门口冷冷地看着你。', action: '我挣扎着扶住桌沿，毒性正在扩散。那个下毒的人还在看着我，我必须在失去意识前采取行动。' },
+    { icon: '🏚️', title: '密室困境', type: 'crisis', typeLabel: '危机', desc: '门从外面被锁死了，窗户用铁条封住。墙角有一行血书："第三块砖，往左转。"这是提示还是陷阱？', action: '被困在密室里，我看着墙角的血书犹豫了片刻，最终走向第三块砖。' },
+
+    // ── 日常类 ──
+    { icon: '🌧️', title: '突如其来的暴雨', type: 'neutral', typeLabel: '日常', desc: '天色骤然暗下来，豆大的雨点砸了下来。你被困在了一处陌生的屋檐下——而屋里似乎有人。', action: '暴雨突至，我不得不躲进最近的建筑避雨。推开门，发现里面居然有人。' },
+    { icon: '🔑', title: '遗失的钥匙', type: 'neutral', typeLabel: '日常', desc: '你在角落发现了一把古旧的铜钥匙，上面刻着奇怪的花纹。这把钥匙能打开什么？', action: '我捡到了一把刻有神秘花纹的古铜钥匙，这一定能打开某个重要的地方。' },
+    { icon: '🐱', title: '受伤的小动物', type: 'neutral', typeLabel: '日常', desc: '路边的草丛里传来微弱的叫声。你拨开草丛，发现一只受伤的小猫（或者是某种灵兽？），正用湿漉漉的眼睛看着你。', action: '我小心翼翼地抱起受伤的小家伙。它不挣扎，只是安静地看着我，眼神里充满信任。' },
+    { icon: '🎵', title: '远处的歌声', type: 'neutral', typeLabel: '日常', desc: '夜深了，你听到远处传来一阵低沉的歌声。旋律陌生又熟悉，像是你小时候听过的某首歌。循声走去，你看到……', action: '那阵歌声像在召唤我。我起身循着声音的方向走去。' },
+    { icon: '🏮', title: '集市奇遇', type: 'neutral', typeLabel: '日常', desc: '今天逢集，你随意逛着，忽然一个摊贩拉住你："这位客官，这面古镜与您有缘。只收半价，您就当帮我了。"', action: '我被那面古镜吸引住了，决定花钱买下来仔细研究。' },
+    { icon: '✉️', title: '误收的信', type: 'neutral', typeLabel: '日常', desc: '一封原本不属于你的信被塞到了你手里。拆开一看，信的内容让你瞠目结舌——这涉及一个你一直想知道的秘密。', action: '这封信不是写给我的，但内容让我坐不住了。我决定去找信的真正收件人问个清楚。' },
+    { icon: '🍶', title: '醉酒的知己', type: 'neutral', typeLabel: '日常', desc: '你在酒馆遇到一个喝得酩酊大醉的人。他拉着你絮絮叨叨，说的却全是关于某个重要人物的秘辛。等他清醒后多半会后悔。', action: '我坐下来给醉汉续了一杯酒，假装随意地引导他说出更多内容。' },
+    { icon: '🌙', title: '不眠之夜', type: 'neutral', typeLabel: '日常', desc: '今夜你怎么都睡不着。走出房间透气时，撞见了一个同样失眠的人。月光下，你们聊了很多从未对别人说过的话。', action: '月色正好，我在庭院里遇到了同样睡不着的人。我们坐在台阶上，开始聊天。' },
+    { icon: '🎲', title: '赌局邀请', type: 'neutral', typeLabel: '日常', desc: '有人递来一张烫金请柬："今晚的赌局，赌注不是钱，是一个秘密。每位参与者须拿出一个从未告诉过别人的秘密作为筹码。"', action: '我决定参加今晚的赌局。用一个秘密换一个秘密，或许能得到意想不到的情报。' }
   ];
 
   function _tryTriggerFateEvent(j) {
@@ -13065,7 +13827,15 @@ function _initPhraseManageDrag() {
     var today = new Date().toLocaleDateString();
     var lastFate = j._lastFateDate || '';
     if (lastFate === today) return;
-    if (Math.random() > 0.25) return;
+    // 动态概率：根据距离上次触发间隔的天数提升概率
+    var daysSinceLastFate = 1;
+    if (j._lastFateDate) {
+      var lastDate = new Date(j._lastFateDate);
+      var now = new Date();
+      daysSinceLastFate = Math.max(1, Math.floor((now - lastDate) / 86400000));
+    }
+    var triggerChance = Math.min(0.6, 0.2 + daysSinceLastFate * 0.1);
+    if (Math.random() > triggerChance) return;
     j._lastFateDate = today;
     _saveJourneys();
     setTimeout(function () { _showFateEvent(j); }, 2000);
@@ -14044,7 +14814,7 @@ function surrenderDuel() {
         var posEl  = document.getElementById('hs-pos-' + si);
         var negEl  = document.getElementById('hs-neg-' + si);
         var thrEl  = document.getElementById('hs-threshold-' + si);
-        if (nameEl && nameEl.value.trim()) stat.name = nameEl.value.trim();
+        if (nameEl) stat.name = nameEl.value.trim() || stat.name;
         if (posEl)  stat.posDesc   = posEl.value.trim();
         if (negEl)  stat.negDesc   = negEl.value.trim();
         if (thrEl)  stat.threshold = thrEl.value.trim();
@@ -14268,25 +15038,31 @@ function _hsScopeChange(si, val) {
 
   function _parseHiddenStats(j, content) {
     if (!_settings.hiddenStatsEnabled || !j) return content;
-    var hsRegex = /HSTATS:([^\n<]*)/;
-    var match = content.match(hsRegex);
-    if (!match) return content;
+    var hsRegex = /HSTATS:([^\n<]*)/g;
+    var allMatches = [];
+    var singleMatch;
+    while ((singleMatch = hsRegex.exec(content)) !== null) {
+      allMatches.push(singleMatch[1]);
+    }
+    if (allMatches.length === 0) return content;
     var hs = _getHiddenStats(j);
-    var parts = match[1].split(',');
     var _hsCfg = _getHiddenStatsConfig();
     var _validKeys = _hsCfg.stats.map(function(s){ return s.key.toLowerCase(); });
-    parts.forEach(function (p) {
-      p = p.trim();
-      var kv = p.split('=');
-      if (kv.length === 2) {
-        var keyLower = kv[0].trim().toLowerCase();
-        var val = Math.max(0, Math.min(100, parseInt(kv[1]) || 0));
-        var matchIdx = _validKeys.indexOf(keyLower);
-        if (matchIdx !== -1) {
-          var originalKey = _hsCfg.stats[matchIdx].key;
-          hs[originalKey] = val;
+    allMatches.forEach(function(matchStr) {
+      var parts = matchStr.split(',');
+      parts.forEach(function (p) {
+        p = p.trim();
+        var kv = p.split('=');
+        if (kv.length === 2) {
+          var keyLower = kv[0].trim().toLowerCase();
+          var val = Math.max(0, Math.min(100, parseInt(kv[1]) || 0));
+          var matchIdx = _validKeys.indexOf(keyLower);
+          if (matchIdx !== -1) {
+            var originalKey = _hsCfg.stats[matchIdx].key;
+            hs[originalKey] = val;
+          }
         }
-      }
+      });
     });
     if (!hs.history) hs.history = [];
     var _histEntry = { ts: new Date().toISOString() };
@@ -14514,10 +15290,13 @@ function _buildCharaWikiPrompt(j) {
     var parts = allEnabled.map(function(ch) {
       var lines = ['【' + ch.name + '】'];
       if (ch.relation) lines.push('与穿越者关系：' + ch.relation);
-      if (ch.relationType) {
-        var _rt = _getRelType(ch.relationType);
-        var _rtLabel = _rt ? _rt.label : (ch.relationType.indexOf('custom:') === 0 ? ch.relationType.slice(7) : '');
-        if (_rtLabel) lines.push('角色定位：' + _rtLabel);
+      var _rtTypes = ch.relationTypes || (ch.relationType ? [ch.relationType] : []);
+      if (_rtTypes.length > 0) {
+        var _rtLabels = _rtTypes.map(function(rtk) {
+          var _rt = _getRelType(rtk);
+          return _rt ? _rt.label : (rtk.indexOf('custom:') === 0 ? rtk.slice(7) : '');
+        }).filter(Boolean);
+        if (_rtLabels.length > 0) lines.push('角色定位：' + _rtLabels.join('、'));
       }
       if (ch.tags && ch.tags.length > 0) lines.push('性格特征：' + ch.tags.join('、'));
       if (ch.bio) lines.push('简介：' + ch.bio);
@@ -14705,23 +15484,26 @@ function _buildCharaWikiPrompt(j) {
     '</div>';
 
     // 关系标签
+    var _pickerTypes = ch.relationTypes || (ch.relationType ? [ch.relationType] : []);
     var relPickerBtns = _REL_TYPES.map(function(rt) {
-      var isSel = ch.relationType === rt.key;
+      var isSel = _pickerTypes.indexOf(rt.key) !== -1;
       return '<button class="rel-type-opt' + (isSel ? ' sel' : '') + '" data-rkey="' + rt.key + '"' +
         (isSel ? ' style="border-color:' + rt.color + ';color:' + rt.color + ';border-width:2px"' : '') +
         ' onclick="TB.setRelationType(' + idx + ',\'' + rt.key + '\')">' +
         '<i class="fas ' + rt.icon + '"></i> ' + rt.label + '</button>';
     }).join('');
-    var isCustom = ch.relationType && ch.relationType.indexOf('custom:') === 0;
-    var customLabel = isCustom ? ch.relationType.slice(7) : '';
+    var _detailTypes = ch.relationTypes || (ch.relationType ? [ch.relationType] : []);
+    var _detailCustom = _detailTypes.find(function(rt) { return rt.indexOf('custom:') === 0; });
+    var _detailCustomLabel = _detailCustom ? _detailCustom.slice(7) : '';
     html += '<div class="cwc-detail-section">' +
-      '<div class="cwc-detail-title"><i class="fas fa-user-tag"></i> 关系标签</div>' +
+      '<div class="cwc-detail-title"><i class="fas fa-user-tag"></i> 关系标签 <span style="font-size:10px;color:var(--text2);font-weight:400;margin-left:4px">（最多2个）</span></div>' +
       '<div class="rel-type-picker" id="rel-type-picker-' + idx + '">' + relPickerBtns + '</div>' +
       '<div class="rel-custom-row">' +
         '<input class="rel-custom-input" id="rel-custom-input-' + idx + '" placeholder="自定义（最多8字）" maxlength="8">' +
         '<button class="rel-custom-btn" onclick="TB.saveCustomRelType(' + idx + ')"><i class="fas fa-check"></i></button>' +
       '</div>' +
-      (isCustom ? '<div style="font-size:11px;color:var(--accent2);margin-top:4px"><i class="fas fa-tag" style="margin-right:4px"></i>当前自定义：' + _esc(customLabel) + '</div>' : '') +
+      (_detailCustomLabel ? '<div style="font-size:11px;color:var(--accent2);margin-top:4px"><i class="fas fa-tag" style="margin-right:4px"></i>当前自定义：' + _esc(_detailCustomLabel) + '</div>' : '') +
+      (_detailTypes.length > 0 ? '<div style="font-size:10px;color:var(--text2);margin-top:6px">当前已选 ' + _detailTypes.length + '/2 个标签，点击已选标签可取消</div>' : '') +
     '</div>';
 
     // 好感度
@@ -15814,7 +16596,7 @@ function toggleCharaNextBook(idx) {
     var idx = j ? (j.messages.length - 1) : 0;
     bar.innerHTML =
       '<i class="fas fa-triangle-exclamation"></i>' +
-      '<span>世界状态已连续 ' + failCount + ' 次未更新</span>' +
+      '<span>世界状态已连续 ' + failCount + ' 次未解析到，可能需要重新生成</span>' +
       '<button onclick="TB.regenWithVersion(' + idx + ')">重新生成</button>' +
       '<button class="ws-warn-dismiss" onclick="(function(b,jj){b.parentNode&&b.parentNode.removeChild(b);var journey=TB._getJourneyPublic&&TB._getJourneyPublic();if(journey){journey._wsFailCount=0;}}).call(this,this.closest(\'.ws-warn-bar\'))">忽略</button>';
     // 忽略按钮需要访问 journey，改用闭包
@@ -16014,6 +16796,41 @@ function toggleCharaNextBook(idx) {
     setTimeout(function() { dot.classList.remove('active'); }, 1500);
   }
 
+  // ── 关键情节自动轻量快照 ──
+  function _autoEventSnapshot(j, eventDesc) {
+    if (!j || j.status === 'stopped') return;
+    if (!j.savePoints) j.savePoints = [];
+    // 同一事件描述30秒内不重复
+    var now = Date.now();
+    var recentAuto = j.savePoints.filter(function(sp) { return sp._isEventSnapshot; });
+    if (recentAuto.length > 0) {
+      var last = recentAuto[recentAuto.length - 1];
+      var lastTs = new Date(last.createdAt).getTime();
+      if (now - lastTs < 30000 && last.name === '📌 ' + eventDesc) return;
+    }
+    // 限制事件快照最多10个
+    var eventSnapshots = j.savePoints.filter(function(sp) { return sp._isEventSnapshot; });
+    while (eventSnapshots.length >= 10) {
+      var oldest = eventSnapshots.shift();
+      var oldIdx = j.savePoints.indexOf(oldest);
+      if (oldIdx !== -1) j.savePoints.splice(oldIdx, 1);
+      eventSnapshots = j.savePoints.filter(function(sp) { return sp._isEventSnapshot; });
+    }
+    var timeStr = new Date().toLocaleString('zh-CN', { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    j.savePoints.push({
+      name: '📌 ' + eventDesc,
+      note: timeStr,
+      createdAt: new Date().toISOString(),
+      _isEventSnapshot: true,
+      messages: JSON.parse(JSON.stringify(j.messages || [])),
+      memorySummary: j.memorySummary || '',
+      lockedFacts: j.lockedFacts || '',
+      worldState: j.worldState ? JSON.parse(JSON.stringify(j.worldState)) : null
+    });
+    j.updatedAt = new Date().toISOString();
+    _flashAutosaveDot();
+  }
+
   // ── OPT-5 出戏词自定义编辑 ──
   function openBreakingWordsEditor() {
     var custom = (_settings.customBreakingWords || []).slice();
@@ -16134,7 +16951,30 @@ function toggleCharaNextBook(idx) {
     if (!j) return;
     var ch = _getCharaWiki(j)[idx];
     if (!ch) return;
-    ch.relationType = (ch.relationType === key) ? '' : key;
+    if (!ch.relationTypes) {
+      ch.relationTypes = ch.relationType ? [ch.relationType] : [];
+    }
+    var pos = ch.relationTypes.indexOf(key);
+    if (pos !== -1) {
+      // 已有，取消
+      ch.relationTypes.splice(pos, 1);
+    } else {
+      // 添加前检查：内置标签最多2个（不计入自定义标签的名额）
+      var builtinCount = ch.relationTypes.filter(function(rt) {
+        return rt.indexOf('custom:') !== 0;
+      }).length;
+      if (builtinCount >= 2) {
+        // 移除最早的内置标签
+        for (var ri = 0; ri < ch.relationTypes.length; ri++) {
+          if (ch.relationTypes[ri].indexOf('custom:') !== 0) {
+            ch.relationTypes.splice(ri, 1);
+            break;
+          }
+        }
+      }
+      ch.relationTypes.push(key);
+    }
+    ch.relationType = ch.relationTypes.length > 0 ? ch.relationTypes[0] : '';
     ch.updatedAt = new Date().toISOString();
     _saveJourneys();
     _refreshRelPicker(idx, ch);
@@ -16149,7 +16989,20 @@ function toggleCharaNextBook(idx) {
     var inp = document.getElementById('rel-custom-input-' + idx);
     if (!inp || !inp.value.trim()) { tbToast('请输入自定义关系'); return; }
     var label = inp.value.trim().slice(0, 8);
-    ch.relationType = 'custom:' + label;
+    var customKey = 'custom:' + label;
+    if (!ch.relationTypes) {
+      ch.relationTypes = ch.relationType ? [ch.relationType] : [];
+    }
+    // 移除已有的自定义标签
+    ch.relationTypes = ch.relationTypes.filter(function(rt) {
+      return rt.indexOf('custom:') !== 0;
+    });
+    // 如果内置标签已满2个，移除最早的内置标签腾出位置
+    if (ch.relationTypes.length >= 2) {
+      ch.relationTypes.shift();
+    }
+    ch.relationTypes.push(customKey);
+    ch.relationType = ch.relationTypes.length > 0 ? ch.relationTypes[0] : '';
     ch.updatedAt = new Date().toISOString();
     _saveJourneys();
     _refreshRelPicker(idx, ch);
@@ -16161,9 +17014,10 @@ function toggleCharaNextBook(idx) {
   function _refreshRelPicker(idx, ch) {
     var group = document.getElementById('rel-type-picker-' + idx);
     if (!group) return;
+    var types = ch.relationTypes || (ch.relationType ? [ch.relationType] : []);
     group.querySelectorAll('.rel-type-opt').forEach(function(b) {
       var bKey = b.dataset.rkey;
-      var isSel = ch.relationType === bKey;
+      var isSel = types.indexOf(bKey) !== -1;
       b.classList.toggle('sel', isSel);
       if (isSel) {
         var rt = _getRelType(bKey);
@@ -16172,11 +17026,11 @@ function toggleCharaNextBook(idx) {
         b.style.cssText = '';
       }
     });
-    // 更新自定义显示
     var customDisplay = document.getElementById('rel-custom-display-' + idx);
     if (customDisplay) {
-      if (ch.relationType && ch.relationType.indexOf('custom:') === 0) {
-        customDisplay.textContent = '当前：' + ch.relationType.slice(7);
+      var customType = types.find(function(rt) { return rt.indexOf('custom:') === 0; });
+      if (customType) {
+        customDisplay.textContent = '当前：' + customType.slice(7);
         customDisplay.style.display = 'inline';
       } else {
         customDisplay.style.display = 'none';
@@ -16185,18 +17039,21 @@ function toggleCharaNextBook(idx) {
   }
 
   function _renderRelChip(ch) {
-    if (!ch.relationType) return '';
-    var rt = _getRelType(ch.relationType);
-    if (rt) {
-      return '<span class="rel-type-chip" style="color:' + rt.color + ';border-color:' + rt.border + '">' +
-        '<i class="fas ' + rt.icon + '" style="font-size:9px"></i> ' + rt.label + '</span>';
-    }
-    if (ch.relationType.indexOf('custom:') === 0) {
-      var label = ch.relationType.slice(7);
-      return '<span class="rel-type-chip" style="color:var(--accent2);border-color:rgba(108,92,231,.3)">' +
-        '<i class="fas fa-tag" style="font-size:9px"></i> ' + label + '</span>';
-    }
-    return '';
+    var types = ch.relationTypes || (ch.relationType ? [ch.relationType] : []);
+    if (types.length === 0) return '';
+    var html = '';
+    types.forEach(function(typeKey) {
+      var rt = _getRelType(typeKey);
+      if (rt) {
+        html += '<span class="rel-type-chip" style="color:' + rt.color + ';border-color:' + rt.border + '">' +
+          '<i class="fas ' + rt.icon + '" style="font-size:9px"></i> ' + rt.label + '</span>';
+      } else if (typeKey.indexOf('custom:') === 0) {
+        var label = typeKey.slice(7);
+        html += '<span class="rel-type-chip" style="color:var(--accent2);border-color:rgba(108,92,231,.3)">' +
+          '<i class="fas fa-tag" style="font-size:9px"></i> ' + label + '</span>';
+      }
+    });
+    return html;
   }
 
   // ── 名台词收藏 ──
@@ -16511,6 +17368,7 @@ function toggleCharaNextBook(idx) {
     openMemoryModal: openMemoryModal,
     aiSummarize: aiSummarize,
     _toggleAutoSummary: _toggleAutoSummary,
+    _toggleAutoExtractFacts: _toggleAutoExtractFacts,
     _triggerManualAutoSummary: _triggerManualAutoSummary,
     _syncChatLayout: _syncChatLayout,
     fetchModels: fetchModels,
@@ -16548,6 +17406,10 @@ function toggleCharaNextBook(idx) {
     _scTouchEnd: _scTouchEnd,
     openExportNovel: openExportNovel,
     doExportNovel: doExportNovel,
+    _buildDocxZip: _buildDocxZip,
+    _buildEpubZip: _buildEpubZip,
+    _doExportFile: _doExportFile,
+    _escXml: _escXml,
     openReader: openReader,
     closeReader: closeReader,
     openReaderToc: openReaderToc,
@@ -16557,6 +17419,10 @@ function toggleCharaNextBook(idx) {
     toggleReaderSettings: toggleReaderSettings,
     updateReaderStyle: updateReaderStyle,
     setReaderMode: setReaderMode,
+    // ★ Fix: beforeunload 中 TB.flushSave() 需要此导出，否则静默 TypeError
+    flushSave: function() {
+      if (_saveDirty) _doSaveJourneys();
+    },
     _stopAutoSaveTimer: _stopAutoSaveTimer,
     openTrashBin: openTrashBin,
     _restoreFromTrash: _restoreFromTrash,
@@ -16573,6 +17439,7 @@ function toggleCharaNextBook(idx) {
     closeTimeline: closeTimeline,
     jumpToMsg: jumpToMsg,
     loadSaveFromTimeline: loadSaveFromTimeline,
+    switchToBranch: switchToBranch,
     deleteBookmarkFromTL: deleteBookmarkFromTL,
     deleteSaveFromTL: deleteSaveFromTL,
     _dialogOk: _dialogOk,
@@ -16615,6 +17482,9 @@ function toggleCharaNextBook(idx) {
     insertAtMention: insertAtMention,
     showWorldState: showWorldState,
     closeWorldState: closeWorldState,
+    editWorldState: editWorldState,
+    cancelEditWorldState: cancelEditWorldState,
+    saveEditWorldState: saveEditWorldState,
     toggleFullscreen: toggleFullscreen,
     genNovelSummary: genNovelSummary,
     openSysPromptEditor: openSysPromptEditor,
@@ -16784,14 +17654,27 @@ var _openGroupName = '';
     }
     _openGroupName = gName;
     var items = [];
-    _phrases.forEach(function (p, i) {
-      if ((p.group || '') === gName) items.push({ phrase: p, idx: i });
-    });
+    if (gName === '__more__') {
+      // "更多"折叠组：找所有未分组的、排序后排在第6个及以后的
+      var ungroupedAll = [];
+      _phrases.forEach(function (p, i) {
+        if (!(p.group || '')) ungroupedAll.push({ phrase: p, idx: i });
+      });
+      ungroupedAll.sort(function(a, b) {
+        return (b.phrase.useCount || 0) - (a.phrase.useCount || 0);
+      });
+      items = ungroupedAll.slice(5); // 跳过前5个（已直接显示）
+    } else {
+      _phrases.forEach(function (p, i) {
+        if ((p.group || '') === gName) items.push({ phrase: p, idx: i });
+      });
+    }
     if (items.length === 0) return;
     var panel = document.createElement('div');
     panel.id = 'phrase-group-expand';
     panel.className = 'qp-group-expand show';
-    var html = '<div class="qp-group-header"><span><i class="fas fa-folder-open" style="margin-right:4px"></i>' + _esc(gName) + '</span><button onclick="TB.closePhraseGroup()"><i class="fas fa-times"></i></button></div>';
+    var displayGroupName = (gName === '__more__') ? '更多短语' : gName;
+    var html = '<div class="qp-group-header"><span><i class="fas fa-folder-open" style="margin-right:4px"></i>' + _esc(displayGroupName) + '</span><button onclick="TB.closePhraseGroup()"><i class="fas fa-times"></i></button></div>';
     items.forEach(function (item) {
       html += '<div class="qp-pill" style="pointer-events:auto" onclick="TB.sendQuickPhrase(' + item.idx + ');TB.closePhraseGroup()">' +
         '<i class="fas fa-bolt"></i>' + _esc(item.phrase.name) +
@@ -16808,7 +17691,17 @@ var _openGroupName = '';
   }
   function closeInspirationPanel() {
     var panel = document.getElementById('inspiration-panel');
-    if (panel) panel.classList.remove('show');
+    if (!panel) return;
+    panel.classList.remove('show');
+    // 重置面板内容为初始状态，下次打开时可以选择灵感或剧情分析
+    var contentEl = document.getElementById('insp-content');
+    if (contentEl) {
+      contentEl.innerHTML =
+        '<div style="display:flex;gap:8px;justify-content:center;padding:14px 10px;flex-wrap:wrap">' +
+          '<button class="btn-primary" style="padding:10px 20px;font-size:13px" onclick="TB.genInspiration()"><i class="fas fa-wand-magic-sparkles"></i> 给我灵感</button>' +
+          '<button class="btn-primary" style="padding:10px 20px;font-size:13px;background:linear-gradient(135deg,#e67e22,#f0b27a);box-shadow:0 3px 14px rgba(230,126,34,.35)" onclick="TB.genPlotAdvice()"><i class="fas fa-chess"></i> 剧情分析</button>' +
+        '</div>';
+    }
   }
 
   function genInspiration() {
@@ -16822,25 +17715,27 @@ var _openGroupName = '';
 
     var histMsgs = (j.messages || []).filter(function (m) { return !m.isTimeMark; });
     if (histMsgs.length < 2) {
-      contentEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text2);font-size:12px">对话太少，请先推进几轮故事再使用灵感骰子</div>' +
-        '<div style="display:flex;gap:8px;justify-content:center;padding:8px 10px;flex-wrap:wrap"><button class="btn-primary" style="padding:10px 20px;font-size:13px" onclick="TB.genInspiration()"><i class="fas fa-wand-magic-sparkles"></i> 给我灵感</button><button class="btn-primary" style="padding:10px 20px;font-size:13px;background:linear-gradient(135deg,#e67e22,#f0b27a);box-shadow:0 3px 14px rgba(230,126,34,.35)" onclick="TB.genPlotAdvice()"><i class="fas fa-chess"></i> 剧情分析</button></div>';
+      _showInspEmptyState(contentEl);
       return;
     }
-    var recentSlice = histMsgs.slice(-8);
+    var recentSlice = histMsgs.slice(-6);
     var chatContext = recentSlice.map(function (m) {
-      return (m.role === 'ai' ? '[叙事]' : '[玩家行动]') + ' ' + m.content.slice(0, 200);
+      return (m.role === 'ai' ? '[叙事]' : '[行动]') + ' ' + m.content.replace(/<!--WS[\s\S]*?WS-->/g, '').slice(0, 150);
     }).join('\n');
 
     var identity = _settings.userIdentity || '穿越者';
 
-    var sysPrompt = '你的唯一任务：根据故事上下文，输出3条角色可以采取的具体行动建议。\n\n' +
-      '## 绝对禁止\n- 禁止输出任何开场白、分析、解释、总结\n- 禁止输出"好的""根据""以下是"等废话\n- 禁止输出单个词语，每条必须是完整的动作描述句\n- 禁止输出超过3行\n\n' +
-      '## 输出格式（逐字遵守）\n只输出3行纯文本，每行格式为：\n字母|具体描述句\n\n' +
-      '第1行以A|开头，是一条行动建议（8~20字）\n第2行以B|开头，是一条台词/对话建议（8~20字）\n第3行以C|开头，是一条观察/心理建议（8~20字）\n\n' +
-      '## 正确输出示例\nA|悄悄跟上那个形迹可疑的侍卫\nB|走到她面前说"你刚才的话，我不信"\nC|仔细观察他的表情判断是否在说谎\n\n' +
-      '穿越者身份：' + identity + '\n注意：你的回复必须恰好3行，第一个字符必须是大写A';
+    var sysPrompt = '根据对话，给出3条行动建议。身份：' + identity + '\n\n' +
+      '格式要求：输出恰好3行，每行格式为"字母|完整句子"：\n' +
+      'A|一条具体行动（10~20字完整句）\n' +
+      'B|一句要说的话或对话（10~20字完整句）\n' +
+      'C|一个观察或心理活动（10~20字完整句）\n\n' +
+      '铁律：只输出3行，第一个字必须是A，每条必须句号或动词结尾，禁止逗号省略号结尾，禁止任何开场白。';
 
     var url = api.url.replace(/\/$/, '') + '/chat/completions';
+    var inspAbort = new AbortController();
+    var inspTimeout = setTimeout(function(){ inspAbort.abort(); }, 30000);
+
     fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + api.key },
@@ -16848,33 +17743,38 @@ var _openGroupName = '';
         model: api.model || 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: sysPrompt },
-          { role: 'user', content: chatContext + '\n\n现在直接输出A|B|C三行：' }
+          { role: 'user', content: chatContext + '\n\n直接输出A|B|C三行：' }
         ],
-        max_tokens: 200,
-        temperature: 1.0
+        max_tokens: 500,
+        temperature: 0.9
       }),
-      signal: (function() { var ac = new AbortController(); setTimeout(function(){ ac.abort(); }, 60000); return ac.signal; })()
+      signal: inspAbort.signal
     }).then(function (res) {
-      if (!res.ok) {
-        return res.text().then(function (t) {
-          throw new Error('API错误 ' + res.status + ': ' + t.slice(0, 80));
-        });
-      }
+      clearTimeout(inspTimeout);
+      if (!res.ok) return res.text().then(function (t) { throw new Error('API错误 ' + res.status); });
       return res.json();
     }).then(function (data) {
       var result = '';
-      try {
-        result = data.choices[0].message.content || '';
-      } catch (e) {
-        throw new Error('返回数据格式异常');
-      }
-      if (!result.trim()) throw new Error('AI返回了空内容');
+      try { result = data.choices[0].message.content || ''; } catch (e) { throw new Error('返回异常'); }
+      if (!result.trim()) throw new Error('AI返回空内容');
       _renderInspirationResults(result);
     }).catch(function (e) {
-      var errMsg = e.name === 'AbortError' ? '请求超时（60秒），请检查网络' : e.message;
-      contentEl.innerHTML = '<div style="text-align:center;padding:12px;color:var(--danger);font-size:12px"><i class="fas fa-circle-xmark"></i> ' + _esc(errMsg) + '</div>' +
-        '<div style="display:flex;gap:8px;justify-content:center;padding:8px 10px;flex-wrap:wrap"><button class="btn-primary" style="padding:10px 20px;font-size:13px" onclick="TB.genInspiration()"><i class="fas fa-wand-magic-sparkles"></i> 重试</button><button class="btn-primary" style="padding:10px 20px;font-size:13px;background:linear-gradient(135deg,#e67e22,#f0b27a);box-shadow:0 3px 14px rgba(230,126,34,.35)" onclick="TB.genPlotAdvice()"><i class="fas fa-chess"></i> 剧情分析</button></div>';
+      clearTimeout(inspTimeout);
+      var errMsg = e.name === 'AbortError' ? '请求超时，请检查网络' : e.message;
+      contentEl.innerHTML = '<div style="text-align:center;padding:12px;color:var(--danger);font-size:12px"><i class="fas fa-circle-xmark"></i> ' + _esc(errMsg) + '</div>';
+      _appendInspButtons(contentEl);
     });
+  }
+  function _showInspEmptyState(contentEl) {
+    contentEl.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text2);font-size:12px">对话太少，请先推进几轮故事再使用</div>';
+    _appendInspButtons(contentEl);
+  }
+
+  function _appendInspButtons(contentEl) {
+    contentEl.innerHTML += '<div style="display:flex;gap:8px;justify-content:center;padding:8px 10px;flex-wrap:wrap">' +
+      '<button class="btn-primary" style="padding:10px 20px;font-size:13px" onclick="TB.genInspiration()"><i class="fas fa-wand-magic-sparkles"></i> 给我灵感</button>' +
+      '<button class="btn-primary" style="padding:10px 20px;font-size:13px;background:linear-gradient(135deg,#e67e22,#f0b27a);box-shadow:0 3px 14px rgba(230,126,34,.35)" onclick="TB.genPlotAdvice()"><i class="fas fa-chess"></i> 剧情分析</button>' +
+      '</div>';
   }
 
   function _renderInspirationResults(text) {
@@ -16933,9 +17833,11 @@ function genPlotAdvice() {
         '<div style="display:flex;gap:8px;justify-content:center;padding:8px 10px;flex-wrap:wrap"><button class="btn-primary" style="padding:10px 20px;font-size:13px" onclick="TB.genInspiration()"><i class="fas fa-wand-magic-sparkles"></i> 给我灵感</button><button class="btn-primary" style="padding:10px 20px;font-size:13px;background:linear-gradient(135deg,#e67e22,#f0b27a);box-shadow:0 3px 14px rgba(230,126,34,.35)" onclick="TB.genPlotAdvice()"><i class="fas fa-chess"></i> 剧情分析</button></div>';
       return;
     }
-    var recentSlice = histMsgs.slice(-12);
+    var plotRounds = Math.min(j.contextRounds || 20, MAX_CONTEXT_ROUNDS);
+    var plotSliceCount = Math.min(histMsgs.length, plotRounds * 2);
+    var recentSlice = histMsgs.slice(-plotSliceCount);
     var chatContext = recentSlice.map(function (m) {
-      return (m.role === 'ai' ? '[叙事]' : '[玩家行动]') + ' ' + m.content.slice(0, 250);
+      return (m.role === 'ai' ? '[叙事]' : '[玩家行动]') + ' ' + m.content.replace(/<!--WS[\s\S]*?WS-->/g, '').slice(0, 250);
     }).join('\n');
 
     var summaryHint = j.memorySummary ? '故事摘要：' + j.memorySummary.slice(0, 300) + '\n\n' : '';
@@ -16970,7 +17872,7 @@ function genPlotAdvice() {
         model: api.model || 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: sysPrompt },
-          { role: 'user', content: summaryHint + (wsHint ? '当前状态：' + wsHint + '\n\n' : '') + '最近对话：\n' + chatContext + '\n\n现在直接输出，第一个字符是1：' }
+          { role: 'user', content: summaryHint + (j.lockedFacts ? '关键事实（绝对不可违背）：\n' + j.lockedFacts + '\n\n' : '') + (wsHint ? '当前状态：' + wsHint + '\n\n' : '') + '最近对话（' + recentSlice.length + '条）：\n' + chatContext + '\n\n现在直接输出，第一个字符是1：' }
         ],
         max_tokens: 400,
         temperature: 0.85
@@ -17190,6 +18092,192 @@ function genPlotAdvice() {
     document.getElementById('wsOverlay').classList.remove('show');
   }
 
+  function editWorldState() {
+    var j = _getJourney(_curJourneyId);
+    if (!j) { tbToast('请先进入旅途'); return; }
+    if (!j.worldState) j.worldState = {};
+    var ws = j.worldState;
+    // 构建编辑界面，替换 wsBody 内容
+    var body = document.getElementById('wsBody');
+    if (!body) return;
+    // 修改标题
+    var wsHeader = body.parentElement.querySelector('.ws-header h3');
+    if (wsHeader) wsHeader.innerHTML = '<i class="fas fa-pen" style="color:var(--accent2)"></i> 编辑世界状态';
+
+    var charsText = '';
+    if (ws.characters && ws.characters.length > 0) {
+      charsText = ws.characters.map(function(c) {
+        var parts = [c.name || ''];
+        if (c.location) parts.push('位置=' + c.location);
+        if (c.relation) parts.push('态度=' + c.relation);
+        if (c.favor >= 0) parts.push('好感=' + c.favor);
+        return parts.join('，');
+      }).join('\n');
+    }
+    var itemsText = '';
+    if (ws.items && ws.items.length > 0) {
+      itemsText = ws.items.map(function(it) {
+        return it.name + '=' + it.holder;
+      }).join('\n');
+    }
+    // 隐藏数值
+    var hsCfg = _getHiddenStatsConfig();
+    var hsEditHtml = '';
+    if (hsCfg.enabled) {
+      var hs = _getHiddenStats(j);
+      hsEditHtml = '<div class="form-group">' +
+        '<label class="form-label"><i class="fas fa-sliders" style="color:#8e44ad;margin-right:4px"></i>隐藏数值</label>';
+      hsCfg.stats.forEach(function(s, si) {
+        var val = hs[s.key] || 0;
+        hsEditHtml += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<i class="fas ' + s.icon + '" style="color:' + s.color + ';font-size:12px;width:16px;text-align:center"></i>' +
+          '<span style="font-size:12px;color:var(--text);min-width:60px">' + _esc(s.name) + '</span>' +
+          '<input class="form-input" type="number" id="ws-edit-hs-' + si + '" min="0" max="100" value="' + val + '" style="flex:1;padding:8px 10px;font-size:13px">' +
+        '</div>';
+      });
+      hsEditHtml += '<div class="form-hint">范围 0~100</div></div>';
+    }
+
+    body.innerHTML =
+      '<div style="padding:4px 0">' +
+        '<div class="form-group">' +
+          '<label class="form-label"><i class="fas fa-clock" style="color:var(--accent2);margin-right:4px"></i>当前时间</label>' +
+          '<input class="form-input" type="text" id="ws-edit-time" placeholder="故事内的具体时间" value="' + _esc(ws.time || '') + '">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label"><i class="fas fa-location-dot" style="color:var(--accent2);margin-right:4px"></i>当前地点</label>' +
+          '<input class="form-input" type="text" id="ws-edit-loc" placeholder="当前地点" value="' + _esc(ws.currentLocation || '') + '">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label"><i class="fas fa-bolt" style="color:var(--accent2);margin-right:4px"></i>当前事件</label>' +
+          '<input class="form-input" type="text" id="ws-edit-event" placeholder="正在发生的关键事件" value="' + _esc(ws.event || '') + '">' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label"><i class="fas fa-users" style="color:var(--accent2);margin-right:4px"></i>人物状态（每行一人）</label>' +
+          '<textarea class="form-textarea" id="ws-edit-chars" style="min-height:100px;font-size:12px" placeholder="每行格式：姓名，位置=xxx，态度=xxx，好感=数字&#10;例如：&#10;颜如玉，位置=书房，态度=友好，好感=58&#10;李长安，位置=院中，态度=冷淡，好感=22">' + _esc(charsText) + '</textarea>' +
+        '</div>' +
+        '<div class="form-group">' +
+          '<label class="form-label"><i class="fas fa-gem" style="color:var(--accent2);margin-right:4px"></i>关键物品（每行一个）</label>' +
+          '<textarea class="form-textarea" id="ws-edit-items" style="min-height:60px;font-size:12px" placeholder="每行格式：物品名=持有者&#10;例如：&#10;青玉令=颜如玉&#10;密信=我">' + _esc(itemsText) + '</textarea>' +
+        '</div>' +
+        hsEditHtml +
+        '<div style="display:flex;gap:10px;margin-top:14px">' +
+          '<button class="btn-secondary" style="flex:1" onclick="TB.cancelEditWorldState()">取消</button>' +
+          '<button class="btn-primary" style="flex:1" onclick="TB.saveEditWorldState()"><i class="fas fa-floppy-disk"></i> 保存</button>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function cancelEditWorldState() {
+    var j = _getJourney(_curJourneyId);
+    var wsHeader = document.querySelector('#wsBody').parentElement.querySelector('.ws-header h3');
+    if (wsHeader) wsHeader.innerHTML = '<i class="fas fa-globe" style="color:var(--success)"></i> 世界状态';
+    _renderWorldStateBody(j);
+  }
+
+  function saveEditWorldState() {
+    var j = _getJourney(_curJourneyId);
+    if (!j) return;
+    if (!j.worldState) j.worldState = {};
+    var ws = j.worldState;
+    // 读取输入值
+    var timeEl = document.getElementById('ws-edit-time');
+    var locEl = document.getElementById('ws-edit-loc');
+    var eventEl = document.getElementById('ws-edit-event');
+    var charsEl = document.getElementById('ws-edit-chars');
+    var itemsEl = document.getElementById('ws-edit-items');
+    if (timeEl) ws.time = timeEl.value.trim();
+    if (locEl) {
+      var newLoc = locEl.value.trim();
+      if (newLoc && newLoc !== ws.currentLocation) {
+        _recordVisitedLocation(j, newLoc);
+      }
+      ws.currentLocation = newLoc;
+    }
+    if (eventEl) ws.event = eventEl.value.trim();
+    // 解析人物
+    if (charsEl) {
+      var charsLines = charsEl.value.split('\n').filter(function(l) { return l.trim(); });
+      var newChars = [];
+      charsLines.forEach(function(line) {
+        line = line.trim();
+        if (!line) return;
+        var parts = line.split(/[，,]/);
+        var charObj = { name: '', location: '', relation: '', favor: -1 };
+        parts.forEach(function(part, pi) {
+          part = part.trim();
+          if (pi === 0) { charObj.name = part; return; }
+          var kvMatch = part.match(/^(.+?)[=＝](.+)$/);
+          if (!kvMatch) return;
+          var k = kvMatch[1].trim().toLowerCase();
+          var v = kvMatch[2].trim();
+          if (k === '位置' || k === 'location') charObj.location = v;
+          else if (k === '态度' || k === 'relation') charObj.relation = v;
+          else if (k === '好感' || k === 'favor') {
+            var fv = parseInt(v);
+            if (!isNaN(fv)) charObj.favor = Math.max(0, Math.min(100, fv));
+          }
+        });
+        if (charObj.name) newChars.push(charObj);
+      });
+      // 同步到角色百科好感历史
+      if (newChars.length > 0) {
+        ws.characters = newChars;
+        if (j.charaWiki) {
+          newChars.forEach(function(nc) {
+            if (nc.favor < 0) return;
+            for (var wi = 0; wi < j.charaWiki.length; wi++) {
+              if (j.charaWiki[wi].name === nc.name) {
+                j.charaWiki[wi].favor = nc.favor;
+                if (!j.charaWiki[wi].favorHistory) j.charaWiki[wi].favorHistory = [];
+                j.charaWiki[wi].favorHistory.push({ ts: new Date().toISOString(), val: nc.favor });
+                if (j.charaWiki[wi].favorHistory.length > 50) j.charaWiki[wi].favorHistory = j.charaWiki[wi].favorHistory.slice(-50);
+                break;
+              }
+            }
+          });
+        }
+      } else {
+        ws.characters = [];
+      }
+    }
+    // 解析物品
+    if (itemsEl) {
+      var itemLines = itemsEl.value.split('\n').filter(function(l) { return l.trim(); });
+      var newItems = [];
+      itemLines.forEach(function(line) {
+        line = line.trim();
+        if (!line) return;
+        var eqIdx = line.indexOf('=');
+        if (eqIdx === -1) eqIdx = line.indexOf('＝');
+        if (eqIdx > 0) {
+          newItems.push({ name: line.slice(0, eqIdx).trim(), holder: line.slice(eqIdx + 1).trim() });
+        }
+      });
+      ws.items = newItems;
+    }
+    // 隐藏数值
+    var hsCfg = _getHiddenStatsConfig();
+    if (hsCfg.enabled) {
+      var hs = _getHiddenStats(j);
+      hsCfg.stats.forEach(function(s, si) {
+        var el = document.getElementById('ws-edit-hs-' + si);
+        if (el) {
+          var val = parseInt(el.value);
+          if (!isNaN(val)) hs[s.key] = Math.max(0, Math.min(100, val));
+        }
+      });
+    }
+    ws.updatedAt = new Date().toISOString();
+    j.updatedAt = new Date().toISOString();
+    _saveJourneys();
+    // 恢复标题并刷新显示
+    var wsHeader = document.querySelector('#wsBody').parentElement.querySelector('.ws-header h3');
+    if (wsHeader) wsHeader.innerHTML = '<i class="fas fa-globe" style="color:var(--success)"></i> 世界状态';
+    _renderWorldStateBody(j);
+    tbToast('世界状态已更新');
+  }
+
   function _renderWorldStateBody(j) {
     var body = document.getElementById('wsBody');
     if (!body) return;
@@ -17359,7 +18447,7 @@ html += _renderHiddenStatsInWS(j);
         var parts = val.split(';');
         parts.forEach(function (p) {
           try {
-            p = p.trim();
+            p = p.trim().replace(/＝/g, '=');
             if (!p) return;
             var segs = p.split('=');
             if (segs.length < 2) return;
@@ -17386,7 +18474,7 @@ html += _renderHiddenStatsInWS(j);
         var itemParts = val.split(';');
         itemParts.forEach(function (p) {
           try {
-            p = p.trim();
+            p = p.trim().replace(/＝/g, '=');
             if (!p) return;
             var segs = p.split('=');
             if (segs.length >= 2) {
