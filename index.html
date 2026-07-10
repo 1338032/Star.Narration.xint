@@ -298,7 +298,7 @@ body.simple-ui .simple-hide{
 }
 .page-loading-ov.show{opacity:1;pointer-events:auto;}
 .pl-icon{
-  width:48px;height:48px;
+  width:144px;height:144px;
   border-radius:0;object-fit:contain;
   margin-bottom:12px;
   filter:drop-shadow(0 2px 10px rgba(108,92,231,.35));
@@ -6216,6 +6216,9 @@ body.theme-light .mat-sort-btn{background:rgba(108,92,231,.04);}
 .bmm-item-preview{font-size:11px;color:var(--text2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .bmm-item-del{flex-shrink:0;background:none;border:none;color:var(--text2);font-size:15px;cursor:pointer;padding:4px 6px;border-radius:8px;-webkit-tap-highlight-color:transparent;}
 .bmm-item-del:active{color:var(--danger);background:rgba(255,107,107,.08);}
+.bmm-item-swap-selected{border-color:var(--accent)!important;background:rgba(108,92,231,.15)!important;}
+.bmm-item-swap-pick:active{border-color:var(--accent2)!important;background:rgba(108,92,231,.08)!important;}
+.bmm-swap-badge{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:rgba(108,92,231,.2);color:var(--accent2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
 /* 每日灵感火焰按钮 */
 .set-modal-hdr .mat-dib-btn{font-size:20px;padding:4px 6px;border-radius:8px;transition:color .3s,opacity .3s;flex-shrink:0;}
 .set-modal-hdr .mat-dib-btn:active{opacity:.6;}
@@ -11179,6 +11182,15 @@ body.theme-light .ed-scroll-btn{
   </button>
   <h2 id="bmmTitle" style="font-size:15px;font-weight:700;flex:1;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="fas fa-cubes"></i> 素材模块</h2>
 </div>
+<div style="flex-shrink:0;padding:10px 14px;background:var(--bg);position:relative;">
+  <input id="bmmSearch" type="text" placeholder="搜索素材名称…" oninput="_bmmSearchFilter(this.value)" style="width:100%;padding:9px 36px 9px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:13px;outline:none;box-sizing:border-box;-webkit-user-select:text;user-select:text;">
+  <button id="bmmSearchClear" onclick="_bmmSearchClear()" style="display:none;position:absolute;right:20px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text2);font-size:14px;cursor:pointer;padding:6px;-webkit-tap-highlight-color:transparent;">✕</button>
+</div>
+<div id="bmmSwapBar" style="display:none;padding:8px 16px;background:rgba(108,92,231,.1);border-bottom:1px solid rgba(108,92,231,.18);flex-shrink:0;align-items:center;gap:10px;">
+  <i class="fas fa-arrows-up-down" style="color:var(--accent2);font-size:13px;flex-shrink:0;"></i>
+  <span id="bmmSwapHint" style="font-size:12px;color:var(--accent2);flex:1;line-height:1.4;">长按进入换位：点第一条，再点第二条互换位置</span>
+  <button onclick="_bmmExitSwap()" style="padding:5px 12px;border-radius:8px;border:none;background:rgba(81,207,102,.2);color:#51cf66;font-size:12px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;">完成</button>
+</div>
 <div style="flex:1;overflow-y:auto;padding:18px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;">
   <div style="font-size:11px;color:var(--text2);line-height:1.7;background:rgba(108,92,231,.08);border:1px solid rgba(108,92,231,.2);border-radius:12px;padding:10px 12px;margin-bottom:16px;">
     <i class="fas fa-circle-info" style="color:var(--accent2)"></i> 挂载在这里的素材会在「快速续写 / 智能续写 / 精品续写」时自动作为参考内容发送给AI，无需每次手动引用。
@@ -13079,7 +13091,7 @@ function loadBuiltinPacks(){
       if(!_builtinPacksLoading)return;
       var list=document.getElementById('resList');
       if(list){
-        list.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;gap:14px"><img src="./xinx2.png" style="width:192px;height:192px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(108,92,231,.4))" alt=""><span style="font-size:16px;color:var(--text2)">正在努力加载…</span></div>';
+        list.innerHTML='<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:48px 0;gap:14px"><img src="./xinx2.png" style="width:96px;height:96px;object-fit:contain;filter:drop-shadow(0 4px 16px rgba(108,92,231,.4))" alt=""><span style="font-size:16px;color:var(--text2)">正在努力加载…</span></div>';
       }
     },1000);
   }
@@ -50624,7 +50636,7 @@ function saveMatItem(){
   }
   sv('bj_materials',mats);
   closeMatEditor();showToast(_matEditorId?'素材已更新':'素材已保存 ✦');
-  renderMatFilterTags();renderMatList();
+  renderMatFilterTags();renderMatList();_bmmSyncIfOpen();
 }
 
 // ---- 右键/长按菜单 ----
@@ -50680,8 +50692,8 @@ function deleteMatItem(id){
   var item=mats.find(function(m){return m.id===id;});if(!item)return;
   showDlg('删除素材','确定删除「'+(item.title||(item.content||'').slice(0,20))+'」？此操作不可恢复。',function(){
     var card=document.getElementById('mc-'+id);
-    if(card){card.classList.add('mat-card-removing');setTimeout(function(){sv('bj_materials',ld('bj_materials',[]).filter(function(m){return m.id!==id;}));renderMatFilterTags();renderMatList();},300);}
-    else{sv('bj_materials',mats.filter(function(m){return m.id!==id;}));renderMatFilterTags();renderMatList();}
+    if(card){card.classList.add('mat-card-removing');setTimeout(function(){sv('bj_materials',ld('bj_materials',[]).filter(function(m){return m.id!==id;}));renderMatFilterTags();renderMatList();_bmmSyncIfOpen();},300);}
+    else{sv('bj_materials',mats.filter(function(m){return m.id!==id;}));renderMatFilterTags();renderMatList();_bmmSyncIfOpen();}
     showToast('已删除');
   },true);
 }
@@ -51016,11 +51028,23 @@ function openMatPickerForFanwai(){
 // ==================== 素材工坊 END ====================
 
 // ==================== 书目素材模块（素材↔小说自动挂载） ====================
+// 状态：搜索 & 换位
+var _bmmSearchQ='';
+var _bmmSwapMode=false;
+var _bmmSwapFirstId=null;
+var _bmmLPTimer=null;
+var _bmmLPFired=false;
+
 // 打开
 function openBookMatModule(){
   if(!curRd||curRd.type!=='long'){showToast('请先打开一篇长篇文章');return;}
   var titleEl=document.getElementById('bmmTitle');
   if(titleEl)titleEl.innerHTML='<i class="fas fa-cubes"></i> '+_escH('「'+(curRd.title||'未命名')+'」素材模块');
+  // 重置搜索和换位状态
+  _bmmSearchQ='';_bmmSwapMode=false;_bmmSwapFirstId=false;
+  var si=document.getElementById('bmmSearch');if(si)si.value='';
+  var sc=document.getElementById('bmmSearchClear');if(sc)sc.style.display='none';
+  var sb=document.getElementById('bmmSwapBar');if(sb)sb.style.display='none';
   renderBookMatModuleList();
   var ov=document.getElementById('bookMatModuleOv');
   if(!ov)return;
@@ -51029,11 +51053,12 @@ function openBookMatModule(){
 }
 // 关闭
 function closeBookMatModule(){
+  _bmmExitSwap();
   navPop('bookMatModuleOv');
   var ov=document.getElementById('bookMatModuleOv');
   if(ov)ov.classList.remove('show');
 }
-// 渲染已挂载素材列表（自动清理已被删除的素材ID，避免脏数据残留）
+// 渲染已挂载素材列表
 function renderBookMatModuleList(){
   var listEl=document.getElementById('bmmList');
   var countEl=document.getElementById('bmmCount');
@@ -51041,39 +51066,154 @@ function renderBookMatModuleList(){
   var ctx=articleContexts[curRd.id]||{};
   var ids=Array.isArray(ctx.matModuleIds)?ctx.matModuleIds:[];
   var allMats=ld('bj_materials',[])||[];
+  // 清理已被删除的素材ID，避免脏数据残留
   var valid=[];
-  var html='';
   ids.forEach(function(id){
-    var m=allMats.find(function(x){return x.id===id;});
-    if(!m)return; // 素材已被删除，跳过且不再保留该ID
-    valid.push(id);
-    var c=m.type==='image'?(m.imgDesc||''):(m.content||'');
-    if(c.startsWith('data:'))c='';
-    var title=m.title||(c.slice(0,20))||'（无标题）';
-    var icon=m.type==='image'?'<i class="fas fa-image"></i>':'<i class="fas fa-font"></i>';
-    html+='<div class="bmm-item">'+
-      '<div class="bmm-item-icon">'+icon+'</div>'+
-      '<div style="flex:1;min-width:0">'+
-        '<div class="bmm-item-title">'+_escH(title)+'</div>'+
-        (c?'<div class="bmm-item-preview">'+_escH(c.slice(0,60))+'</div>':'')+
-      '</div>'+
-      '<button class="bmm-item-del" onclick="removeBookMatModuleItem(\''+id+'\')" title="移除"><i class="fas fa-times"></i></button>'+
-    '</div>';
+    if(allMats.find(function(x){return x.id===id;}))valid.push(id);
   });
-  // 若发现失效ID（对应素材已被删除），同步清理，避免脏数据反复触发查找
   if(valid.length!==ids.length){
     ctx.matModuleIds=valid;
     articleContexts[curRd.id]=ctx;
     sv('bj_articleContexts',articleContexts);
   }
+  // 搜索过滤
+  var q=_bmmSearchQ.trim().toLowerCase();
+  var filtered=valid.filter(function(id){
+    if(!q)return true;
+    var m=allMats.find(function(x){return x.id===id;});
+    if(!m)return false;
+    var t=(m.title||'').toLowerCase();
+    var c=((m.type==='image'?m.imgDesc:m.content)||'').toLowerCase();
+    return t.indexOf(q)!==-1||c.indexOf(q)!==-1;
+  });
+  // 构建列表HTML
+  var html='';
+  filtered.forEach(function(id){
+    var m=allMats.find(function(x){return x.id===id;});
+    if(!m)return;
+    var c=m.type==='image'?(m.imgDesc||''):(m.content||'');
+    if(c.startsWith('data:'))c='';
+    var title=m.title||(c.slice(0,20))||'（无标题）';
+    var icon=m.type==='image'?'<i class="fas fa-image"></i>':'<i class="fas fa-font"></i>';
+    var extraClass=_bmmSwapMode?(_bmmSwapFirstId===id?' bmm-item-swap-selected':' bmm-item-swap-pick'):'';
+    var badge=_bmmSwapMode
+      ?'<div class="bmm-swap-badge">'+(_bmmSwapFirstId===id?'①':'↕')+'</div>'
+      :'<button class="bmm-item-del" onclick="event.stopPropagation();removeBookMatModuleItem(\''+id+'\')" title="移除"><i class="fas fa-times"></i></button>';
+    html+=
+      '<div class="bmm-item'+extraClass+'" id="bmmI-'+id+'" '+
+        'ontouchstart="_bmmLPStart(\''+id+'\')" '+
+        'ontouchend="_bmmLPEnd()" ontouchcancel="_bmmLPEnd()" '+
+        'onclick="_bmmItemClick(event,\''+id+'\')" '+
+        'oncontextmenu="event.preventDefault();event.stopPropagation();return false;" '+
+        'style="-webkit-touch-callout:none;user-select:none;-webkit-user-select:none;">'+
+        '<div class="bmm-item-icon">'+icon+'</div>'+
+        '<div style="flex:1;min-width:0">'+
+          '<div class="bmm-item-title">'+_escH(title)+'</div>'+
+          (c?'<div class="bmm-item-preview">'+_escH(c.slice(0,60))+'</div>':'')+
+        '</div>'+
+        badge+
+      '</div>';
+  });
   if(valid.length===0){
     html='<div style="text-align:center;padding:40px 20px;color:var(--text2);font-size:12px">'+
       '<div style="font-size:36px;margin-bottom:12px;opacity:.4"><i class="fas fa-cubes"></i></div>'+
       '还没有挂载任何素材<br>点击上方「添加素材」，续写时将自动参考'+
     '</div>';
+  }else if(filtered.length===0&&q){
+    html='<div style="text-align:center;padding:40px 20px;color:var(--text2);font-size:12px">'+
+      '<div style="font-size:28px;margin-bottom:10px;opacity:.3"><i class="fas fa-magnifying-glass"></i></div>'+
+      '没有找到匹配的素材'+
+    '</div>';
   }
   listEl.innerHTML=html;
-  if(countEl)countEl.textContent='已挂载 '+valid.length+' 条素材';
+  if(countEl)countEl.textContent='已挂载 '+valid.length+' 条素材'+(q?'（搜索到 '+filtered.length+' 条）':'');
+}
+// 搜索过滤
+function _bmmSearchFilter(val){
+  _bmmSearchQ=val||'';
+  var sc=document.getElementById('bmmSearchClear');
+  if(sc)sc.style.display=val?'':'none';
+  renderBookMatModuleList();
+}
+function _bmmSearchClear(){
+  _bmmSearchQ='';
+  var si=document.getElementById('bmmSearch');
+  if(si){si.value='';si.focus();}
+  var sc=document.getElementById('bmmSearchClear');
+  if(sc)sc.style.display='none';
+  renderBookMatModuleList();
+}
+// 进入换位模式
+function _bmmEnterSwap(){
+  if(_bmmSwapMode)return;
+  _bmmSwapMode=true;
+  _bmmSwapFirstId=null;
+  clearTimeout(_bmmLPTimer);
+  setTimeout(function(){_bmmLPFired=false;},350);
+  var sb=document.getElementById('bmmSwapBar');
+  if(sb)sb.style.display='flex';
+  var hint=document.getElementById('bmmSwapHint');
+  if(hint)hint.textContent='点击第一条素材，选中后再点击另一条互换位置';
+  renderBookMatModuleList();
+}
+// 退出换位模式
+function _bmmExitSwap(){
+  if(!_bmmSwapMode)return;
+  _bmmSwapMode=false;_bmmSwapFirstId=null;
+  var sb=document.getElementById('bmmSwapBar');
+  if(sb)sb.style.display='none';
+  renderBookMatModuleList();
+}
+// 换位模式下的点击逻辑
+function _bmmItemClick(e,id){
+  e.stopPropagation();
+  if(_bmmLPFired)return;
+  if(!_bmmSwapMode)return;
+  if(_bmmSwapFirstId===null){
+    _bmmSwapFirstId=id;
+    var hint=document.getElementById('bmmSwapHint');
+    if(hint)hint.textContent='已选中，再点击另一条素材完成换位';
+    renderBookMatModuleList();
+  }else if(_bmmSwapFirstId===id){
+    _bmmSwapFirstId=null;
+    var hint=document.getElementById('bmmSwapHint');
+    if(hint)hint.textContent='点击第一条素材，选中后再点击另一条互换位置';
+    renderBookMatModuleList();
+  }else{
+    if(!curRd)return;
+    var ctx=articleContexts[curRd.id]||{};
+    var ids=Array.isArray(ctx.matModuleIds)?ctx.matModuleIds.slice():[];
+    var i1=ids.indexOf(_bmmSwapFirstId);
+    var i2=ids.indexOf(id);
+    if(i1===-1||i2===-1){_bmmExitSwap();return;}
+    var tmp=ids[i1];ids[i1]=ids[i2];ids[i2]=tmp;
+    ctx.matModuleIds=ids;
+    articleContexts[curRd.id]=ctx;
+    sv('bj_articleContexts',articleContexts);
+    showToast('已互换位置 ✦');
+    _bmmSwapFirstId=null;
+    var hint=document.getElementById('bmmSwapHint');
+    if(hint)hint.textContent='互换成功！可继续换位，点「完成」退出';
+    renderBookMatModuleList();
+  }
+}
+// 长按检测（不触发系统复制菜单）
+function _bmmLPStart(id){
+  _bmmLPFired=false;
+  clearTimeout(_bmmLPTimer);
+  _bmmLPTimer=setTimeout(function(){
+    _bmmLPFired=true;
+    _bmmEnterSwap();
+  },500);
+}
+function _bmmLPEnd(){
+  clearTimeout(_bmmLPTimer);
+  setTimeout(function(){_bmmLPFired=false;},350);
+}
+// 素材工坊修改/删除后同步书目素材模块（若当前打开着）
+function _bmmSyncIfOpen(){
+  var ov=document.getElementById('bookMatModuleOv');
+  if(ov&&ov.classList.contains('show'))renderBookMatModuleList();
 }
 // 添加素材（复用已有的素材选择器）
 function addBookMatModuleItem(){
