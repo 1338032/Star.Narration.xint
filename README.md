@@ -7,7 +7,7 @@
 
 *让每一个灵感都有机会长成作品*
 
-[![Version](https://img.shields.io/badge/版本-v1.4.6-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
+[![Version](https://img.shields.io/badge/版本-v1.4.7-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![License](https://img.shields.io/badge/免费使用-Free-51cf66?style=for-the-badge&logo=heart&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![PWA](https://img.shields.io/badge/PWA-可安装-a29bfe?style=for-the-badge&logo=googlechrome&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![Platform](https://img.shields.io/badge/平台-Web_+_Android-ff6b6b?style=for-the-badge&logo=android&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
@@ -74,8 +74,8 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
   </tr>
   <tr>
     <td>
-      <h3>🎭 角色扮演（RP）</h3>
-      <p>与你笔下的角色对话，感受人物性格，探索支线故事，让创作更有温度。</p>
+      <h3>🎭 角色模拟</h3>
+      <p>与你笔下的角色对话，感受人物性格，探索支线故事。v1.4.7 起已独立为同伴分支应用，拥有专属数据库和设置页，同时仍可读取星叙的书籍与 API 配置。</p>
     </td>
     <td>
       <h3>📝 星笺</h3>
@@ -90,6 +90,16 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
     <td>
       <h3>🔬 精华压缩器</h3>
       <p>将长篇内容智能压缩提炼，精准输入 AI 上下文，续写更连贯，不再跑偏。</p>
+    </td>
+  </tr>
+  <tr>
+    <td>
+      <h3>📖 穿书系统</h3>
+      <p>以自定义身份真正穿越进你的原创或收藏小说，和书中人物实时互动、改写剧情走向。同样是独立分支应用，数据可单独管理。</p>
+    </td>
+    <td>
+      <h3>ℹ️ 关于星叙</h3>
+      <p>软件介绍、创作理念与开发者的话，一处集中查看；支持填写反馈问卷、发邮件、点亮 GitHub Star，或扫码自愿支持开发者。</p>
     </td>
   </tr>
 </table>
@@ -110,6 +120,8 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 | 📱 **沉浸式阅读** | 无干扰全屏阅读模式，专注享受自己的作品 |
 | 🔤 **自定义字体** | 内置多款中文字体可选，打造专属阅读体验 |
 | 💾 **数据备份还原** | 一键导出全部数据（作品、笔记、设定），安全无忧 |
+| 🗄️ **数据管理全屏化** | 穿书系统、角色模拟均新增存储概览、清理与压缩、独立清空数据入口，互不影响星叙主数据库 |
+| 🌌 **沉浸式启动页** | 穿书系统"正在穿越…"、角色模拟旋转星标，进入即入戏，同时保证数据加载完整不卡顿 |
 
 ---
 
@@ -191,7 +203,7 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 |------|----------|
 | 📮 邮箱 | a13380324832@qq.com |
 | 💬 QQ | 962005530 |
-| 📕 小红书 | 95567118758 / 27418565861 |
+| 📕 小红书 | 27418565861 |
 
 欢迎提交 Issue 反馈 Bug 或建议新功能！
 
@@ -213,7 +225,7 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 **⭐ 如果星叙对你有帮助，欢迎点个 Star！**
 
-*v1.4.6 · Created with ❤️ by 心田*
+*v1.4.7 · Created with ❤️ by 心田*
 
 </div>
 
@@ -278,8 +290,8 @@ Manage characters, world-building, writing rules, outlines, and more. Automatica
 ### 📦 Resource Hub
 Package characters, worlds, and writing styles into reusable resource packs for sharing or reuse.
 
-### 🎭 Role Play Mode
-Interact with your characters and explore side stories to deepen emotional connection.
+### 🎭 Character Roleplay
+Chat with your own characters, explore side stories, and deepen your connection to them. As of v1.4.7 this has become an independent companion branch app with its own database and settings page, while still reading your books and API config from the main app.
 
 ### 📝 Star Notes
 A unique idea note system that organizes fragmented inspiration automatically.
@@ -289,6 +301,12 @@ Visually manage story timelines and detect logical inconsistencies.
 
 ### 🔬 Essence Compressor
 Summarize long content into optimized AI context input for better continuity.
+
+### 📖 Story Portal (Chuanshu System)
+Step into your own original or bookmarked novel as a custom character and interact with the story in real time. Also an independent companion branch with its own data management.
+
+### ℹ️ About Star Narration
+A dedicated page with the app's story, the developer's notes, a feedback survey, email contact, a GitHub star link, and an optional support QR code.
 
 ---
 
@@ -304,6 +322,8 @@ Summarize long content into optimized AI context input for better continuity.
 - Immersive reading mode
 - Custom fonts
 - Data backup & restore
+- Full-screen data management for Story Portal and Character Roleplay (storage overview, cleanup & compression, independent data clearing)
+- Immersive splash screens for the companion apps, with guaranteed data loading before entry
 
 ---
 
@@ -356,7 +376,7 @@ Author: xint
 
 Email: a13380324832@qq.com  
 QQ: 962005530  
-Xiaohongshu: 95567118758 / 27418565861  
+Xiaohongshu: 27418565861  
 
 ---
 
@@ -376,6 +396,6 @@ Content created by users belongs to the users themselves.
 
 If this project helps you, please give it a ⭐ Star!
 
-v1.4.6 · Created with ❤️ by xint
+v1.4.7 · Created with ❤️ by xint
 
 </div>

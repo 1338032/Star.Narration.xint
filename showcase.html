@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>星叙 · AI创作工坊</title>
-<meta name="description" content="星叙——面向网文创作者的智能写作工具，支持AI续写、伏笔追踪、设定管理、资源广场等功能，免费使用，数据完全本地存储。">
+<title>星叙 · 初见</title>
+<meta name="description" content="星叙——面向网文创作者的智能写作工具，支持AI续写、伏笔追踪、设定管理、资源广场等功能；配套独立分支「角色模拟」与「穿书系统」，可与角色实时对话、亲身穿越进故事世界。免费使用，数据完全本地存储。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+QingKe+HuangYou&display=swap" rel="stylesheet">
@@ -419,6 +419,114 @@ nav.scrolled{
 .xj-skin-name{font-size:10px;color:var(--text3);letter-spacing:.5px;}
 .xj-skin-locked{position:relative;}
 .xj-skin-locked::after{content:'🔒';position:absolute;font-size:9px;bottom:-2px;right:-2px;}
+
+/* ===================== EXPANSION APPS (角色模拟 / 穿书系统) ===================== */
+.expand-section{padding:96px 24px;position:relative;}
+.expand-intro{max-width:600px;margin:0 auto;text-align:center;}
+.expand-cards{max-width:1080px;margin:52px auto 0;display:flex;flex-direction:column;gap:28px;}
+.expand-card{
+  display:grid;grid-template-columns:1fr 1.15fr;gap:0;
+  background:var(--card);border:1px solid var(--border);border-radius:22px;
+  overflow:hidden;position:relative;
+  transition:border-color .3s,box-shadow .3s,transform .3s;
+}
+.expand-card:hover{transform:translateY(-3px);}
+.expand-card.rp{--exp:var(--accent3);--exp-soft:rgba(253,121,168,.12);--exp-glow:rgba(253,121,168,.22);}
+.expand-card.cs{--exp:var(--accent4);--exp-soft:rgba(0,206,201,.12);--exp-glow:rgba(0,206,201,.2);}
+.expand-card.rp:hover{border-color:rgba(253,121,168,.4);box-shadow:0 20px 54px rgba(253,121,168,.14);}
+.expand-card.cs:hover{border-color:rgba(0,206,201,.4);box-shadow:0 20px 54px rgba(0,206,201,.14);}
+
+.expand-visual{
+  background:var(--bg3);padding:36px 30px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid var(--border);
+}
+.expand-visual::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 75% 65% at 25% 20%,var(--exp-soft) 0%,transparent 65%);
+}
+
+/* 角色模拟：聊天预览 */
+.rp-mock{position:relative;z-index:1;}
+.rp-mock-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.rp-mock-avatar{
+  width:34px;height:34px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--exp),rgba(253,121,168,.4));
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;
+}
+.rp-mock-name{font-size:12px;font-weight:700;}
+.rp-mock-status{font-size:10px;color:var(--exp);display:flex;align-items:center;gap:4px;}
+.rp-mock-status::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--exp);}
+.rp-mock-bubbles{display:flex;flex-direction:column;gap:9px;}
+.rp-mock-bubble{
+  max-width:78%;padding:9px 13px;border-radius:14px;font-size:11px;line-height:1.65;
+  color:var(--text2);
+}
+.rp-mock-bubble.them{background:var(--card2);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px;}
+.rp-mock-bubble.me{
+  background:linear-gradient(135deg,var(--exp),rgba(253,121,168,.6));
+  color:#fff;align-self:flex-end;border-bottom-right-radius:4px;
+}
+.rp-mock-meta{font-size:9px;color:var(--text3);margin-top:5px;padding:0 2px;}
+.rp-mock-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:18px;}
+.rp-mock-tag{
+  font-size:10px;padding:4px 10px;border-radius:20px;
+  background:var(--exp-soft);border:1px solid rgba(253,121,168,.25);color:var(--exp);
+}
+
+/* 穿书系统：世界状态预览 */
+.cs-mock{position:relative;z-index:1;}
+.cs-mock-head{font-size:11px;color:var(--text2);margin-bottom:16px;display:flex;align-items:center;gap:6px;letter-spacing:.5px;}
+.cs-mock-head i{color:var(--exp);}
+.cs-mock-rows{display:flex;flex-direction:column;gap:11px;}
+.cs-mock-row{display:flex;align-items:center;gap:10px;}
+.cs-mock-label{font-size:10px;color:var(--text2);width:52px;flex-shrink:0;}
+.cs-mock-val{font-size:11px;color:var(--text);flex:1;}
+.cs-mock-track{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.06);}
+.cs-mock-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--exp),rgba(0,206,201,.5));}
+.cs-mock-pct{font-size:10px;color:var(--exp);width:30px;text-align:right;flex-shrink:0;}
+.cs-mock-items{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;}
+.cs-mock-item{
+  display:flex;align-items:center;gap:5px;
+  font-size:10px;padding:5px 10px;border-radius:10px;
+  background:var(--exp-soft);border:1px solid rgba(0,206,201,.25);color:var(--text2);
+}
+.cs-mock-item i{color:var(--exp);font-size:10px;}
+
+.expand-content{padding:32px 34px;position:relative;z-index:1;}
+.expand-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10px;letter-spacing:1px;color:var(--exp);
+  padding:3px 12px;border-radius:20px;border:1px solid var(--exp-glow);background:var(--exp-soft);
+  margin-bottom:14px;
+}
+.expand-title{font-family:'ZCOOL QingKe HuangYou',sans-serif;font-size:clamp(20px,3vw,26px);margin-bottom:10px;line-height:1.3;}
+.expand-desc{font-size:12.5px;color:var(--text2);line-height:1.85;margin-bottom:20px;}
+.expand-points{display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.ep-item{display:flex;align-items:flex-start;gap:11px;}
+.ep-icon{
+  width:28px;height:28px;border-radius:8px;flex-shrink:0;
+  background:var(--exp-soft);border:1px solid var(--exp-glow);
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--exp);
+}
+.ep-text strong{display:block;font-size:12.5px;margin-bottom:2px;}
+.ep-text span{font-size:11px;color:var(--text2);line-height:1.7;}
+.expand-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:11px 26px;border-radius:24px;
+  color:#fff;font-size:13px;font-weight:700;text-decoration:none;letter-spacing:.3px;
+  transition:transform .2s,box-shadow .2s;
+}
+.expand-btn:hover{transform:translateY(-2px);}
+.expand-card.rp .expand-btn{background:linear-gradient(135deg,#fd79a8,#ff9ec2);box-shadow:0 8px 26px rgba(253,121,168,.35);}
+.expand-card.rp .expand-btn:hover{box-shadow:0 12px 36px rgba(253,121,168,.5);}
+.expand-card.cs .expand-btn{background:linear-gradient(135deg,#00b5b0,#00cec9);box-shadow:0 8px 26px rgba(0,206,201,.3);}
+.expand-card.cs .expand-btn:hover{box-shadow:0 12px 36px rgba(0,206,201,.45);}
+
+@media(max-width:780px){
+  .expand-card{grid-template-columns:1fr;}
+  .expand-visual{border-right:none;border-bottom:1px solid var(--border);}
+}
 
 /* ===================== WORKFLOW ===================== */
 .workflow{padding:96px 24px;}
@@ -836,10 +944,10 @@ footer{
   <div class="nav-links">
     <a href="#features">功能</a>
     <a href="#mascot">星笺</a>
-    <a href="#transfer">数据传输</a>
+    <a href="#roleplay">角色模拟</a>
+    <a href="#chuanshu">穿书系统</a>
     <a href="#workflow">使用流程</a>
     <a href="#download">下载</a>
-    <a href="#data">数据安全</a>
   </div>
   <div class="nav-right">
   <button class="nav-dl-btn" onclick="scrollToDownload()">
@@ -854,10 +962,10 @@ footer{
 <div class="mobile-nav-menu" id="mobileNavMenu">
   <a href="#features" onclick="closeMobileNav()">功能</a>
   <a href="#mascot" onclick="closeMobileNav()">星笺</a>
-  <a href="#transfer" onclick="closeMobileNav()">数据传输</a>
+  <a href="#roleplay" onclick="closeMobileNav()">角色模拟</a>
+  <a href="#chuanshu" onclick="closeMobileNav()">穿书系统</a>
   <a href="#workflow" onclick="closeMobileNav()">使用流程</a>
   <a href="#download" onclick="closeMobileNav()">下载</a>
-  <a href="#data" onclick="closeMobileNav()">数据安全</a>
   <a href="./index.html" class="m-cta"><i class="fas fa-pen-nib"></i> 立即使用</a>
 </div>
 
@@ -1024,6 +1132,107 @@ footer{
           <div class="xj-skin-dot"><i class="fas fa-heart"></i></div>
           <div class="xj-skin-name">星境</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ── EXPANSION APPS: 角色模拟 & 穿书系统 ── -->
+<section class="expand-section" id="universe">
+  <div class="expand-intro reveal">
+    <div class="section-label" style="justify-content:center"><i class="fas fa-diagram-project"></i> 星叙宇宙</div>
+    <h2 class="section-title">不止于写<br>两个独立分支，把故事活成体验</h2>
+    <p class="section-desc" style="margin:0 auto">角色模拟和穿书系统都已独立成专属分支应用——各自拥有独立数据库和设置页，同时仍与星叙共享书籍与 API 配置，随时切换，无缝联动。</p>
+  </div>
+
+  <div class="expand-cards">
+    <!-- 角色模拟 -->
+    <div class="expand-card rp reveal-l" id="roleplay">
+      <div class="expand-visual">
+        <div class="rp-mock">
+          <div class="rp-mock-head">
+            <div class="rp-mock-avatar"><i class="fas fa-mask"></i></div>
+            <div>
+              <div class="rp-mock-name">沈知晚</div>
+              <div class="rp-mock-status">在线</div>
+            </div>
+          </div>
+          <div class="rp-mock-bubbles">
+            <div class="rp-mock-bubble them">今晚的风有点大，要不要进来坐会儿？</div>
+            <div class="rp-mock-bubble me">好啊，正好想和你聊聊白天发生的事。</div>
+          </div>
+          <div class="rp-mock-meta">对方正在输入…</div>
+          <div class="rp-mock-tags">
+            <span class="rp-mock-tag"><i class="fas fa-users"></i> 群聊</span>
+            <span class="rp-mock-tag"><i class="fas fa-book-open"></i> 一起看书</span>
+            <span class="rp-mock-tag"><i class="fas fa-brain"></i> 长期记忆</span>
+          </div>
+        </div>
+      </div>
+      <div class="expand-content">
+        <div class="expand-badge"><i class="fas fa-masks-theater"></i> 独立分支 · 角色模拟</div>
+        <h3 class="expand-title">和你笔下的角色<br>真正聊上一场</h3>
+        <p class="expand-desc">角色只说"说的话"，不写心理旁白和动作描写，像真实聊天软件一样自然。访谈摸透人设，剧场生成短剧，记忆越聊越懂你。</p>
+        <div class="expand-points">
+          <div class="ep-item">
+            <div class="ep-icon"><i class="fas fa-users"></i></div>
+            <div class="ep-text"><strong>群聊 & 共读</strong><span>长按发起多角色群聊，或喊上角色一起看书，AI知道你们在聊同一本书</span></div>
+          </div>
+          <div class="ep-item">
+            <div class="ep-icon"><i class="fas fa-brain"></i></div>
+            <div class="ep-text"><strong>会成长的记忆</strong><span>自动总结长期记忆，内容可编辑确认后再保存，角色不会"失忆"</span></div>
+          </div>
+          <div class="ep-item">
+            <div class="ep-icon"><i class="fas fa-microphone"></i></div>
+            <div class="ep-text"><strong>访谈 & 剧场</strong><span>20问深度访谈摸透人设，一句话生成角色主演的短剧</span></div>
+          </div>
+        </div>
+        <a href="./juesemoni.html" class="expand-btn"><i class="fas fa-comment-dots"></i> 进入角色模拟</a>
+      </div>
+    </div>
+
+    <!-- 穿书系统 -->
+    <div class="expand-card cs reveal-r" id="chuanshu">
+      <div class="expand-visual">
+        <div class="cs-mock">
+          <div class="cs-mock-head"><i class="fas fa-globe"></i> 世界状态 · 自动追踪</div>
+          <div class="cs-mock-rows">
+            <div class="cs-mock-row"><div class="cs-mock-label">地点</div><div class="cs-mock-val">藏书阁 · 三层</div></div>
+            <div class="cs-mock-row"><div class="cs-mock-label">时间</div><div class="cs-mock-val">深夜 · 子时三刻</div></div>
+            <div class="cs-mock-row">
+              <div class="cs-mock-label">好感度</div>
+              <div class="cs-mock-track"><div class="cs-mock-fill" style="width:72%"></div></div>
+              <div class="cs-mock-pct">72</div>
+            </div>
+          </div>
+          <div class="cs-mock-items">
+            <span class="cs-mock-item"><i class="fas fa-scroll"></i> 残卷</span>
+            <span class="cs-mock-item"><i class="fas fa-gem"></i> 玉佩</span>
+            <span class="cs-mock-item"><i class="fas fa-key"></i> 密室钥匙</span>
+          </div>
+        </div>
+      </div>
+      <div class="expand-content">
+        <div class="expand-badge"><i class="fas fa-book-open-reader"></i> 独立分支 · 穿书系统</div>
+        <h3 class="expand-title">以你的身份<br>走进故事内部</h3>
+        <p class="expand-desc">用自定义身份"穿"进自己的原创或收藏小说，和书中人物实时互动、改写走向。地点、时间、好感度全部自动记录，走错一步也能开新分支重来。</p>
+        <div class="expand-points">
+          <div class="ep-item">
+            <div class="ep-icon"><i class="fas fa-globe"></i></div>
+            <div class="ep-text"><strong>世界状态自动追踪</strong><span>AI每次回复后自动记录地点、时间、好感度和关键事件，也可手动修正</span></div>
+          </div>
+          <div class="ep-item">
+            <div class="ep-icon"><i class="fas fa-code-branch"></i></div>
+            <div class="ep-text"><strong>"如果当时"平行分支</strong><span>剧情走岔了不必推倒重来，从任意一条消息开一条新时间线</span></div>
+          </div>
+          <div class="ep-item">
+            <div class="ep-icon"><i class="fas fa-suitcase"></i></div>
+            <div class="ep-text"><strong>背包与好感事件</strong><span>书中获得的物品、感情变化都留痕，点滴积累成完整的旅途记录</span></div>
+          </div>
+        </div>
+        <a href="./chuanshu.html" class="expand-btn"><i class="fas fa-door-open"></i> 开启穿越</a>
       </div>
     </div>
   </div>
@@ -1470,7 +1679,7 @@ footer{
     <a href="./index.html" class="btn-primary" style="font-size:16px;padding:15px 44px">
       <i class="fas fa-pen-nib"></i> 立即开始创作
     </a>
-    <div class="cta-version">星叙 v1.4.6 · Created by 心田 · 为爱发电</div>
+    <div class="cta-version">星叙 v1.4.7 · Created by 心田 · 为爱发电</div>
   </div>
 </section>
 
@@ -1482,12 +1691,14 @@ footer{
     个人创作者独立开发 · 数据完全本地 · 完全免费
   </div>
   <div class="footer-contacts">
-    <div class="footer-contact"><i class="fas fa-book-open"></i><span>小红书：95567118758</span></div>
+    <div class="footer-contact"><i class="fas fa-book-open"></i><span>小红书：27418565861</span></div>
     <div class="footer-contact"><i class="fab fa-qq"></i><span>QQ：962005530</span></div>
     <div class="footer-contact"><i class="fas fa-envelope"></i><span>a13380324832@qq.com</span></div>
   </div>
   <div class="footer-links">
     <a href="#features">功能介绍</a>
+    <a href="#roleplay">角色模拟</a>
+    <a href="#chuanshu">穿书系统</a>
     <a href="#transfer">数据传输</a>
     <a href="#download">下载应用</a>
     <a href="#data">隐私安全</a>

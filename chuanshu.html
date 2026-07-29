@@ -26,6 +26,106 @@ body.theme-light{
   --text:#1a1a2e;--text2:#666688;--border:#ddddf0;
   --shadow:0 4px 20px rgba(108,92,231,.12);
 }
+/* ── 启动页 ── */
+#splash-screen{
+  position:fixed;inset:0;z-index:99999;
+  background:#07070c;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  transition:opacity .8s ease,transform .6s ease;
+  overflow:hidden;
+}
+#splash-screen.fade-out{
+  opacity:0;transform:scale(1.05);
+  pointer-events:none;
+}
+.splash-created{
+  position:absolute;top:calc(16px + env(safe-area-inset-top,0px));left:20px;
+  font-size:11px;color:rgba(162,155,254,.45);
+  letter-spacing:1px;font-weight:400;
+  z-index:2;
+}
+.splash-version{
+  position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:20px;
+  font-size:11px;color:rgba(162,155,254,.35);
+  letter-spacing:.5px;
+  z-index:2;
+}
+.splash-center{
+  display:flex;flex-direction:column;align-items:center;
+  gap:24px;position:relative;z-index:2;
+}
+.splash-orb{
+  width:80px;height:80px;position:relative;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:8px;
+}
+.splash-orb-inner{
+  width:32px;height:32px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#a29bfe,#6c5ce7 60%,#3c2ea0);
+  box-shadow:0 0 30px rgba(108,92,231,.6),0 0 60px rgba(108,92,231,.25);
+  animation:splashPulse 2s ease-in-out infinite;
+}
+.splash-orb-ring{
+  position:absolute;inset:-4px;border-radius:50%;
+  border:1.5px solid rgba(162,155,254,.25);
+  animation:splashSpin 4s linear infinite;
+}
+.splash-orb-ring::before{
+  content:'';position:absolute;top:-3px;left:50%;
+  width:6px;height:6px;border-radius:50%;
+  background:#a29bfe;transform:translateX(-50%);
+  box-shadow:0 0 8px #a29bfe;
+}
+.splash-orb-ring.r2{
+  inset:-16px;border-color:rgba(162,155,254,.12);
+  animation-duration:7s;animation-direction:reverse;
+}
+.splash-orb-ring.r2::before{
+  width:4px;height:4px;background:rgba(162,155,254,.5);
+  box-shadow:0 0 6px rgba(162,155,254,.4);
+}
+@keyframes splashPulse{
+  0%,100%{transform:scale(1);box-shadow:0 0 30px rgba(108,92,231,.6),0 0 60px rgba(108,92,231,.25);}
+  50%{transform:scale(1.15);box-shadow:0 0 40px rgba(108,92,231,.8),0 0 80px rgba(108,92,231,.35);}
+}
+@keyframes splashSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+.splash-title{
+  font-family:'ZCOOL QingKe HuangYou',sans-serif;
+  font-size:24px;letter-spacing:6px;
+  min-height:36px;
+  color:transparent;
+  background:linear-gradient(135deg,#e8e8f0,#a29bfe);
+  -webkit-background-clip:text;background-clip:text;
+  text-align:center;
+}
+.splash-title .st-cursor{
+  display:inline-block;width:2px;height:1em;
+  background:#a29bfe;vertical-align:text-bottom;
+  animation:blink .6s infinite;margin-left:2px;
+}
+.splash-status{
+  font-size:13px;color:rgba(162,155,254,.6);
+  letter-spacing:2px;min-height:20px;
+  transition:color .4s,opacity .3s;
+  text-align:center;line-height:1.6;
+}
+.splash-status.success{color:rgba(81,207,102,.8);}
+.splash-particles{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  overflow:hidden;
+}
+.splash-particle{
+  position:absolute;width:2px;height:2px;border-radius:50%;
+  background:rgba(162,155,254,.4);
+  animation:splashFloat linear infinite;
+}
+@keyframes splashFloat{
+  0%{transform:translateY(0) scale(1);opacity:0;}
+  10%{opacity:1;}
+  90%{opacity:1;}
+  100%{transform:translateY(-100vh) scale(0);opacity:0;}
+}
 body{
   background:var(--bg);color:var(--text);
   font-family:'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;
@@ -428,8 +528,6 @@ body.theme-light #shortcut-bar{background:transparent;}
   touch-action:manipulation;
 }
 .sc-pill:active{transform:scale(.93);background:rgba(108,92,231,.35);}
-.sc-pill.dragging{opacity:.45;transform:scale(.94);}
-.qp-pill.dragging{opacity:.45;transform:scale(.94);}
 body.theme-light .sc-pill{
   background:rgba(108,92,231,.12);
   color:var(--accent);
@@ -997,6 +1095,27 @@ body.theme-light #chat-body{scrollbar-color:rgba(0,0,0,.15) transparent;}
   font-size:10px;padding:2px 8px;border-radius:8px;
   background:rgba(108,92,231,.1);color:var(--accent2);
 }
+/* ── 通用「长按进入换位」列表排序（星叙素材模块同款交互） ── */
+.tb-swap-bar{
+  display:none;padding:8px 12px;border-radius:10px;
+  background:rgba(108,92,231,.1);border:1px solid rgba(108,92,231,.18);
+  align-items:center;gap:10px;margin-bottom:10px;
+}
+.tb-swap-hint{font-size:12px;color:var(--accent2);flex:1;line-height:1.4;}
+.tb-swap-done{
+  padding:5px 12px;border-radius:8px;border:none;flex-shrink:0;
+  background:rgba(81,207,102,.2);color:#51cf66;
+  font-size:12px;font-weight:600;cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.tb-swap-badge{
+  flex-shrink:0;width:28px;height:28px;border-radius:50%;
+  background:rgba(108,92,231,.2);color:var(--accent2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:700;
+}
+.assoc-drag-item.tb-swap-selected{border-color:var(--accent)!important;background:rgba(108,92,231,.15)!important;}
+.assoc-drag-item.tb-swap-pick:active{border-color:var(--accent2)!important;background:rgba(108,92,231,.08)!important;}
 /* ── Markdown 渲染样式 ── */
 .story-msg strong,.story-msg b{font-weight:700;color:var(--text);}
 .story-msg em,.story-msg i:not(.fas):not(.far):not(.fab){font-style:italic;color:var(--accent2);}
@@ -1554,6 +1673,9 @@ body.theme-light #inspiration-panel{background:rgba(248,248,252,.96);}
   margin-bottom:12px;
 }
 body.theme-light .qp-pill{background:rgba(81,207,102,.1);color:#27ae60;}
+#manualTocDrawer{left:-320px;}
+#manualTocDrawer.open{left:0;}
+#manualTocBackdrop.show{display:block;animation:ovIn .2s ease;}
 .qp-pill i{margin-right:4px;font-size:10px;}
 .qp-group-pill{
   display:inline-flex;align-items:center;
@@ -1909,6 +2031,24 @@ body.theme-light .timeline-drawer{box-shadow:-8px 0 32px rgba(108,92,231,.1);}
   color:var(--text2);font-size:13px;line-height:1.8;
 }
 .tl-empty i{font-size:32px;color:var(--border);margin-bottom:12px;display:block;}
+#manualTocDrawer .manual-toc-item{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:10px 12px;border-radius:10px;cursor:pointer;
+  font-size:13px;color:var(--text);line-height:1.5;
+  transition:background .15s;margin-bottom:2px;
+}
+#manualTocDrawer .manual-toc-item:active{background:rgba(108,92,231,.1);}
+#manualTocDrawer .manual-toc-item .toc-icon{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:rgba(108,92,231,.12);display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--accent2);margin-top:1px;
+}
+#manualTocDrawer .manual-toc-item:active{background:rgba(108,92,231,.1);}
+#manualTocDrawer .manual-toc-item .toc-icon{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  background:rgba(108,92,231,.12);display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--accent2);margin-top:1px;
+}
 /* 时间线节点 */
 .tl-item{
   position:relative;
@@ -2758,6 +2898,22 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
 </style>
 </head>
 <body>
+  
+<!-- ===== 启动页 ===== -->
+<div id="splash-screen">
+  <div class="splash-created">Created by 心田</div>
+  <div class="splash-center">
+    <div class="splash-orb">
+      <div class="splash-orb-inner"></div>
+      <div class="splash-orb-ring"></div>
+      <div class="splash-orb-ring r2"></div>
+    </div>
+    <div class="splash-title" id="splashTitle"></div>
+    <div class="splash-status" id="splashStatus">正在穿越…</div>
+  </div>
+  <div class="splash-version">v1.1.4 星叙配套</div>
+  <div class="splash-particles" id="splashParticles"></div>
+</div>
 
 <!-- ===== 顶部导航栏 ===== -->
 <div id="tbHdr">
@@ -2969,23 +3125,13 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
     </div>
     <div class="settings-group">
       <div class="settings-group-label">数据管理</div>
-      <div class="settings-item" onclick="TB.exportAllData()">
+      <div class="settings-item" onclick="TB.openDataManager()">
         <div class="settings-item-icon" style="background:rgba(39,174,96,.15)">
-          <i class="fas fa-file-export" style="color:#27ae60"></i>
+          <i class="fas fa-database" style="color:#27ae60"></i>
         </div>
         <div class="settings-item-text">
-          <div class="settings-item-title">导出备份</div>
-          <div class="settings-item-desc">将穿书系统所有数据导出为JSON文件</div>
-        </div>
-        <i class="fas fa-chevron-right settings-item-arrow"></i>
-      </div>
-      <div class="settings-item" onclick="TB.importAllData()">
-        <div class="settings-item-icon" style="background:rgba(41,128,185,.15)">
-          <i class="fas fa-file-import" style="color:#5dade2"></i>
-        </div>
-        <div class="settings-item-text">
-          <div class="settings-item-title">导入备份</div>
-          <div class="settings-item-desc">从JSON文件恢复数据（会覆盖当前数据）</div>
+          <div class="settings-item-title">数据管理</div>
+          <div class="settings-item-desc" id="set-data-desc">导出备份、导入恢复、清理压缩、重置数据</div>
         </div>
         <i class="fas fa-chevron-right settings-item-arrow"></i>
       </div>
@@ -3014,7 +3160,7 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
       </div>
     </div>
     <div style="text-align:center;padding:8px 0 4px;font-size:11px;color:var(--text2)">
-      穿书系统 v1.1.3 · 星叙 配套
+      穿书系统 v1.1.4 · 星叙 配套
     </div>
   </div>
 </div>
@@ -3197,9 +3343,12 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
 <div class="modal-ov" id="modal-manual" onclick="if(event.target===this)TB.closeModal('modal-manual')">
   <div class="modal-box">
     <div class="modal-hdr">
-      <h3><i class="fas fa-book-open" style="color:var(--accent2)"></i> 使用手册</h3>
-      <button class="modal-close" onclick="TB.closeModal('modal-manual')"><i class="fas fa-times"></i></button>
-    </div>
+  <h3><i class="fas fa-book-open" style="color:var(--accent2)"></i> 使用手册</h3>
+  <div style="display:flex;align-items:center;gap:2px">
+    <button class="modal-close" onclick="TB.openManualToc()" title="目录"><i class="fas fa-list"></i></button>
+    <button class="modal-close" onclick="TB.closeModal('modal-manual')"><i class="fas fa-times"></i></button>
+  </div>
+</div>
     <div class="modal-body manual-content">
       <h3>🌌 什么是穿书系统</h3>
       <p>穿书系统是星叙的配套工具，让你以主角或旁观者身份真正<strong>进入小说世界</strong>，和书中人物互动，甚至改变故事的走向。你输入的每一句话都是你在故事里的行动，AI会以小说作者的笔法接续剧情，打造出完全属于你的专属故事。</p>
@@ -3318,15 +3467,16 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
         <li><strong>全屏沉浸模式</strong>：在设置页点击进入/退出全屏，隐藏地址栏和状态栏</li>
       </ul>
 
-      <h3>🗃️ 数据备份</h3>
-      <p>穿书系统有<strong>独立的数据备份</strong>功能：</p>
+      <h3>🗃️ 数据管理</h3>
+      <p>穿书系统有完整的数据管理功能，在「设置 → 数据管理」中操作：</p>
       <ul>
-        <li>在「设置 → 导出备份」中，将所有旅途、设定、预设、快捷键、快捷短语等导出为一个JSON文件</li>
-        <li>在「设置 → 导入备份」中，选择JSON文件恢复数据（会覆盖当前数据）</li>
-        <li>换手机、清缓存、或想在不同设备间同步时使用</li>
-        <li>建议定期备份，避免数据丢失</li>
+        <li><strong>存储概览</strong>：查看当前穿书系统占用的存储空间、旅途数量、消息总数、存档和回收站条数</li>
+        <li><strong>导出备份</strong>：将所有旅途、设定、预设、快捷键、快捷短语等导出为一个JSON文件</li>
+        <li><strong>导入备份</strong>：选择JSON文件恢复数据（会覆盖当前数据）</li>
+        <li><strong>清理与压缩</strong>：一键清除回收站、过期草稿、多余的自动存档和事件快照，压缩原著内容（保留前3万字），释放存储空间。不影响正常使用</li>
+        <li><strong>清除所有穿书数据</strong>：彻底删除穿书系统的全部数据（旅途、设置、预设、美化配置等），星叙的收藏、创作、API配置不受影响。需二次确认，建议先导出备份</li>
       </ul>
-      <p>穿书系统的所有数据（旅途、设定、预设等）也包含在<strong>星叙的完整备份</strong>中，在星叙里导出备份时会自动携带穿书数据，导入时也会一并恢复。</p>
+      <p>穿书系统的数据也包含在<strong>星叙的完整备份</strong>中，在星叙里导出备份时会自动携带穿书数据，导入时也会一并恢复。建议定期备份，避免数据丢失。</p>
 
       <h3>📊 旅途数据统计</h3>
       <p>在旅途选项的顶部可以看到统计面板：</p>
@@ -3965,7 +4115,15 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
     </div>
   </div>
 </div>
-
+<!-- ===== 手册目录抽屉 ===== -->
+<div id="manualTocBackdrop" class="timeline-backdrop" onclick="TB.closeManualToc()" style="position:fixed;inset:0;z-index:590;background:rgba(0,0,0,.4)"></div>
+<div id="manualTocDrawer" style="position:fixed;top:0;bottom:0;width:300px;max-width:80vw;background:var(--card);border-right:1px solid var(--border);z-index:600;display:flex;flex-direction:column;transition:left .3s cubic-bezier(.4,0,.2,1);box-shadow:8px 0 32px rgba(0,0,0,.4);padding-top:var(--safe-top)">
+  <div class="tl-header">
+    <h3><i class="fas fa-list" style="color:var(--accent2)"></i> 手册目录</h3>
+    <button onclick="TB.closeManualToc()" title="关闭"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="tl-body" id="manualTocBody" style="padding:12px 16px"></div>
+</div>
 <!-- ===== 模态：记忆管理 ===== -->
 <div class="modal-ov" id="modal-memory" onclick="if(event.target===this)TB.closeModal('modal-memory')">
   <div class="modal-box">
@@ -4012,6 +4170,10 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
       <h3><i class="fas fa-keyboard" style="color:var(--accent2)"></i> 快捷键设置</h3>
       <button class="modal-close" onclick="TB.closeModal('modal-shortcuts')"><i class="fas fa-times"></i></button>
     </div>
+    <div id="sc-swap-bar" class="tb-swap-bar">
+      <span id="sc-swap-hint" class="tb-swap-hint">点击第一项，选中后再点击另一项互换位置</span>
+      <button class="tb-swap-done" onclick="TB.exitSwapMode('sc')">完成</button>
+    </div>
     <div class="modal-body" id="shortcuts-body"></div>
     <div class="modal-footer">
       <button class="btn-primary" onclick="TB.addShortcut()"><i class="fas fa-plus"></i> 新建快捷键</button>
@@ -4024,6 +4186,10 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
     <div class="modal-hdr">
       <h3><i class="fas fa-comment-dots" style="color:var(--success)"></i> 快捷短语</h3>
       <button class="modal-close" onclick="TB.closeModal('modal-phrases')"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="ph-swap-bar" class="tb-swap-bar">
+      <span id="ph-swap-hint" class="tb-swap-hint">点击第一项，选中后再点击另一项互换位置</span>
+      <button class="tb-swap-done" onclick="TB.exitSwapMode('ph')">完成</button>
     </div>
     <div class="modal-body" id="phrases-body"></div>
     <div class="modal-footer">
@@ -4421,6 +4587,16 @@ body.theme-light .bp-rarity-chip{background:rgba(0,0,0,.03);}
     </div>
   </div>
 </div>
+<!-- ===== 模态：数据管理 ===== -->
+<div class="modal-ov" id="modal-data-mgr" onclick="if(event.target===this)TB.closeModal('modal-data-mgr')">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <h3><i class="fas fa-database" style="color:var(--accent2)"></i> 数据管理</h3>
+      <button class="modal-close" onclick="TB.closeModal('modal-data-mgr')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="data-mgr-body"></div>
+  </div>
+</div>
 <!-- ===== 模态：隐藏数值系统设置 ===== -->
 <div class="modal-ov" id="modal-hidden-stats" onclick="if(event.target===this)TB.closeModal('modal-hidden-stats')">
   <div class="modal-box">
@@ -4756,8 +4932,6 @@ var TB = (function () {
   var _presetEditIdx = -1;     // 正在编辑的预设索引（-1=新建）
   var _shortcuts = [];          // 快捷键列表
   var _scEditIdx = -1;         // 正在编辑的快捷键索引（-1=新建）
-  var _scDragIdx = -1;         // 拖动中的快捷键索引
-  var _scDragOver = -1;        // 拖动目标索引
 
   // ── 初始化 ──
   function init() {
@@ -10625,6 +10799,57 @@ function setBubbleStyle(mode) {
     localStorage.setItem(TB_VISITED_KEY, '1');
     document.getElementById('onboard-ov').classList.remove('show');
   }
+  
+  // ── 手册目录 ──
+  function openManualToc() {
+    var body = document.getElementById('manualTocBody');
+    if (!body) return;
+    // 从手册内容中提取所有 h3 标题
+    var manualBody = document.querySelector('#modal-manual .manual-content');
+    if (!manualBody) return;
+    var headings = manualBody.querySelectorAll('h3');
+    if (headings.length === 0) {
+      body.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text2)">暂无目录</div>';
+    } else {
+      var html = '';
+      for (var i = 0; i < headings.length; i++) {
+        var h = headings[i];
+        var text = h.textContent || '';
+        // 给每个 h3 加一个 id 用于跳转
+        var anchorId = 'manual-h-' + i;
+        h.id = anchorId;
+        html += '<div class="manual-toc-item" onclick="TB.jumpManualSection(\'' + anchorId + '\')">' +
+          '<div class="toc-icon">' + (i + 1) + '</div>' +
+          '<span>' + text + '</span>' +
+        '</div>';
+      }
+      body.innerHTML = html;
+    }
+    document.getElementById('manualTocBackdrop').classList.add('show');
+    document.getElementById('manualTocDrawer').classList.add('open');
+  }
+
+  function closeManualToc() {
+    document.getElementById('manualTocBackdrop').classList.remove('show');
+    document.getElementById('manualTocDrawer').classList.remove('open');
+  }
+
+  function jumpManualSection(anchorId) {
+    closeManualToc();
+    setTimeout(function() {
+      var target = document.getElementById(anchorId);
+      if (!target) return;
+      var scrollContainer = document.querySelector('#modal-manual .modal-body');
+      if (!scrollContainer) return;
+      var offsetTop = target.offsetTop - scrollContainer.offsetTop;
+      scrollContainer.scrollTo({ top: offsetTop - 10, behavior: 'smooth' });
+      // 高亮闪烁
+      target.style.transition = 'color .3s';
+      target.style.color = '#fdcb6e';
+      setTimeout(function() { target.style.color = ''; }, 1500);
+    }, 250);
+  }
+  
 // ── 快捷键功能 ──
 
   // 渲染对话框上方的胶囊栏（快捷键 + 快捷短语混合）
@@ -10643,11 +10868,7 @@ function setBubbleStyle(mode) {
     // 先渲染快捷键
     html += _shortcuts.map(function (sc, i) {
       return '<div class="sc-pill" data-idx="' + i + '"' +
-        ' onclick="TB.insertShortcut(' + i + ')"' +
-        ' ontouchstart="TB._scTouchStart(event,' + i + ')"' +
-        ' ontouchmove="TB._scTouchMove(event)"' +
-        ' ontouchend="TB._scTouchEnd(event,' + i + ')"' +
-        ' ontouchcancel="TB._scTouchEnd(event,' + i + ')">' +
+        ' onclick="TB.insertShortcut(' + i + ')">' +
         _esc(sc.name) +
         '</div>';
     }).join('');
@@ -10691,11 +10912,7 @@ function setBubbleStyle(mode) {
         ? '<span style="font-size:9px;opacity:.5;margin-left:2px">' + item.phrase.useCount + '</span>'
         : '';
       html += '<div class="qp-pill" data-ph-idx="' + item.idx + '"' +
-        ' onclick="TB.sendQuickPhrase(' + item.idx + ')"' +
-        ' ontouchstart="TB._phTouchStart(event,' + item.idx + ')"' +
-        ' ontouchmove="TB._phTouchMove(event)"' +
-        ' ontouchend="TB._phTouchEnd(event)"' +
-        ' ontouchcancel="TB._phTouchEnd(event)">' +
+        ' onclick="TB.sendQuickPhrase(' + item.idx + ')">' +
         '<i class="fas fa-bolt"></i>' + _esc(item.phrase.name) + countBadge +
         '</div>';
     });
@@ -10780,117 +10997,81 @@ function insertTimeMark() {
     tbToast('已插入光标标记');
   }
 
-  // ── 长按拖动排序 ──
-  var _scLpTimer = null;
-  var _scDragStartX = 0;
-  var _scDragStartY = 0;
-  var _phLpTimer = null;
-  var _phDragIdx = -1;
-  var _phDragOver = -1;
-  var _phDragStartX = 0;
-  var _phDragStartY = 0;
+  // ==================== 通用「长按进入换位」列表排序 ====================
+  // 移植自星叙素材模块：长按任意条目进入换位模式 → 点第一项选中 → 点第二项互换位置，
+  // 可连续换位，点「完成」退出。相比拖拽排序，在小屏上更容易精准操作。
+  // 用法：容器渲染时以 (_swapActiveKey===key) 判断是否处于换位模式；
+  // 条目绑定 ontouchstart="TB._swapLPStart('key',i)" + onclick="TB._swapItemClick(event,'key',i)"
+  var _swapActiveKey = null;   // 当前处于换位模式的列表标识：'sc' | 'ph' | null
+  var _swapFirstIdx = -1;      // 已选中的第一项索引
+  var _swapLpTimer = null;
+  var _swapLpFired = false;
 
-  function _scTouchStart(e, idx) {
-    _scDragStartX = e.touches[0].clientX;
-    _scDragStartY = e.touches[0].clientY;
-    _scLpTimer = setTimeout(function () {
-      _scDragIdx = idx;
-      var el = e.target.closest('.sc-pill');
-      if (el) el.classList.add('dragging');
-      navigator.vibrate && navigator.vibrate(30);
-    }, 400);
+  function _swapGetCfg(key) {
+    if (key === 'sc') return { getArr: function () { return _shortcuts; }, storageKey: TB_SHORTCUTS_KEY, render: _renderShortcutsBody, barId: 'sc-swap-bar', hintId: 'sc-swap-hint' };
+    if (key === 'ph') return { getArr: function () { return _phrases; }, storageKey: TB_PHRASES_KEY, render: _renderPhrasesBody, barId: 'ph-swap-bar', hintId: 'ph-swap-hint' };
+    return null;
   }
-
-  function _scTouchMove(e) {
-    if (_scDragIdx === -1) {
-      var _t = e.touches[0];
-      if (Math.abs(_t.clientX - _scDragStartX) > 8 || Math.abs(_t.clientY - _scDragStartY) > 8) {
-        clearTimeout(_scLpTimer);
-      }
-      return;
-    }
-    e.preventDefault();
-    var touch = e.touches[0];
-    var el = document.elementFromPoint(touch.clientX, touch.clientY);
-    var pill = el && el.closest('.sc-pill');
-    if (pill) {
-      var overIdx = parseInt(pill.dataset.idx);
-      if (!isNaN(overIdx) && overIdx !== _scDragIdx) {
-        _scDragOver = overIdx;
-        document.querySelectorAll('.sc-pill').forEach(function (p, i) {
-          p.style.outline = (i === overIdx) ? '2px solid var(--accent2)' : '';
-        });
-      }
-    }
+  function _swapLPStart(key, idx) {
+    _swapLpFired = false;
+    clearTimeout(_swapLpTimer);
+    _swapLpTimer = setTimeout(function () {
+      _swapLpFired = true;
+      _swapEnterMode(key);
+    }, 500);
   }
-
-  function _scTouchEnd(e, idx) {
-    clearTimeout(_scLpTimer);
-    if (_scDragIdx !== -1 && _scDragOver !== -1 && _scDragIdx !== _scDragOver) {
-      // 执行移动
-      var item = _shortcuts.splice(_scDragIdx, 1)[0];
-      _shortcuts.splice(_scDragOver, 0, item);
-      tbSet(TB_SHORTCUTS_KEY, _shortcuts);
-    }
-    // 清理状态
-    _scDragIdx = -1;
-    _scDragOver = -1;
-    document.querySelectorAll('.sc-pill').forEach(function (p) {
-      p.classList.remove('dragging');
-      p.style.outline = '';
-    });
-    _renderShortcutBar();
+  function _swapLPEnd() {
+    clearTimeout(_swapLpTimer);
+    setTimeout(function () { _swapLpFired = false; }, 350);
   }
-
-  function _phTouchStart(e, idx) {
-    _phDragStartX = e.touches[0].clientX;
-    _phDragStartY = e.touches[0].clientY;
-    _phLpTimer = setTimeout(function () {
-      _phDragIdx = idx;
-      var el = e.target.closest('.qp-pill');
-      if (el) el.classList.add('dragging');
-      navigator.vibrate && navigator.vibrate(30);
-    }, 400);
+  function _swapEnterMode(key) {
+    var cfg = _swapGetCfg(key);
+    if (!cfg) return;
+    _swapActiveKey = key;
+    _swapFirstIdx = -1;
+    var bar = document.getElementById(cfg.barId);
+    if (bar) bar.style.display = 'flex';
+    var hint = document.getElementById(cfg.hintId);
+    if (hint) hint.textContent = '点击第一项，选中后再点击另一项互换位置';
+    try { navigator.vibrate(30); } catch (e) { /* 部分设备不支持振动 */ }
+    cfg.render();
   }
-
-  function _phTouchMove(e) {
-    if (_phDragIdx === -1) {
-      var _t = e.touches[0];
-      if (Math.abs(_t.clientX - _phDragStartX) > 8 || Math.abs(_t.clientY - _phDragStartY) > 8) {
-        clearTimeout(_phLpTimer);
-      }
-      return;
-    }
-    e.preventDefault();
-    var touch = e.touches[0];
-    var el = document.elementFromPoint(touch.clientX, touch.clientY);
-    var pill = el && el.closest('.qp-pill');
-    if (pill) {
-      var overIdx = parseInt(pill.dataset.phIdx);
-      if (!isNaN(overIdx) && overIdx !== _phDragIdx) {
-        _phDragOver = overIdx;
-        document.querySelectorAll('.qp-pill').forEach(function (p) {
-          var pIdx = parseInt(p.dataset.phIdx);
-          p.style.outline = (pIdx === overIdx) ? '2px solid var(--success)' : '';
-        });
-      }
-    }
+  function exitSwapMode(key) {
+    var cfg = _swapGetCfg(key);
+    if (!cfg) return;
+    _swapActiveKey = null;
+    _swapFirstIdx = -1;
+    var bar = document.getElementById(cfg.barId);
+    if (bar) bar.style.display = 'none';
+    cfg.render();
   }
-
-  function _phTouchEnd(e) {
-    clearTimeout(_phLpTimer);
-    if (_phDragIdx !== -1 && _phDragOver !== -1 && _phDragIdx !== _phDragOver) {
-      var item = _phrases.splice(_phDragIdx, 1)[0];
-      _phrases.splice(_phDragOver, 0, item);
-      tbSet(TB_PHRASES_KEY, _phrases);
+  function _swapItemClick(e, key, idx) {
+    if (e) e.stopPropagation();
+    if (_swapLpFired) return; // 忽略长按触发换位模式后紧随的那次click，避免误选中
+    if (_swapActiveKey !== key) return;
+    var cfg = _swapGetCfg(key);
+    if (!cfg) return;
+    var hint = document.getElementById(cfg.hintId);
+    if (_swapFirstIdx === -1) {
+      _swapFirstIdx = idx;
+      if (hint) hint.textContent = '已选中，再点击另一项完成互换';
+      cfg.render();
+    } else if (_swapFirstIdx === idx) {
+      _swapFirstIdx = -1;
+      if (hint) hint.textContent = '点击第一项，选中后再点击另一项互换位置';
+      cfg.render();
+    } else {
+      var arr = cfg.getArr();
+      var tmp = arr[_swapFirstIdx];
+      arr[_swapFirstIdx] = arr[idx];
+      arr[idx] = tmp;
+      tbSet(cfg.storageKey, arr);
+      _swapFirstIdx = -1;
+      _renderShortcutBar();
+      tbToast('已互换位置 ✦');
+      if (hint) hint.textContent = '互换成功！可继续换位，点「完成」退出';
+      cfg.render();
     }
-    _phDragIdx = -1;
-    _phDragOver = -1;
-    document.querySelectorAll('.qp-pill').forEach(function (p) {
-      p.classList.remove('dragging');
-      p.style.outline = '';
-    });
-    _renderShortcutBar();
   }
 
   // ── 快捷键管理弹窗 ──
@@ -10901,108 +11082,31 @@ function insertTimeMark() {
       body.innerHTML = '<div class="list-empty" style="padding:24px"><i class="fas fa-keyboard"></i><p>还没有快捷键<br>点击下方「新建快捷键」添加</p></div>';
       return;
     }
-    body.innerHTML = '<p style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.7">点击「编辑」修改内容；长按项目可拖动调整顺序</p>' +
+    var swapping = (_swapActiveKey === 'sc');
+    body.innerHTML = '<p style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.7">点击「编辑」修改内容；长按项目进入换位模式，点选两项即可互换顺序</p>' +
       '<div id="sc-manage-list">' +
       _shortcuts.map(function (sc, i) {
         var display = (sc.content || '').replace('{光标}', '▏').slice(0, 30);
-        return '<div class="assoc-drag-item" draggable="true" data-sc-idx="' + i + '" style="margin-bottom:8px">' +
-          '<i class="fas fa-grip-vertical handle" style="cursor:grab"></i>' +
+        var extraClass = swapping ? (_swapFirstIdx === i ? ' tb-swap-selected' : ' tb-swap-pick') : '';
+        var right = swapping
+          ? '<div class="tb-swap-badge">' + (_swapFirstIdx === i ? '①' : '↕') + '</div>'
+          : '<div style="display:flex;gap:6px;flex-shrink:0">' +
+              '<button onclick="event.stopPropagation();TB.editShortcut(' + i + ')" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(108,92,231,.3);background:rgba(108,92,231,.08);color:var(--accent2);font-size:11px;cursor:pointer"><i class="fas fa-pen"></i></button>' +
+              '<button onclick="event.stopPropagation();TB.deleteShortcut(' + i + ')" style="padding:6px 8px;border-radius:8px;border:1px solid rgba(255,107,107,.2);background:transparent;color:var(--danger);font-size:11px;cursor:pointer"><i class="fas fa-trash-alt"></i></button>' +
+            '</div>';
+        return '<div class="assoc-drag-item' + extraClass + '" data-sc-idx="' + i + '" style="margin-bottom:8px;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none" ' +
+          'ontouchstart="TB._swapLPStart(\'sc\',' + i + ')" ontouchend="TB._swapLPEnd()" ontouchcancel="TB._swapLPEnd()" ' +
+          'oncontextmenu="event.preventDefault();event.stopPropagation();return false;" ' +
+          'onclick="TB._swapItemClick(event,\'sc\',' + i + ')">' +
+          '<i class="fas fa-grip-vertical handle"></i>' +
           '<div style="flex:1;min-width:0">' +
             '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">' + _esc(sc.name) + '</div>' +
             '<div style="font-size:11px;color:var(--text2);font-family:monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(display) + (sc.content.length > 30 ? '…' : '') + '</div>' +
           '</div>' +
-          '<div style="display:flex;gap:6px;flex-shrink:0">' +
-            '<button onclick="TB.editShortcut(' + i + ')" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(108,92,231,.3);background:rgba(108,92,231,.08);color:var(--accent2);font-size:11px;cursor:pointer"><i class="fas fa-pen"></i></button>' +
-            '<button onclick="TB.deleteShortcut(' + i + ')" style="padding:6px 8px;border-radius:8px;border:1px solid rgba(255,107,107,.2);background:transparent;color:var(--danger);font-size:11px;cursor:pointer"><i class="fas fa-trash-alt"></i></button>' +
-          '</div>' +
+          right +
         '</div>';
       }).join('') +
       '</div>';
-    _initScManageDrag();
-  }
-function _initScManageDrag() {
-    var list = document.getElementById('sc-manage-list');
-    if (!list) return;
-    var dragSrc = null;
-    var items = list.querySelectorAll('.assoc-drag-item');
-    items.forEach(function (item) {
-      var lpTimer = null;
-      var _tsX = 0, _tsY = 0;
-      item.addEventListener('touchstart', function (e) {
-        _tsX = e.touches[0].clientX;
-        _tsY = e.touches[0].clientY;
-        var self = this;
-        lpTimer = setTimeout(function () {
-          lpTimer = null;
-          dragSrc = self;
-          self.classList.add('dragging');
-          self.style.opacity = '0.5';
-          try { navigator.vibrate(30); } catch(e){}
-        }, 400);
-      }, { passive: true });
-      item.addEventListener('touchmove', function (e) {
-        if (!dragSrc) {
-          var _mv = e.touches[0];
-          if (Math.abs(_mv.clientX - _tsX) > 8 || Math.abs(_mv.clientY - _tsY) > 8) {
-            if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-          }
-          return;
-        }
-        e.preventDefault();
-        var touch = e.touches[0];
-        var el = document.elementFromPoint(touch.clientX, touch.clientY);
-        var target = el && el.closest('.assoc-drag-item');
-        list.querySelectorAll('.assoc-drag-item').forEach(function (it) { it.style.borderTop = ''; });
-        if (target && target !== dragSrc) {
-          target.style.borderTop = '2px solid var(--accent2)';
-        }
-      }, { passive: false });
-      item.addEventListener('touchend', function (e) {
-        if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-        if (!dragSrc) return;
-        var touch = e.changedTouches[0];
-        var el = document.elementFromPoint(touch.clientX, touch.clientY);
-        var target = el && el.closest('.assoc-drag-item');
-        list.querySelectorAll('.assoc-drag-item').forEach(function (it) { it.style.borderTop = ''; });
-        if (target && target !== dragSrc) {
-          var fromIdx = parseInt(dragSrc.dataset.scIdx);
-          var toIdx = parseInt(target.dataset.scIdx);
-          if (!isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
-            var moved = _shortcuts.splice(fromIdx, 1)[0];
-            _shortcuts.splice(toIdx, 0, moved);
-            tbSet(TB_SHORTCUTS_KEY, _shortcuts);
-            _renderShortcutsBody();
-            _renderShortcutBar();
-            tbToast('顺序已调整');
-          }
-        }
-        dragSrc.classList.remove('dragging');
-        dragSrc.style.opacity = '';
-        dragSrc = null;
-      });
-      item.addEventListener('touchcancel', function () {
-        if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-        if (dragSrc) { dragSrc.classList.remove('dragging'); dragSrc.style.opacity = ''; dragSrc = null; }
-      });
-      item.addEventListener('dragstart', function () { dragSrc = this; this.style.opacity = '0.5'; });
-      item.addEventListener('dragend', function () { this.style.opacity = ''; dragSrc = null; list.querySelectorAll('.assoc-drag-item').forEach(function(it){it.style.borderTop='';}); });
-      item.addEventListener('dragover', function (e) { e.preventDefault(); if (dragSrc && this !== dragSrc) this.style.borderTop = '2px solid var(--accent2)'; });
-      item.addEventListener('dragleave', function () { this.style.borderTop = ''; });
-      item.addEventListener('drop', function () {
-        this.style.borderTop = '';
-        if (!dragSrc || dragSrc === this) return;
-        var fromIdx = parseInt(dragSrc.dataset.scIdx);
-        var toIdx = parseInt(this.dataset.scIdx);
-        if (!isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
-          var moved = _shortcuts.splice(fromIdx, 1)[0];
-          _shortcuts.splice(toIdx, 0, moved);
-          tbSet(TB_SHORTCUTS_KEY, _shortcuts);
-          _renderShortcutsBody();
-          _renderShortcutBar();
-          tbToast('顺序已调整');
-        }
-      });
-    });
   }
   function addShortcut() {
     _scEditIdx = -1;
@@ -11380,8 +11484,8 @@ function _showQuickBindSheet(type, localIdx) {
     }
     else if (id === 'modal-beauty') _renderBeautyModal();
     else if (id === 'modal-identity') { _openIdentityModal(); return; }
-    else if (id === 'modal-shortcuts') { _renderShortcutsBody(); }
-    else if (id === 'modal-phrases') { _renderPhrasesBody(); }
+    else if (id === 'modal-shortcuts') { exitSwapMode('sc'); }
+    else if (id === 'modal-phrases') { exitSwapMode('ph'); }
     else if (id === 'modal-search') { /* 内容在openMsgSearch中处理 */ }
     else if (id === 'modal-presets') {
       _presetTab = 'char';
@@ -13188,109 +13292,32 @@ function _hexToRgb(hex) {
       body.innerHTML = '<div class="list-empty" style="padding:24px"><i class="fas fa-comment-dots"></i><p>还没有快捷短语<br>点击下方「新建短语」添加</p></div>';
       return;
     }
-    body.innerHTML = '<p style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.7">点击按钮名称即可一键发送对应内容。长按项目可拖动调整顺序。</p>' +
+    var swapping = (_swapActiveKey === 'ph');
+    body.innerHTML = '<p style="font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.7">点击按钮名称即可一键发送对应内容。长按项目进入换位模式，点选两项即可互换顺序。</p>' +
       '<div id="phrase-manage-list">' +
       _phrases.map(function (p, i) {
         var displayContent = (p.content || p.name).slice(0, 40);
-        return '<div class="assoc-drag-item" draggable="true" data-phrase-idx="' + i + '" style="margin-bottom:8px">' +
-          '<i class="fas fa-grip-vertical handle" style="cursor:grab"></i>' +
+        var extraClass = swapping ? (_swapFirstIdx === i ? ' tb-swap-selected' : ' tb-swap-pick') : '';
+        var right = swapping
+          ? '<div class="tb-swap-badge">' + (_swapFirstIdx === i ? '①' : '↕') + '</div>'
+          : '<div style="display:flex;gap:6px;flex-shrink:0">' +
+              '<button onclick="event.stopPropagation();TB.editPhrase(' + i + ')" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(108,92,231,.3);background:rgba(108,92,231,.08);color:var(--accent2);font-size:11px;cursor:pointer"><i class="fas fa-pen"></i></button>' +
+              '<button onclick="event.stopPropagation();TB.deletePhrase(' + i + ')" style="padding:6px 8px;border-radius:8px;border:1px solid rgba(255,107,107,.2);background:transparent;color:var(--danger);font-size:11px;cursor:pointer"><i class="fas fa-trash-alt"></i></button>' +
+            '</div>';
+        return '<div class="assoc-drag-item' + extraClass + '" data-phrase-idx="' + i + '" style="margin-bottom:8px;-webkit-touch-callout:none;user-select:none;-webkit-user-select:none" ' +
+          'ontouchstart="TB._swapLPStart(\'ph\',' + i + ')" ontouchend="TB._swapLPEnd()" ontouchcancel="TB._swapLPEnd()" ' +
+          'oncontextmenu="event.preventDefault();event.stopPropagation();return false;" ' +
+          'onclick="TB._swapItemClick(event,\'ph\',' + i + ')">' +
+          '<i class="fas fa-grip-vertical handle"></i>' +
           '<div style="flex:1;min-width:0">' +
             '<div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;display:flex;align-items:center;gap:6px"><i class="fas fa-bolt" style="color:var(--success);font-size:10px"></i>' + _esc(p.name) + (p.group ? '<span style="font-size:9px;padding:1px 6px;border-radius:6px;background:rgba(81,207,102,.1);color:var(--success);margin-left:4px">' + _esc(p.group) + '</span>' : '') + '</div>' +
             '<div style="font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _esc(displayContent) + (p.content && p.content.length > 40 ? '…' : '') + '</div>' +
            (p.useCount ? '<div style="font-size:10px;color:var(--accent2);margin-top:2px;opacity:.6"><i class="fas fa-fire" style="font-size:9px;margin-right:3px"></i>已使用 ' + p.useCount + ' 次</div>' : '') +
           '</div>' +
-          '<div style="display:flex;gap:6px;flex-shrink:0">' +
-            '<button onclick="TB.editPhrase(' + i + ')" style="padding:6px 10px;border-radius:8px;border:1px solid rgba(108,92,231,.3);background:rgba(108,92,231,.08);color:var(--accent2);font-size:11px;cursor:pointer"><i class="fas fa-pen"></i></button>' +
-            '<button onclick="TB.deletePhrase(' + i + ')" style="padding:6px 8px;border-radius:8px;border:1px solid rgba(255,107,107,.2);background:transparent;color:var(--danger);font-size:11px;cursor:pointer"><i class="fas fa-trash-alt"></i></button>' +
-          '</div>' +
+          right +
         '</div>';
       }).join('') +
       '</div>';
-    _initPhraseManageDrag();
-  }
-function _initPhraseManageDrag() {
-    var list = document.getElementById('phrase-manage-list');
-    if (!list) return;
-    var dragSrc = null;
-    var items = list.querySelectorAll('.assoc-drag-item');
-    items.forEach(function (item) {
-      var lpTimer = null;
-      var _tsX = 0, _tsY = 0;
-      item.addEventListener('touchstart', function (e) {
-        _tsX = e.touches[0].clientX;
-        _tsY = e.touches[0].clientY;
-        var self = this;
-        lpTimer = setTimeout(function () {
-          lpTimer = null;
-          dragSrc = self;
-          self.classList.add('dragging');
-          self.style.opacity = '0.5';
-          try { navigator.vibrate(30); } catch(e){}
-        }, 400);
-      }, { passive: true });
-      item.addEventListener('touchmove', function (e) {
-        if (!dragSrc) {
-          var _mv = e.touches[0];
-          if (Math.abs(_mv.clientX - _tsX) > 8 || Math.abs(_mv.clientY - _tsY) > 8) {
-            if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-          }
-          return;
-        }
-        e.preventDefault();
-        var touch = e.touches[0];
-        var el = document.elementFromPoint(touch.clientX, touch.clientY);
-        var target = el && el.closest('.assoc-drag-item');
-        list.querySelectorAll('.assoc-drag-item').forEach(function (it) { it.style.borderTop = ''; });
-        if (target && target !== dragSrc) {
-          target.style.borderTop = '2px solid var(--success)';
-        }
-      }, { passive: false });
-      item.addEventListener('touchend', function (e) {
-        if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-        if (!dragSrc) return;
-        var touch = e.changedTouches[0];
-        var el = document.elementFromPoint(touch.clientX, touch.clientY);
-        var target = el && el.closest('.assoc-drag-item');
-        list.querySelectorAll('.assoc-drag-item').forEach(function (it) { it.style.borderTop = ''; });
-        if (target && target !== dragSrc) {
-          var fromIdx = parseInt(dragSrc.dataset.phraseIdx);
-          var toIdx = parseInt(target.dataset.phraseIdx);
-          if (!isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
-            var moved = _phrases.splice(fromIdx, 1)[0];
-            _phrases.splice(toIdx, 0, moved);
-            tbSet(TB_PHRASES_KEY, _phrases);
-            _renderPhrasesBody();
-            _renderShortcutBar();
-            tbToast('顺序已调整');
-          }
-        }
-        dragSrc.classList.remove('dragging');
-        dragSrc.style.opacity = '';
-        dragSrc = null;
-      });
-      item.addEventListener('touchcancel', function () {
-        if (lpTimer) { clearTimeout(lpTimer); lpTimer = null; }
-        if (dragSrc) { dragSrc.classList.remove('dragging'); dragSrc.style.opacity = ''; dragSrc = null; }
-      });
-      item.addEventListener('dragstart', function () { dragSrc = this; this.style.opacity = '0.5'; });
-      item.addEventListener('dragend', function () { this.style.opacity = ''; dragSrc = null; list.querySelectorAll('.assoc-drag-item').forEach(function(it){it.style.borderTop='';}); });
-      item.addEventListener('dragover', function (e) { e.preventDefault(); if (dragSrc && this !== dragSrc) this.style.borderTop = '2px solid var(--success)'; });
-      item.addEventListener('dragleave', function () { this.style.borderTop = ''; });
-      item.addEventListener('drop', function () {
-        this.style.borderTop = '';
-        if (!dragSrc || dragSrc === this) return;
-        var fromIdx = parseInt(dragSrc.dataset.phraseIdx);
-        var toIdx = parseInt(this.dataset.phraseIdx);
-        if (!isNaN(fromIdx) && !isNaN(toIdx) && fromIdx !== toIdx) {
-          var moved = _phrases.splice(fromIdx, 1)[0];
-          _phrases.splice(toIdx, 0, moved);
-          tbSet(TB_PHRASES_KEY, _phrases);
-          _renderPhrasesBody();
-          _renderShortcutBar();
-          tbToast('顺序已调整');
-        }
-      });
-    });
   }
   function addPhrase() {
     _phraseEditIdx = -1;
@@ -13458,7 +13485,222 @@ function _initPhraseManageDrag() {
       cb(ok);
     } catch (e) { cb(false); }
   }
+  // ── 数据管理弹窗 ──
+  function openDataManager() {
+    _renderDataManagerBody();
+    openModal('modal-data-mgr');
+  }
 
+  function _renderDataManagerBody() {
+    var body = document.getElementById('data-mgr-body');
+    if (!body) return;
+
+    // 计算存储占用
+    var totalSize = 0;
+    var tbKeys = [TB_JOURNEY_KEY, TB_SETTINGS_KEY, TB_BINDINGS_KEY, TB_BEAUTY_KEY, TB_PRESET_KEY, TB_SHORTCUTS_KEY, 'tb_phrases'];
+    var keySizes = {};
+    tbKeys.forEach(function(k) {
+      try {
+        var v = localStorage.getItem(k);
+        var s = v ? v.length * 2 : 0; // UTF-16 每字符2字节
+        keySizes[k] = s;
+        totalSize += s;
+      } catch(e) { keySizes[k] = 0; }
+    });
+    // 加上背景图和草稿
+    try {
+      var bgVal = localStorage.getItem(TB_BEAUTY_KEY + '_bg');
+      if (bgVal) { var bs = bgVal.length * 2; keySizes['bg'] = bs; totalSize += bs; }
+    } catch(e) {}
+    // 草稿key
+    _journeys.forEach(function(j) {
+      try {
+        var d = localStorage.getItem('tb_draft_' + j.id);
+        if (d) totalSize += d.length * 2;
+      } catch(e) {}
+    });
+
+    function fmtSize(bytes) {
+      if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + ' MB';
+      if (bytes >= 1024) return (bytes / 1024).toFixed(1) + ' KB';
+      return bytes + ' B';
+    }
+
+    var journeyCount = _journeys.length;
+    var msgTotal = _journeys.reduce(function(s, j) { return s + (j.messages || []).length; }, 0);
+    var saveTotal = _journeys.reduce(function(s, j) { return s + (j.savePoints || []).length; }, 0);
+    var trashTotal = _journeys.reduce(function(s, j) { return s + (j.trashBin || []).length; }, 0);
+
+    body.innerHTML =
+      // 存储概览
+      '<div style="padding:16px;background:linear-gradient(135deg,rgba(39,174,96,.1),rgba(81,207,102,.04));border:1px solid rgba(39,174,96,.2);border-radius:16px;margin-bottom:16px">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px"><i class="fas fa-hard-drive" style="color:#27ae60"></i>存储概览</div>' +
+          '<div style="font-size:18px;font-weight:800;color:#27ae60">' + fmtSize(totalSize) + '</div>' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;font-size:11px;color:var(--text2);text-align:center">' +
+          '<div><div style="font-size:16px;font-weight:700;color:var(--text)">' + journeyCount + '</div>旅途</div>' +
+          '<div><div style="font-size:16px;font-weight:700;color:var(--text)">' + msgTotal + '</div>消息</div>' +
+          '<div><div style="font-size:16px;font-weight:700;color:var(--text)">' + saveTotal + '</div>存档</div>' +
+          '<div><div style="font-size:16px;font-weight:700;color:var(--text)">' + trashTotal + '</div>回收站</div>' +
+        '</div>' +
+      '</div>' +
+
+      // 导出备份
+      '<div class="settings-item" style="border-radius:12px;margin-bottom:8px;background:var(--card2);border:1px solid var(--border)" onclick="TB.exportAllData()">' +
+        '<div class="settings-item-icon" style="background:rgba(39,174,96,.15)"><i class="fas fa-file-export" style="color:#27ae60"></i></div>' +
+        '<div class="settings-item-text"><div class="settings-item-title">导出备份</div><div class="settings-item-desc">将所有穿书数据导出为JSON文件</div></div>' +
+        '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
+      '</div>' +
+
+      // 导入备份
+      '<div class="settings-item" style="border-radius:12px;margin-bottom:8px;background:var(--card2);border:1px solid var(--border)" onclick="TB.importAllData()">' +
+        '<div class="settings-item-icon" style="background:rgba(41,128,185,.15)"><i class="fas fa-file-import" style="color:#5dade2"></i></div>' +
+        '<div class="settings-item-text"><div class="settings-item-title">导入备份</div><div class="settings-item-desc">从JSON文件恢复数据（覆盖当前）</div></div>' +
+        '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
+      '</div>' +
+
+      '<div style="height:1px;background:var(--border);margin:12px 0"></div>' +
+
+      // 清理压缩
+      '<div class="settings-item" style="border-radius:12px;margin-bottom:8px;background:var(--card2);border:1px solid var(--border)" onclick="TB.cleanAndCompress()">' +
+        '<div class="settings-item-icon" style="background:rgba(253,203,110,.15)"><i class="fas fa-broom" style="color:#fdcb6e"></i></div>' +
+        '<div class="settings-item-text"><div class="settings-item-title">清理与压缩</div><div class="settings-item-desc">清除回收站、过期草稿、压缩原著内容，释放存储空间</div></div>' +
+        '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
+      '</div>' +
+
+      // 清除穿书数据
+      '<div class="settings-item" style="border-radius:12px;margin-bottom:8px;background:rgba(255,107,107,.04);border:1px solid rgba(255,107,107,.15)" onclick="TB.resetAllTBData()">' +
+        '<div class="settings-item-icon" style="background:rgba(255,107,107,.12)"><i class="fas fa-trash-can" style="color:var(--danger)"></i></div>' +
+        '<div class="settings-item-text"><div class="settings-item-title" style="color:var(--danger)">清除所有穿书数据</div><div class="settings-item-desc">删除穿书系统全部数据（旅途、设置、预设等），星叙数据不受影响</div></div>' +
+        '<i class="fas fa-chevron-right settings-item-arrow"></i>' +
+      '</div>' +
+
+      '<div style="padding:12px;margin-top:6px;background:rgba(108,92,231,.04);border-radius:12px;border:1px solid rgba(108,92,231,.12)">' +
+        '<p style="font-size:11px;color:var(--text2);line-height:1.8;margin:0">' +
+          '<i class="fas fa-circle-info" style="color:var(--accent2);margin-right:4px"></i>' +
+          '穿书系统数据独立于星叙存储。清除穿书数据不会影响星叙的收藏、创作、API配置等内容。建议操作前先导出备份。' +
+        '</p>' +
+      '</div>';
+  }
+
+  function cleanAndCompress() {
+    var cleaned = { trash: 0, drafts: 0, novels: 0, autoSaves: 0 };
+
+    _journeys.forEach(function(j) {
+      // 清除回收站
+      if (j.trashBin && j.trashBin.length > 0) {
+        cleaned.trash += j.trashBin.length;
+        j.trashBin = [];
+      }
+      // 清除草稿
+      try {
+        var draftKey = 'tb_draft_' + j.id;
+        var draftVal = localStorage.getItem(draftKey);
+        if (draftVal) { localStorage.removeItem(draftKey); cleaned.drafts++; }
+      } catch(e) {}
+      j._inputDraft = '';
+      // 压缩原著内容（保留前30000字）
+      if (j.novelContent && j.novelContent.length > 30000) {
+        var before = j.novelContent.length;
+        j.novelContent = j.novelContent.slice(0, 30000);
+        cleaned.novels += (before - 30000);
+      }
+      // 清理多余的自动存档（只保留最新3个）
+      if (j.savePoints) {
+        var autoSaves = j.savePoints.filter(function(sp) { return sp._isAuto; });
+        while (autoSaves.length > 3) {
+          var oldest = autoSaves.shift();
+          var idx = j.savePoints.indexOf(oldest);
+          if (idx !== -1) { j.savePoints.splice(idx, 1); cleaned.autoSaves++; }
+          autoSaves = j.savePoints.filter(function(sp) { return sp._isAuto; });
+        }
+      }
+      // 清理事件快照（只保留最新5个）
+      if (j.savePoints) {
+        var eventSnaps = j.savePoints.filter(function(sp) { return sp._isEventSnapshot; });
+        while (eventSnaps.length > 5) {
+          var oldEvt = eventSnaps.shift();
+          var eidx = j.savePoints.indexOf(oldEvt);
+          if (eidx !== -1) { j.savePoints.splice(eidx, 1); cleaned.autoSaves++; }
+          eventSnaps = j.savePoints.filter(function(sp) { return sp._isEventSnapshot; });
+        }
+      }
+      // 清理角色百科中过长的好感历史（只保留最近20条）
+      if (j.charaWiki) {
+        j.charaWiki.forEach(function(ch) {
+          if (ch.favorHistory && ch.favorHistory.length > 20) {
+            ch.favorHistory = ch.favorHistory.slice(-20);
+          }
+        });
+      }
+      // 清理隐藏数值历史（只保留最近20条）
+      if (j.hiddenStats && j.hiddenStats.history && j.hiddenStats.history.length > 20) {
+        j.hiddenStats.history = j.hiddenStats.history.slice(-20);
+      }
+    });
+
+    _doSaveJourneys();
+
+    var parts = [];
+    if (cleaned.trash > 0) parts.push('回收站 ' + cleaned.trash + ' 条');
+    if (cleaned.drafts > 0) parts.push('草稿 ' + cleaned.drafts + ' 个');
+    if (cleaned.novels > 0) parts.push('原著压缩 ' + Math.round(cleaned.novels / 1000) + 'K字');
+    if (cleaned.autoSaves > 0) parts.push('过期快照 ' + cleaned.autoSaves + ' 个');
+
+    if (parts.length === 0) {
+      tbToast('数据已经很干净，无需清理');
+    } else {
+      tbToast('✅ 已清理：' + parts.join('、'));
+    }
+
+    // 刷新数据管理界面
+    _renderDataManagerBody();
+  }
+
+  function resetAllTBData() {
+    tbConfirm('⚠️ 确定清除穿书系统的所有数据吗？\n\n包括：所有旅途、设置、预设、快捷键、快捷短语、美化配置等。\n\n星叙的收藏、创作、API配置不受影响。\n\n此操作不可撤销！建议先导出备份。', function() {
+      tbConfirm('再次确认：清除后所有穿书旅途将永久丢失。\n\n真的要继续吗？', function() {
+        // 收集所有穿书系统相关的 localStorage key
+        var keysToRemove = [
+          TB_JOURNEY_KEY, TB_SETTINGS_KEY, TB_BINDINGS_KEY,
+          TB_BEAUTY_KEY, TB_BEAUTY_KEY + '_bg',
+          TB_PRESET_KEY, TB_SHORTCUTS_KEY, 'tb_phrases',
+          TB_VISITED_KEY
+        ];
+        // 清除草稿key
+        _journeys.forEach(function(j) {
+          keysToRemove.push('tb_draft_' + j.id);
+        });
+        keysToRemove.forEach(function(k) {
+          try { localStorage.removeItem(k); } catch(e) {}
+        });
+
+        // 重置内存状态
+        _journeys = [];
+        _settings = { userIdentity: '', contextRounds: 20 };
+        _bindings = {};
+        _beauty = {};
+        _localPresets = { char: [], world: [], style: [] };
+        _shortcuts = [
+          { name: '括号', content: '（{光标}）' },
+          { name: '引号', content: '"{光标}"' }
+        ];
+        _initPhrases();
+
+        // 重新应用默认主题
+        _applyTheme(_getBJTheme());
+        _applyBeauty();
+        _renderShortcutBar();
+        _updateSettingsDesc();
+        renderJourneys();
+        _renderInfoCard();
+
+        closeModal('modal-data-mgr');
+        tbToast('穿书系统数据已全部清除');
+      });
+    });
+  }
   function importAllData() {
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -17401,9 +17643,10 @@ function toggleCharaNextBook(idx) {
     editShortcut: editShortcut,
     saveShortcut: saveShortcut,
     deleteShortcut: deleteShortcut,
-    _scTouchStart: _scTouchStart,
-    _scTouchMove: _scTouchMove,
-    _scTouchEnd: _scTouchEnd,
+    exitSwapMode: exitSwapMode,
+    _swapItemClick: _swapItemClick,
+    _swapLPStart: _swapLPStart,
+    _swapLPEnd: _swapLPEnd,
     openExportNovel: openExportNovel,
     doExportNovel: doExportNovel,
     _buildDocxZip: _buildDocxZip,
@@ -17603,6 +17846,9 @@ function toggleCharaNextBook(idx) {
     toggleInputHistory: toggleInputHistory,
     toggleFavorPeek: toggleFavorPeek,
     openBreakingWordsEditor: openBreakingWordsEditor,
+    openDataManager: openDataManager,
+    cleanAndCompress: cleanAndCompress,
+    resetAllTBData: resetAllTBData,
     _removeCustomWord: _removeCustomWord,
     // ── 三新功能 ──
     setRelationType: setRelationType,
@@ -17610,6 +17856,9 @@ function toggleCharaNextBook(idx) {
     collectQuote: collectQuote,
     _doCollectQuote: _doCollectQuote,
     openQuoteLibrary: openQuoteLibrary,
+    openManualToc: openManualToc,
+    closeManualToc: closeManualToc,
+    jumpManualSection: jumpManualSection,
     _qlFilter: _qlFilter,
     _deleteCollectedQuote: _deleteCollectedQuote,
     _exportQuotes: _exportQuotes,
@@ -18576,45 +18825,151 @@ html += _renderHiddenStatsInWS(j);
 
 // ==================== 启动 ====================
 document.addEventListener('DOMContentLoaded', function () {
-  TB.init();
-  window.addEventListener('beforeunload', function() { TB.flushSave(); });
-  // 电脑端键盘快捷键
-  document.addEventListener('keydown', function(e) {
-    // Esc 关闭弹窗
-    if (e.key === 'Escape') {
-      var duelOv = document.getElementById('cardDuelOv');
-      if (duelOv && duelOv.classList.contains('show')) { TB.closeDuel(); e.preventDefault(); return; }
-      var fateOv = document.getElementById('fateEventOv');
-      if (fateOv && fateOv.classList.contains('show')) { TB.closeFateEvent(); e.preventDefault(); return; }
-      var favorOv = document.getElementById('favorEventOv');
-      if (favorOv && favorOv.classList.contains('show')) { TB.closeFavorEvent(); e.preventDefault(); return; }
-      var rewriteOv = document.getElementById('rewriteCompareOv');
-      if (rewriteOv && rewriteOv.classList.contains('show')) { TB.closeRewriteCompare(); e.preventDefault(); return; }
-      var modals = document.querySelectorAll('.modal-ov.show');
-      if (modals.length > 0) {
-        var topModal = null;
-        var topZ = -1;
-        modals.forEach(function(m) {
-          var z = parseInt(window.getComputedStyle(m).zIndex) || 0;
-          if (!z) z = parseInt(m.style.zIndex) || 500;
-          if (z > topZ) { topZ = z; topModal = m; }
-        });
-        if (topModal) TB.closeModal(topModal.id);
-        else TB.closeModal(modals[modals.length - 1].id);
-        e.preventDefault();
-        return;
+  // ── 启动页逻辑 ──
+  var _splashDone = false;
+  var _splashMinTime = 3000;
+  var _splashStart = Date.now();
+
+  function _splashTypewriter(text, el, speed, cb) {
+    var i = 0;
+    var cursor = document.createElement('span');
+    cursor.className = 'st-cursor';
+    el.textContent = '';
+    el.appendChild(cursor);
+    function _type() {
+      if (i < text.length) {
+        var ch = document.createTextNode(text[i]);
+        el.insertBefore(ch, cursor);
+        i++;
+        setTimeout(_type, speed);
+      } else {
+        setTimeout(function() {
+          if (cursor.parentNode) cursor.parentNode.removeChild(cursor);
+          if (cb) cb();
+        }, 400);
       }
-      var wsOv = document.getElementById('wsOverlay');
-      if (wsOv && wsOv.classList.contains('show')) { TB.closeWorldState(); e.preventDefault(); return; }
-      var tlDrawer = document.getElementById('tlDrawer');
-      if (tlDrawer && tlDrawer.classList.contains('open')) { TB.closeTimeline(); e.preventDefault(); return; }
-      var readerOv = document.getElementById('readerOverlay');
-      if (readerOv && readerOv.classList.contains('show')) { TB.closeReader(); e.preventDefault(); return; }
-      TB.hideCtxMenu();
     }
+    _type();
+  }
+
+  function _splashParticles() {
+    var container = document.getElementById('splashParticles');
+    if (!container) return;
+    for (var pi = 0; pi < 20; pi++) {
+      var p = document.createElement('div');
+      p.className = 'splash-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.bottom = '-10px';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 5) + 's';
+      p.style.width = p.style.height = (1 + Math.random() * 2.5) + 'px';
+      p.style.opacity = String(0.2 + Math.random() * 0.5);
+      container.appendChild(p);
+    }
+  }
+
+  function _splashFinish() {
+    if (_splashDone) return;
+    _splashDone = true;
+    var elapsed = Date.now() - _splashStart;
+    var remaining = Math.max(0, _splashMinTime - elapsed);
+
+    setTimeout(function() {
+      var statusEl = document.getElementById('splashStatus');
+      var titleEl = document.getElementById('splashTitle');
+      if (!statusEl || !titleEl) { _splashRemove(); return; }
+
+      statusEl.classList.add('success');
+
+      var isNew = !localStorage.getItem('tb_hasVisited');
+      var userName = '';
+      try {
+        var uc = JSON.parse(localStorage.getItem('bj_userCard') || '{}');
+        userName = (uc.name || '').trim();
+      } catch(e) {}
+
+      if (isNew) {
+        statusEl.textContent = '穿越成功。';
+        setTimeout(_splashRemove, 1800);
+      } else {
+        var welcomeText = userName
+          ? '穿越成功，' + userName + ' 旅者欢迎回来'
+          : '穿越成功，旅者欢迎回来';
+        statusEl.textContent = '';
+        _splashTypewriter(welcomeText, statusEl, 60, function() {
+          setTimeout(_splashRemove, 1200);
+        });
+      }
+    }, remaining);
+  }
+
+  function _splashRemove() {
+    var splash = document.getElementById('splash-screen');
+    if (!splash) return;
+    splash.classList.add('fade-out');
+    setTimeout(function() {
+      if (splash.parentNode) splash.parentNode.removeChild(splash);
+    }, 900);
+  }
+
+  // 启动粒子效果
+  _splashParticles();
+
+  // 打字机显示标题
+  var titleEl = document.getElementById('splashTitle');
+  _splashTypewriter('穿 书 系 统', titleEl, 150, function() {
+    // 标题打字完成后开始加载数据
+
+    // 阶段1：加载基础数据
+    setTimeout(function() {
+      try { TB.init(); } catch(e) { console.error('init error:', e); }
+
+      // 阶段2：绑定事件
+      setTimeout(function() {
+        window.addEventListener('beforeunload', function() { TB.flushSave(); });
+        document.addEventListener('keydown', function(e) {
+          if (e.key === 'Escape') {
+            var duelOv = document.getElementById('cardDuelOv');
+            if (duelOv && duelOv.classList.contains('show')) { TB.closeDuel(); e.preventDefault(); return; }
+            var fateOv = document.getElementById('fateEventOv');
+            if (fateOv && fateOv.classList.contains('show')) { TB.closeFateEvent(); e.preventDefault(); return; }
+            var favorOv = document.getElementById('favorEventOv');
+            if (favorOv && favorOv.classList.contains('show')) { TB.closeFavorEvent(); e.preventDefault(); return; }
+            var rewriteOv = document.getElementById('rewriteCompareOv');
+            if (rewriteOv && rewriteOv.classList.contains('show')) { TB.closeRewriteCompare(); e.preventDefault(); return; }
+            var modals = document.querySelectorAll('.modal-ov.show');
+            if (modals.length > 0) {
+              var topModal = null;
+              var topZ = -1;
+              modals.forEach(function(m) {
+                var z = parseInt(window.getComputedStyle(m).zIndex) || 0;
+                if (!z) z = parseInt(m.style.zIndex) || 500;
+                if (z > topZ) { topZ = z; topModal = m; }
+              });
+              if (topModal) TB.closeModal(topModal.id);
+              else TB.closeModal(modals[modals.length - 1].id);
+              e.preventDefault();
+              return;
+            }
+            var wsOv = document.getElementById('wsOverlay');
+            if (wsOv && wsOv.classList.contains('show')) { TB.closeWorldState(); e.preventDefault(); return; }
+            var tlDrawer = document.getElementById('tlDrawer');
+            if (tlDrawer && tlDrawer.classList.contains('open')) { TB.closeTimeline(); e.preventDefault(); return; }
+            var readerOv = document.getElementById('readerOverlay');
+            if (readerOv && readerOv.classList.contains('show')) { TB.closeReader(); e.preventDefault(); return; }
+            TB.hideCtxMenu();
+          }
+        });
+        document.addEventListener('fullscreenchange', function () { TB._onFsChange(); });
+        document.addEventListener('webkitfullscreenchange', function () { TB._onFsChange(); });
+
+        // 阶段3：完成
+        setTimeout(function() {
+          _splashFinish();
+        }, 300);
+      }, 200);
+    }, 100);
   });
-  document.addEventListener('fullscreenchange', function () { TB._onFsChange(); });
-  document.addEventListener('webkitfullscreenchange', function () { TB._onFsChange(); });
 });
 </script>
 <script>
