@@ -9815,6 +9815,8 @@ function openRpGroupById(groupId){
 function closeRpGroup(){
   navPop('rpGroupModal');
   document.getElementById('rpGroupModal').classList.remove('show');
+  // 退出群聊后回到通讯录页，必须恢复底部导航栏（同closeRolePlay）
+  document.getElementById('bnav').classList.remove('hide');
   if(rpGroupAbortCtrl){try{rpGroupAbortCtrl.abort();}catch(e){} rpGroupAbortCtrl=null;}
 }
 
@@ -10199,6 +10201,7 @@ function openRpGroupSettings(){
 function closeRpGroupSettings(){
   navPop('rpGroupSettingsOv');
   document.getElementById('rpGroupSettingsOv').classList.remove('show');
+  document.getElementById('bnav').classList.remove('hide');
   rpEditingGroupId='';
 }
 
@@ -10297,6 +10300,7 @@ function openRpGroupMemoryModal(){
 function closeRpGroupMemoryModal(){
   navPop('rpGroupMemoryOv');
   document.getElementById('rpGroupMemoryOv').classList.remove('show');
+  document.getElementById('bnav').classList.remove('hide');
 }
 
 function deleteRpGroupMemory(memId){
@@ -11057,7 +11061,10 @@ function openRpChatById(charId){
 function closeRolePlay(){
   navPop('rpModal');
   document.getElementById('rpModal').classList.remove('show');
-  // 注意：不恢复bnav，因为通讯录还在
+  // 退出聊天后回到通讯录页，必须恢复底部导航栏
+  // （聊天内如打开过角色编辑/记忆/设置等子弹窗，关闭时可能仍处于"聊天中"而未恢复bnav，
+  //  这里作为退出聊天的最终出口，兜底恢复，避免底部栏消失）
+  document.getElementById('bnav').classList.remove('hide');
   if(rpAbortCtrl){try{rpAbortCtrl.abort();}catch(e){} rpAbortCtrl=null;}
 }
 
@@ -11983,6 +11990,7 @@ function renderRpMemoryPanel(){
 function closeRpMemory(){
   navPop('rpMemoryOv');
   document.getElementById('rpMemoryOv').classList.remove('show');
+  document.getElementById('bnav').classList.remove('hide');
 }
 
 function saveRpMemory(){
