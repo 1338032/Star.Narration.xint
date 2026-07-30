@@ -25,6 +25,34 @@
 
 ---
 
+## 🖼️ 界面预览
+
+<p align="center">
+  <img src="./homepage.jpg" alt="星叙首页" width="45%" />
+  <img src="./start.jpg" alt="星叙创作起始页" width="45%" />
+</p>
+
+<p align="center"><sub>首页总览（左）· 新建作品 / 快速开始（右）</sub></p>
+
+---
+
+## 📑 目录
+
+- [🖼️ 界面预览](#🖼️-界面预览)
+- [📢 星叙的创作立场声明](#📢-星叙的创作立场声明)
+- [✨ 核心功能](#✨-核心功能)
+- [🚀 更多亮点](#🚀-更多亮点)
+- [🎨 界面主题](#🎨-界面主题)
+- [📲 安装与使用](#📲-安装与使用)
+- [💻 本地运行与部署指南](#💻-本地运行与部署指南)
+- [🔒 隐私与安全](#🔒-隐私与安全)
+- [💡 快速上手](#💡-快速上手)
+- [🛠️ 技术特性](#🛠️-技术特性)
+- [📬 联系作者](#📬-联系作者)
+- [⚖️ 版权声明](#⚖️-版权声明)
+
+---
+
 ## 📢 星叙的创作立场声明
 
 **星叙从诞生之初，就明确反对**用 AI 批量生成低质内容、刷平台、代笔代写等行为。
@@ -104,6 +132,15 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
   </tr>
 </table>
 
+### 📸 功能截图
+
+<p align="center">
+  <img src="./writing.jpg" alt="写作界面" width="45%" />
+  <img src="./read.jpg" alt="沉浸式阅读界面" width="45%" />
+</p>
+
+<p align="center"><sub>AI 辅助写作面板（左）· 沉浸式阅读模式（右）</sub></p>
+
 ---
 
 ## 🚀 更多亮点
@@ -161,6 +198,48 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 ```
 https://1338032.github.io/Star.Narration.xint/syn.apk
 ```
+
+---
+
+## 💻 本地运行与部署指南
+
+星叙是一个**纯前端单文件应用**，零构建、零依赖，二次开发或本地调试非常简单。
+
+### 本地运行
+
+**方式一：直接打开**
+
+克隆或下载本仓库后，用浏览器直接打开根目录下的 `index.html` 即可运行，无需任何环境配置。
+
+**方式二：使用静态服务器（推荐）**
+
+部分浏览器对本地文件的 PWA / Service Worker 等能力有限制，建议用任意静态服务器托管后访问：
+
+```bash
+# 方式 A：Python 自带服务器
+python -m http.server 8000
+
+# 方式 B：Node.js（需先全局安装 serve）
+npx serve .
+
+# 方式 C：VS Code
+安装 "Live Server" 插件后，右键 index.html → Open with Live Server
+```
+
+启动后浏览器访问 `http://localhost:8000` 即可。
+
+### 部署上线
+
+星叙不依赖任何后端，可直接部署到任意静态托管平台：
+
+| 平台 | 部署方式 |
+|------|----------|
+| **GitHub Pages** | Fork 本仓库 → 仓库 Settings → Pages 中选择部署分支即可 |
+| **Vercel** | 导入本仓库 → 无需额外配置 → 一键部署 |
+| **Netlify** | 将项目文件夹拖拽到 Netlify 控制台，或连接 Git 仓库自动部署 |
+| **其他静态托管** | Nginx、云存储静态网站托管等，只需将全部文件上传至根目录即可 |
+
+> 💡 因为是纯静态单文件应用，部署时**无需配置任何构建命令**，直接托管项目根目录即可生效。
 
 ---
 
@@ -250,6 +329,17 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 ---
 
+## 🖼️ Screenshots
+
+<p align="center">
+  <img src="./homepage.jpg" alt="Home page" width="45%" />
+  <img src="./start.jpg" alt="New story / getting started page" width="45%" />
+</p>
+
+<p align="center"><sub>Home overview (left) · New project / quick start (right)</sub></p>
+
+---
+
 ## 📢 Statement of Creative Positioning
 
 From its inception, Star Narration has clearly opposed the use of AI for mass-producing low-quality content, platform manipulation, or ghostwriting.
@@ -308,6 +398,15 @@ Step into your own original or bookmarked novel as a custom character and intera
 ### ℹ️ About Star Narration
 A dedicated page with the app's story, the developer's notes, a feedback survey, email contact, a GitHub star link, and an optional support QR code.
 
+### 📸 Feature Screenshots
+
+<p align="center">
+  <img src="./writing.jpg" alt="Writing interface" width="45%" />
+  <img src="./read.jpg" alt="Immersive reading mode" width="45%" />
+</p>
+
+<p align="center"><sub>AI-assisted writing panel (left) · Immersive reading mode (right)</sub></p>
+
 ---
 
 ## 🚀 More Highlights
@@ -349,6 +448,48 @@ Use browser “Add to Home Screen” or install icon in Chrome/Safari.
 
 ### Android APK
 https://1338032.github.io/Star.Narration.xint/syn.apk
+
+---
+
+## 💻 Run Locally & Deployment
+
+Star Narration is a **pure frontend, single-file app** — no build step, no dependencies. It's easy to run locally or deploy anywhere.
+
+### Run locally
+
+**Option A — Open directly**
+
+Clone or download this repo and open `index.html` in your browser. That's it — no setup required.
+
+**Option B — Use a local static server (recommended)**
+
+Some browser features (PWA, Service Worker) are restricted when opening files directly, so a local server is recommended:
+
+```bash
+# Python
+python -m http.server 8000
+
+# Node.js (requires serve)
+npx serve .
+
+# VS Code
+Install the "Live Server" extension, then right-click index.html → Open with Live Server
+```
+
+Then visit `http://localhost:8000` in your browser.
+
+### Deployment
+
+Since there's no backend, Star Narration can be deployed to any static hosting platform:
+
+| Platform | How |
+|------|----------|
+| **GitHub Pages** | Fork this repo → Settings → Pages → select the deploy branch |
+| **Vercel** | Import this repo → no config needed → deploy |
+| **Netlify** | Drag the project folder into the Netlify dashboard, or connect the Git repo |
+| **Other static hosts** | Any static file host (Nginx, cloud storage static hosting, etc.) works — just upload the root folder |
+
+> 💡 No build command is required since it's a static single-file app — just host the project root.
 
 ---
 
