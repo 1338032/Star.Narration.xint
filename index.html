@@ -36,7 +36,7 @@
 }
 :root{
 --bg:#0f0f14;--card:#1a1a24;--card2:#22222f;--card-rgb:26,26,36;
---accent:#6c5ce7;--accent2:#a29bfe;
+--accent:#6c5ce7;--accent2:#a29bfe;--accent-rgb:108,92,231;
 --text:#e8e8f0;--text2:#9090a8;
 --danger:#ff6b6b;--success:#51cf66;
 --border:#2a2a3a;--shadow:0 4px 20px rgba(0,0,0,0.4);
@@ -122,9 +122,9 @@ radial-gradient(ellipse 60% 40% at 80% 110%,rgba(162,155,254,.06),transparent 50
 radial-gradient(circle at 50% 50%,rgba(108,92,231,.02),transparent 70%);
 pointer-events:none;
 }
-body.theme-warm{--accent:#e67e22;--accent2:#f0b27a;--border:#3a2a1a;}
-body.theme-green{--accent:#27ae60;--accent2:#58d68d;--border:#1a3a2a;}
-body.theme-blue{--accent:#2980b9;--accent2:#5dade2;--border:#1a2a3a;}
+body.theme-warm{--accent:#e67e22;--accent2:#f0b27a;--border:#3a2a1a;--accent-rgb:230,126,34;}
+body.theme-green{--accent:#27ae60;--accent2:#58d68d;--border:#1a3a2a;--accent-rgb:39,174,96;}
+body.theme-blue{--accent:#2980b9;--accent2:#5dade2;--border:#1a2a3a;--accent-rgb:41,128,185;}
 body.theme-light{
 --bg:#f5f5f8;--card:#ffffff;--card2:#eeeef3;--card-rgb:255,255,255;
 --text:#1a1a2e;--text2:#555570;--border:#d0d0e0;
@@ -1992,6 +1992,37 @@ animation:xjBlink 6s ease-in-out infinite 3s;
 .xj-float-btn:hover img{
 animation:none;
 }
+/* ===== API设置页：配置教程 首次新手引导 ===== */
+@keyframes apiGuideRedGlow{
+0%,100%{box-shadow:0 0 0 0 rgba(255,107,107,0);border-color:var(--border);}
+50%{box-shadow:0 0 14px 4px rgba(255,107,107,.65);border-color:var(--danger);}
+}
+#apiGuideBtn.api-guide-flash{
+animation:apiGuideRedGlow 1.1s ease-in-out infinite;
+}
+.api-guide-xj-badge{
+position:fixed;
+width:44px;height:56px;
+z-index:9999;
+pointer-events:none;
+animation:xjGlobalFloat 5s ease-in-out infinite;
+}
+.api-guide-xj-badge::before{
+content:'';
+position:absolute;top:50%;left:50%;
+transform:translate(-50%,-50%);
+width:150%;height:150%;
+border-radius:50%;
+background:radial-gradient(circle,rgba(162,155,254,.3) 0%,rgba(108,92,231,.1) 40%,transparent 65%);
+animation:xjSoftGlow 4s ease-in-out infinite;
+z-index:-1;
+}
+.api-guide-xj-badge img{
+width:100%;height:100%;
+object-fit:contain;
+pointer-events:none;
+filter:drop-shadow(0 4px 12px rgba(108,92,231,.5));
+}
 .ucard-top{
 padding:20px 18px 14px;display:flex;align-items:center;gap:14px;
 }
@@ -2199,22 +2230,24 @@ border:1px solid var(--border);position:relative;
 background:none;border:none;color:var(--danger);font-size:10px;cursor:pointer;
 padding:3px 8px;border-radius:6px;border:1px solid rgba(255,107,107,.3);
 }
-/* 全屏关系图谱弹窗 */
+/* 宇宙关系网（原"角色关系图谱"）弹窗：固定深色沉浸风格，不跟随站点浅色/深色主题切换 */
 .rel-graph-modal{
   display:none;position:fixed;inset:0;z-index:700;
-  background:var(--bg);overflow:hidden;
+  background:radial-gradient(ellipse 80% 60% at 50% 30%,#141225 0%,#05050a 70%);
+  overflow:hidden;
   flex-direction:column;
+  color:#e8e6ff;
 }
 .rel-graph-modal.show{display:flex;animation:slideUp .3s ease;}
 .rel-graph-modal .rgm-hdr{
   position:sticky;top:0;z-index:10;
   padding:14px 18px;display:flex;align-items:center;gap:12px;
-  border-bottom:1px solid var(--border);
-  background:linear-gradient(135deg,rgba(108,92,231,.12),rgba(162,155,254,.06));
+  border-bottom:1px solid rgba(255,255,255,.1);
+  background:linear-gradient(135deg,rgba(108,92,231,.22),rgba(162,155,254,.08));
   backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);
   flex-shrink:0;
 }
-.rel-graph-modal .rgm-hdr h2{flex:1;font-size:17px;font-weight:700;margin:0;}
+.rel-graph-modal .rgm-hdr h2{flex:1;font-size:17px;font-weight:700;margin:0;color:#fff;}
 .rel-graph-modal .rgm-body{
   flex:1;overflow:hidden;position:relative;
   touch-action:none;
@@ -2233,35 +2266,35 @@ padding:3px 8px;border-radius:6px;border:1px solid rgba(255,107,107,.3);
   bottom:calc(58px + env(safe-area-inset-bottom,0px));
   right:12px;
   z-index:8;
-  display:flex;flex-direction:column;gap:6px;
+  display:flex;flex-direction:column;gap:8px;
 }
+/* 放大/缩小/重置：统一改为半透明磨砂玻璃样式 */
 .rel-graph-modal .rgm-ctrl-btn{
-  width:40px;height:40px;border-radius:50%;
-  border:1px solid var(--border);background:var(--card);
-  color:var(--text);font-size:18px;cursor:pointer;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(14px) saturate(160%);-webkit-backdrop-filter:blur(14px) saturate(160%);
+  color:#fff;font-size:18px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 10px rgba(0,0,0,.2);
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
   transition:all .2s;
 }
-.rel-graph-modal .rgm-ctrl-btn:active{transform:scale(.9);border-color:var(--accent);}
+.rel-graph-modal .rgm-ctrl-btn:active{transform:scale(.9);background:rgba(255,255,255,.16);}
 .rel-graph-modal .rgm-zoom-info{
   position:absolute;top:14px;right:16px;z-index:5;
   padding:4px 10px;border-radius:8px;
-  background:var(--card);border:1px solid var(--border);
-  font-size:10px;color:var(--text2);
+  background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  font-size:10px;color:rgba(255,255,255,.75);
   pointer-events:none;
 }
 .rel-graph-modal .rgm-legend{
   position:absolute;bottom:0;left:0;right:0;z-index:5;
-  background:rgba(12,12,20,.9);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-top:1px solid rgba(108,92,231,.18);
+  background:rgba(10,10,18,.88);
+  backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);
+  border-top:1px solid rgba(162,155,254,.2);
   padding:5px 76px calc(6px + env(safe-area-inset-bottom,0px)) 10px;
-  font-size:9px;color:var(--text2);
-}
-body.theme-light .rel-graph-modal .rgm-legend{
-  background:rgba(245,245,248,.94);
-  border-top-color:rgba(0,0,0,.1);
+  font-size:9px;color:rgba(232,230,255,.75);
 }
 .rgm-legend-types{
   display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;
@@ -2279,10 +2312,10 @@ body.theme-light .rel-graph-modal .rgm-legend{
 .rel-graph-modal .rgm-filter-bar::-webkit-scrollbar{display:none;}
 .rel-graph-modal .rgm-filter-btn{
   padding:2px 8px;border-radius:8px;font-size:9px;
-  cursor:pointer;border:1px solid var(--border);flex-shrink:0;
-  background:transparent;color:var(--text2);transition:all .2s;
+  cursor:pointer;border:1px solid rgba(255,255,255,.16);flex-shrink:0;
+  background:rgba(255,255,255,.05);color:rgba(232,230,255,.7);transition:all .2s;
 }
-.rel-graph-modal .rgm-filter-btn.act{border-color:var(--accent);background:rgba(108,92,231,.2);color:var(--accent2);}
+.rel-graph-modal .rgm-filter-btn.act{border-color:#a29bfe;background:rgba(108,92,231,.35);color:#fff;}
 .rel-graph-modal .rgm-filter-btn:active{transform:scale(.92);}
 /* 拖动提示 */
 .rgm-drag-hint{
@@ -2290,10 +2323,11 @@ body.theme-light .rel-graph-modal .rgm-legend{
   background:rgba(108,92,231,.82);color:#fff;
   padding:5px 14px;border-radius:20px;font-size:10px;
   pointer-events:none;z-index:8;opacity:0;
-  animation:rgmHintFade 3s ease forwards;
+  white-space:nowrap;
+  animation:rgmHintFade 3.6s ease forwards;
 }
 @keyframes rgmHintFade{
-  0%{opacity:0;} 15%{opacity:1;} 75%{opacity:1;} 100%{opacity:0;}
+  0%{opacity:0;} 12%{opacity:1;} 80%{opacity:1;} 100%{opacity:0;}
 }
 /* 人物关系图 */
 .rel-graph{padding:14px;background:var(--bg);border-radius:12px;border:1px solid var(--border);margin-top:12px;}
@@ -2638,31 +2672,6 @@ transition:all .3s;
 .cr-new-bar button:active{transform:scale(.97);}
 
 /* EDITOR MODAL */
-/* IMMERSIVE MODE */
-.ed-modal.immersive{background:#0a0a0f;} body.theme-light .ed-modal.immersive{background:#f8f8fc;} body.theme-light .ed-modal.immersive .ed-textarea{color:#1a1a2e;}
-.ed-modal.immersive .ed-hdr{display:none;}
-.ed-modal.immersive .ed-acts{display:none;}
-.ed-modal.immersive .ed-ch-bar{display:none;}
-.ed-modal.immersive .ed-footer{
-position:fixed;bottom:0;left:0;right:0;
-background:rgba(10,10,15,.9);backdrop-filter:blur(10px);
-border-top:1px solid rgba(108,92,231,.2);
-}
-.ed-modal.immersive .ed-body{padding:20px 24px 80px;}
-.ed-modal.immersive .ed-textarea{
-background:transparent;border:none;
-font-size:18px;line-height:2.2;
-min-height:calc(100vh - 100px);
-}
-.ed-modal.immersive .ed-textarea:focus{border:none;box-shadow:none;}
-.immersive-exit{
-position:fixed;top:16px;right:16px;z-index:100;
-padding:8px 14px;border-radius:20px;
-background:rgba(108,92,231,.2);border:1px solid var(--accent);
-color:var(--accent2);font-size:11px;cursor:pointer;
-display:none;
-}
-.ed-modal.immersive .immersive-exit{display:block;}
 /* ===== 氛围写作 ===== */
 .ambience-bg{position:absolute;inset:0;background-size:cover;background-position:center;pointer-events:none;display:none;opacity:.55;transition:opacity .8s;}
 body.theme-light .ambience-bg{opacity:.82;}
@@ -2819,8 +2828,6 @@ cursor:pointer;display:flex;justify-content:space-between;
 align-items:center;transition:all .3s;
 }
 .tool-bar-toggle:active{transform:scale(.98);border-color:var(--accent);}
-.tool-bar-toggle svg{width:16px;height:16px;color:var(--text2);transition:transform .3s;}
-.tool-bar-toggle.open svg{transform:rotate(180deg);}
 .tool-bar-toggle .tbt-hint{font-size:11px;color:var(--text2);font-weight:400;margin-left:8px;}
 .tool-bar-panel{
 display:none;margin-top:8px;padding:12px;
@@ -3032,6 +3039,11 @@ padding:2px 8px;border-radius:7px;font-size:9px;font-weight:600;
 .res-card-type.exp{background:rgba(241,196,15,.15);color:#f1c40f;} .res-card-type.rule{background:rgba(155,89,182,.15);color:#9b59b6;}
 .res-card-type.ban{background:rgba(255,107,107,.15);color:var(--danger);}
 .ch-outline-item{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
+.ver-icon-btn{width:30px;height:30px;border-radius:50%;border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;-webkit-tap-highlight-color:transparent;transition:background .2s;flex-shrink:0;color:var(--text2);}
+.ver-icon-btn:active{background:rgba(108,92,231,.14);}
+.ver-icon-btn.accent{color:var(--accent2);}
+.ver-icon-btn.danger{color:var(--danger);}
+.ver-icon-btn.danger:active{background:rgba(255,107,107,.14);}
 .ch-outline-item-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
 .ch-outline-item-hdr span{font-size:12px;font-weight:600;color:var(--accent2);}
 .ch-outline-item textarea{width:100%;padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:11px;min-height:60px;resize:vertical;font-family:inherit;line-height:1.6;}
@@ -4335,8 +4347,7 @@ animation:goalBarShine 3s ease infinite;
 .ed-read-mode .ed-footer,
 .ed-read-mode #edToolPanel,
 .ed-read-mode #edWriteSettings,
-.ed-read-mode #edSearchBar,
-.ed-read-mode .immersive-exit{display:none!important;}
+.ed-read-mode #edSearchBar{display:none!important;}
 .ed-read-mode .ed-body{padding:0!important;overflow:hidden!important;}
 
 .ed-reader-container{
@@ -6215,9 +6226,6 @@ i.fas,i.far,i.fab{font-size:1em;margin-right:3px;vertical-align:middle;font-styl
   .rd-reader-container,
   .rd-reader-overlay{left:0;}
 
-  /* 编辑器沉浸模式底栏 */
-  .ed-modal.immersive .ed-footer{left:180px;}
-
   /* 编辑器内阅读模式 */
   .ed-reader-container,
   .ed-reader-settings-ov{left:180px;}
@@ -6665,18 +6673,35 @@ body.theme-light .ed-scroll-btn{
 }
 #edScrollTop{bottom:calc(76px + env(safe-area-inset-bottom,0px));}
 #edScrollBottom{bottom:calc(76px + env(safe-area-inset-bottom,0px));}
-/* ==================== 编辑器文本区 粗滚动条 ==================== */
-#edTextarea::-webkit-scrollbar{width:14px;}
-#edTextarea::-webkit-scrollbar-track{
-  background:rgba(108,92,231,.06);
+/* ==================== 编辑器文本区：自定义滚动条 ====================
+   原生 ::-webkit-scrollbar 有个硬限制：它永远贴在可滚动元素自己的边缘，没有任何 CSS 能让它
+   "离容器边缘远一点"而同时完全不影响内容区域——之前来回试的两版方案，一版挤压了
+   .ed-textarea 的宽度/margin（会让文字跟着变窄、左右不均），另一版给滑块加透明边框做视觉
+   内缩（滑块本身反而变细，更难点准）——都没有真正达到"只挪动滚动条，文字区域一点不动"。
+   这次不再用原生滚动条：把 #edTextarea 自带的滚动条隐藏掉（隐藏后完全不影响正常的手指滑动/
+   滚轮滚动，只是不显示浏览器自带的那条滚动条 UI），改用两个绝对定位的 div 在 .ed-body 里
+   画一条独立的滚动条（轨道 #edCustomScrollbar + 滑块 #edCustomScrollbarThumb）。它是叠在
+   .ed-body 上层的浮动元素，不占用 .ed-textarea 的任何宽度/padding，可以自由设置离右边缘的
+   距离（right:6px，比原来贴边的原生滚动条明显往里挪了一截），文字排版一个像素都不受影响。
+   滑块的位置/高度随内容动态计算、支持拖拽、颜色跟随主题变化，逻辑见文件末尾
+   "编辑器自定义滚动条" 那一段 JS。 */
+#edTextarea{scrollbar-width:none;-ms-overflow-style:none;}
+#edTextarea::-webkit-scrollbar{display:none;width:0;height:0;}
+.ed-custom-scrollbar{
+  position:absolute;top:6px;bottom:6px;right:6px;width:6px;
+  z-index:5;border-radius:3px;
+  background:rgba(var(--accent-rgb,108,92,231),.05);
+  display:none;
 }
-#edTextarea::-webkit-scrollbar-thumb{
-  background:rgba(108,92,231,.42);
-  border-radius:7px;
-  min-height:50px;
+.ed-custom-scrollbar.show{display:block;}
+.ed-custom-scrollbar-thumb{
+  position:absolute;left:0;right:0;top:0;
+  min-height:44px;border-radius:3px;
+  background:rgba(var(--accent-rgb,108,92,231),.5);
+  touch-action:none;
 }
-#edTextarea::-webkit-scrollbar-thumb:active{
-  background:rgba(108,92,231,.72);
+.ed-custom-scrollbar-thumb.dragging{
+  background:rgba(var(--accent-rgb,108,92,231),.8);
 }
 </style>
 <!-- [FIX-2] 防FOUC：在CSS解析前同步应用主题class，消除浅色模式用户首次加载时的暗色→亮色闪白问题 -->
@@ -6712,34 +6737,34 @@ body.theme-light .ed-scroll-btn{
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
       <i class="fas fa-scroll" style="font-size:18px;color:var(--accent2)"></i>
       <h2 style="font-size:17px;font-weight:700;color:var(--text);margin:0">星叙 使用协议</h2>
-      <span style="margin-left:auto;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(108,92,231,.15);color:var(--accent2)">v2.0</span>
+      <span style="margin-left:auto;font-size:10px;padding:2px 8px;border-radius:10px;background:rgba(108,92,231,.15);color:var(--accent2)">v1.2</span>
     </div>
     <p style="font-size:12px;color:var(--text2);margin:0">请滑到底部阅读完整协议后，勾选并确认方可继续使用</p>
   </div>
   <!-- 协议正文（可滚动） -->
   <div id="agreementBody" style="flex:1;overflow-y:auto;padding:16px 18px;-webkit-overflow-scrolling:touch;" onscroll="checkAgreementScroll()">
-    <p><strong>版本：</strong>v2.0 &nbsp;|&nbsp; <strong>生效时间：</strong>用户在本弹窗中点击"确认"时立即生效。</p>
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">1. 版权声明与所有权</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">本网页（星叙）的整体代码、界面设计、交互逻辑、视觉风格、功能命名、原创文案、专属图标、吉祥物形象（包括但不限于"星笺"角色形象及配图）等，均为作者"心田"独立创作开发，依法享有完整著作权及相关知识产权。</p>
-    <p style="font-size:13px;line-height:1.8;color:var(--text);margin-top:6px">以下为核心独创性功能模块，受著作权法保护，禁止任何形式的抄袭、仿制、套壳或实质性相似复用：星笺、精华压缩器、上下文设置、伏笔追踪器、资源广场、高级创作，及其他具有原创性的功能设计与交互方式。</p>
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">2. 禁止行为</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)"><strong>2.1 禁止抄袭功能：</strong>不得以任何形式复制、模仿、重写本网页的独创性功能模块。<br><strong>2.2 禁止套壳与仿制：</strong>不得开发与本网页功能、界面、交互方式高度相似的产品。<br><strong>2.3 禁止使用相同视觉元素：</strong>不得复制本网页专属图标、星笺形象、Logo、配色方案。<br><strong>2.4 禁止冒充原创：</strong>不得将本网页任意部分作为自己的原创作品发布、出售或用于商业宣传。<br><strong>2.5 禁止逆向工程（竞争目的）：</strong>不得以开发竞争性产品为目的对本网页代码进行反编译或提取核心逻辑（为互操作性目的的合理研究除外）。<br><strong>2.6 禁止恶意滥用：</strong>不得利用本网页生成违法、违规、侵权或虚假信息。</p>
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">3. 授权范围与生成内容</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">本网页为个人创作者免费提供的公益工具，用户可自由用于个人创作、学习、非商业分享。作者不额外限制生成内容的商业化使用，但：<strong>① AI直接生成内容的著作权状态在法律上存在不确定性；② 用户须遵守所在平台的AI内容管理规则；③ 平台要求时须主动声明使用了AI辅助工具；④ 因此产生的纠纷由用户自行承担。</strong>用户不得声称本网页的AI技术由本人独立开发。</p>
+    <p style="font-size:12px;line-height:1.8;color:var(--text2)">这份协议是我自己写的，不是律师起草的正式法律文件——星叙是我业余做的一个开源小项目，希望协议也能像项目本身一样简单直接。</p>
+    <p><strong>版本：</strong>v1.2 &nbsp;|&nbsp; <strong>生效时间：</strong>用户在本弹窗中点击"确认"时立即生效。</p>
+    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">1. 代码和创意归属</h3>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">星叙的代码、界面设计、交互逻辑、文案、图标，以及"星笺"这个虚拟角色形象，都是我（心田）自己业余时间独立做出来的，著作权归我所有。星笺、精华压缩器、上下文设置、伏笔追踪器、资源广场、高级创作这几个功能是我比较看重的原创设计。</p>
+    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">2. 关于抄袭和套壳</h3>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">星叙的代码在 GitHub 上是公开的，欢迎阅读、学习、二次开发用于个人非商业用途，也欢迎自己部署一份来用。但请不要把星叙整个或核心功能换个名字、套个壳，包装成你自己原创的产品去发布或宣传；也请不要直接照搬上面提到的独创功能设计、界面视觉、星笺形象，去做一个高度相似的"竞品"。简单说：可以学，可以用，但别把别人做的东西说成是自己的。</p>
+    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">3. 生成的内容归你</h3>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">用星叙生成的内容归你自己所有，我不主张任何权利。需要提醒的是：AI生成内容的著作权在法律上还存在一些不确定性，各国规定也不太一样；如果要投稿发布，记得看一下对方平台对AI辅助创作的规则，需要时主动说明用了AI工具；因此产生的纠纷需要你自己承担。另外，星叙只是帮你调用你自己配置的AI接口，不能说星叙背后的AI模型是你自己开发的。</p>
     <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">4. 隐私与数据</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)"><strong>星叙 本身不存储、不上传、不查看你的任何数据。</strong>你的所有创作内容、角色设定、世界观等，全部仅存在于你自己设备的本地浏览器中（localStorage / IndexedDB），作者无法访问。</p>
-    <p style="font-size:13px;line-height:1.8;color:var(--text);margin-top:6px">星叙 是一个纯前端工具，不提供 AI 服务。当你点击"生成"时，你的内容会发送给<strong>你自己配置的第三方 AI 服务商</strong>（如 OpenAI、DeepSeek、Claude 等）。你的内容是否被第三方存储，<strong>完全取决于你所选服务商的隐私政策</strong>，与星叙无关。你自行配置的 API Key 由你本人负责保管，星叙不会转发或记录。</p>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)"><strong>星叙不会存、不会传、也看不到你的任何数据。</strong>你的所有创作内容——人物设定、世界观等，全部只存在你自己设备的本地浏览器中（localStorage / IndexedDB），我完全访问不到。</p>
+    <p style="font-size:13px;line-height:1.8;color:var(--text);margin-top:6px">星叙是纯前端工具，不提供 AI 服务。点击"生成"时，内容会发给<strong>你自己配置的第三方 AI 服务商</strong>（如 OpenAI、DeepSeek、Claude 等）。内容是否被第三方存储，<strong>取决于你所选服务商自己的隐私政策</strong>，与星叙无关。你的 API Key 只存在本地，星叙不会转发或记录。</p>
     <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">5. 未成年人使用</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">本网页适合具备完全民事行为能力的成年人（年满18周岁）使用。未成年人须在监护人的陪同、指导和同意下使用。</p>
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">6. 侵权处理</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">如发现违反本协议的行为，作者保留采取法律手段维权的权利，包括要求停止侵权、删除仿制内容、公开道歉、赔偿损失等。第三方权利人若认为用户生成内容侵权，可通过协议末尾联系方式提交书面投诉。</p>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">星叙比较适合成年人使用。未成年人想用的话，最好有监护人陪同、了解之后再使用。</p>
+    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">6. 如果发现抄袭</h3>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">如果发现有人明显抄袭、套壳星叙，我会先尝试私下沟通；实在解决不了，可能会通过平台投诉或其他合理方式处理。如果你发现星叙生成的内容侵犯了第三方权益，也欢迎通过下面的联系方式告诉我。</p>
     <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">7. 免责声明</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">星叙 是免费提供的纯前端创作辅助工具，按"现状"提供，不对可用性或功能完整性做任何保证。本工具本身不提供 AI 服务，仅作为你与第三方 AI 服务商之间的调用界面。你使用本工具及第三方 AI 服务所产生的一切后果，均由你自行承担。对于因作者直接过错导致的直接损失，赔偿上限为人民币一千元（¥1,000）。</p>
-    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">8. 协议更新与生效</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">本协议自用户在此弹窗中勾选并点击"确认"时正式生效。协议版本号变更后，用户下次访问时将再次看到本弹窗，需重新确认后方可继续使用。如不同意本协议，请点击"放弃"并停止使用本网页。</p>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">星叙是免费的业余项目，我会尽量让它稳定好用，但没法保证完全没有bug、不出问题。星叙本身不提供 AI 服务，只是帮你转发请求到你自己配置的第三方接口，所以 AI 回复的质量、内容是否合规、第三方服务本身的问题，都不是我能控制的，需要你自己判断和承担。建议定期用"导出数据"功能自己备份，免得意外丢失创作内容。</p>
+    <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">8. 协议什么时候会变</h3>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">如果协议内容有比较大的调整，这里的版本号会更新，下次打开时会再看到这个弹窗，需要重新确认才能继续使用。如果不同意，直接关闭网页就好，星叙不是必需品，好聚好散。</p>
     <h3 style="margin:14px 0 6px;font-size:14px;color:var(--accent2)">9. 联系方式</h3>
-    <p style="font-size:13px;line-height:1.8;color:var(--text)">如对本协议有任何疑问或发现侵权行为：<br> 小红书：27418565861<br>（推荐）邮箱：a13380324832@qq.com<br>QQ：962005530</p>
-    <p style="margin-top:20px;text-align:center;font-size:13px;font-weight:700;color:var(--accent2)">使用即代表你已阅读、理解并同意本协议的全部内容。</p>
+    <p style="font-size:13px;line-height:1.8;color:var(--text)">有问题、建议，或者发现了什么状况，都欢迎找我聊聊：<br> 小红书：27418565861（推荐）<br>邮箱：a13380324832@qq.com<br>QQ：962005530</p>
+    <p style="margin-top:20px;text-align:center;font-size:13px;font-weight:700;color:var(--accent2)">勾选"确认"即表示你已经读过、也认可上面这些内容。</p>
     <div id="agreementBottomAnchor" style="height:1px;margin-top:4px"></div>
   </div>
   <!-- 勾选区（未滑到底前半透明、不可交互） -->
@@ -6750,7 +6775,7 @@ body.theme-light .ed-scroll-btn{
     </label>
     <label id="agreeCheck2Label" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;opacity:0.35;pointer-events:none;cursor:not-allowed;transition:opacity .3s">
       <input type="checkbox" id="agreeCheck2" style="width:18px;height:18px;flex-shrink:0;accent-color:var(--accent)" onchange="updateAgreementConfirmBtn()">
-      <span style="font-size:13px;color:var(--text);line-height:1.5">我同意履行责任，承担使用本工具的相应义务</span>
+      <span style="font-size:13px;color:var(--text);line-height:1.5">我理解并同意上面的内容</span>
     </label>
     <p id="agreementScrollHint" style="text-align:center;font-size:11px;color:var(--text2);margin-bottom:10px">↓ 请滑到协议底部后才可勾选 ↓</p>
     <div style="display:flex;gap:10px">
@@ -6904,10 +6929,17 @@ body.theme-light .ed-scroll-btn{
 <!-- 懒人通道：继续写 / 新故事入口 -->
 <div id="lazyLaneCard" style="margin:0 0 10px 0;display:none"></div>
 
-<button class="tool-bar-toggle" onclick="toggleCrToolbar(this)" id="crToolToggle">
-<span><i class="fas fa-tools"></i> 创作工具箱 <span class="tbt-hint">新建、AI辅助、导出</span></span>
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+<div class="tool-bar-toggle" onclick="toggleCrToolbar(this)" id="crToolToggle" style="justify-content:flex-start;gap:8px">
+<span id="crToolNormalLabel" style="display:flex;align-items:center;flex:1;min-width:0;overflow:hidden;white-space:nowrap"><i class="fas fa-tools"></i>&nbsp;创作工具箱 <span class="tbt-hint">新建、AI辅助、导出</span></span>
+<span id="crToolSearchRow" style="display:none;align-items:center;gap:8px;flex:1;min-width:0" onclick="event.stopPropagation()">
+<button onclick="closeCrToolSearch()" title="退出搜索" style="flex-shrink:0;width:28px;height:28px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--success);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent"><i class="fas fa-check"></i></button>
+<!-- 搜索不单开结果区域，直接过滤下面草稿箱/我的小说自己那个列表（见 filterCrListBySearch → renderCrList） -->
+<input type="text" id="crToolSearchInput" placeholder="搜索作品名称或创建时间…" oninput="filterCrListBySearch(this.value)" style="flex:1;min-width:0;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:13px;font-weight:400;outline:none;box-sizing:border-box">
+</span>
+<button id="crToolSearchTrigger" onclick="event.stopPropagation();openCrToolSearch()" title="搜索作品" style="flex-shrink:0;width:26px;height:26px;border-radius:7px;border:none;background:transparent;color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent">
+<i class="fas fa-magnifying-glass" style="font-size:13px"></i>
 </button>
+</div>
 <div class="tool-bar-panel" id="crToolPanel"><div class="drawer-handle"></div>
 <div class="tool-group">
 <div class="tool-group-title"><i class="fas fa-file-alt"></i> 新建作品</div>
@@ -7321,22 +7353,22 @@ body.theme-light .ed-scroll-btn{
 </div>
 
 <div class="notice">
-<p><strong>当前版本：v1.4.7（2026.7.30）</strong></p>
-<p>✦ <strong>素材库长按选择</strong>：长按素材卡片直接进入批量选择模式，编辑/收藏/删除/用于创作菜单移到卡片右上角"…"按钮</p>
-<p>✦ <strong>素材挂载状态可视化</strong>：书目"选择要挂载的素材"弹窗里，已挂载的素材自动置底并标红</p>
-<p>✦ <strong>素材续写定位修复</strong>：注入写作方向续写当前书目时，改为先选定目标书目，不再出现定位不准、内容丢失的问题</p>
-<p>✦ <strong>数据备份补全</strong>：导出/导入数据现已包含素材库，以及此前遗漏的伏笔、时间线、角色扮演日记等内容</p>
-<p>✦ <strong>全局搜索接入素材库</strong>：搜索结果新增"素材"分类，点击可直接定位跳转</p>
-<p>✦ <strong>资源广场"素材"分类</strong>：原"经验"更名为"素材"，可选素材库内容或现场手写打包，新增禁用词打包导出，分类栏改为横向滑动；含图片的素材仅导出文字描述，图片本身不会打包</p>
-<p>✦ <strong>打包导出全屏升级</strong>：打包导出改为全屏页面，横滑分类栏，实时显示已选择资源数</p>
-<p>✦ <strong>启动页视觉升级</strong>：标语与全站统一为"AI辅助创作工坊·构筑你的故事宇宙"，新增炫彩极光效果</p>
-<p>✦ <strong>角色模拟独立分支</strong>：与星叙分离但仍可访问书籍/API等数据，新增独立数据库，可单独导出/导入角色模拟数据</p>
-<p>✦ <strong>角色模拟设置页</strong>：底部栏新增设置页，含API设置/页面设置/数据管理/其他设置四个分组</p>
-<p>✦ <strong>新增「关于星叙」页面</strong>：软件介绍、创作理念、开发者的话、反馈问卷、邮箱反馈、GitHub开源仓库、赞赏支持</p>
-<p>✦ <strong>移除多余访问统计</strong>：创作者模式访问统计已由Umami承担，删除冗余的不蒜子功能</p>
-<p>✦ <strong>打包导出新增搜索框</strong>：勾选分享内容的页面顶部可搜索预设名，快速定位当前栏目资源</p>
-<p>✦ <strong>阅读背景配色升级</strong>：内置背景图新增护眼字体配色，浅色/深色模式下各自适配</p>
-<p>✦ <strong>阅读页底部栏磨砂化</strong>：章节/页码/字数信息栏改为半透明磨砂，跟随阅读主题切换</p>
+<p><strong>当前版本：v1.4.8（2026.8.20）</strong></p>
+<p>✦ <strong>排版规则升级</strong>：自动排版按钮旁的"排版规则"新增首段缩进字符数、段间空行样式，支持一键清除多余空行</p>
+<p>✦ <strong>Markdown工具栏定位修复</strong>：格式化按钮现在会在光标所在位置插入符号，不再固定跳到段落开头</p>
+<p>✦ <strong>撤回功能补全</strong>：工具箱"撤回操作"补上了自动排版、AI润色、AI重写等场景</p>
+<p>✦ <strong>草稿管理修复</strong>：草稿页原本不可用的"章节管理"已修复并改名为"草稿管理"</p>
+<p>✦ <strong>章节大纲全面升级</strong>：小弹窗改为下滑全屏弹窗，新增标签归类和5种排序方式，样式统一到素材工坊风格</p>
+<p>✦ <strong>版本管理优化</strong>：新增按名称搜索版本；版本卡片按钮改为纯图标，手机端显示更简洁</p>
+<p>✦ <strong>AI扩写修复</strong>：修复点击后毫无反应、无法使用的问题</p>
+<p>✦ <strong>章节删除/排序数据修复</strong>：删除或拖拽调整章节顺序时，章节名/大纲/标签/版本历史不会再错位</p>
+<p>✦ <strong>高级创作续接修复</strong>：修复生成失败后预览显示"本章暂无内容"的问题；重新打开会自动恢复未完成的进度</p>
+<p>✦ <strong>宇宙关系网大升级</strong>（原角色关系图谱）：全新3D星系视觉、深色沉浸星空背景，恒星/行星/小行星/矮行星四种天体样式，位置可拖拽自动保存，支持左右滑动切换观察角度</p>
+<p>✦ <strong>新手引导优化</strong>：首次进入API设置页会出现教程按钮闪烁提示和星笺引导语</p>
+<p>✦ <strong>作坊标签筛选</strong>：标签按钮现在还能筛选下方已生成的长篇连载/短篇一发作品</p>
+<p>✦ <strong>章节大纲输入框可拖拽扩大</strong>：右下角新增紫色三角手柄，长按下拉即可扩大输入区域</p>
+<p>✦ <strong>滚动条位置优化</strong>：写作页滚动条从贴边改为往里移了一点，手机操作不再压着文字</p>
+<p>✦ <strong>创作工具箱新增搜索</strong>：点击放大镜图标即可搜索草稿箱/我的小说，点击结果直接进入</p>
 <p style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(108,92,231,.2)"><strong>⚠️ 关于后续更新</strong></p>
 <p>由于个人精力和经济原因，星叙将进入不定期更新阶段。我不会放弃这个项目，但更新频率可能会降低。感谢每一位用户的支持和陪伴，你们的反馈是我继续做下去的最大动力。❤️</p>
 </div>
@@ -7508,13 +7540,12 @@ body.theme-light .ed-scroll-btn{
 <ul>
   <li><strong>自动保存 + 手动保存</strong>：输入过程中会自动保存，右上角也有【保存】按钮。</li>
   <li><strong>字数统计 + 阅读时间</strong>：底部实时显示本章字数和预估阅读时间。</li>
-  <li><strong>排版（¶）</strong>：整理换行和空行，让文本更整齐。</li>
+  <li><strong>排版（¶）</strong>：整理换行和空行，让文本更整齐；旁边的"排版规则"按钮可以自定义首段缩进字符数、段间空行方式（无空行/不处理/空一行/空一行+缩进）、是否清除多余空行，设置会自动保存。</li>
   <li><strong>写作排版设置（🔤）</strong>：调整字号、行高、字距，设置后自动保存，所有写作页面通用。</li>
   <li><strong>章节命名（📛）</strong>：为每章起一个名字（如"初遇"、"暗涌"），可随时修改，在目录中显示。</li>
   <li><strong>撤回操作（↩）</strong>：最多支持30步撤回，可恢复误删、误改的内容。</li>
   <li><strong>搜索定位（🔍）</strong>：输入关键词在本章或全文中搜索，支持上下翻跳，快速定位。</li>
   <li><strong>AI查错别字（🔍）</strong>：AI检查本章或全文的错别字，发现的错字会列出来，点击即可复制到搜索栏快速定位修改。</li>
-  <li><strong>沉浸写作</strong>：隐藏顶部工具条，更专注写作。</li>
   <li><strong>AI评价</strong>：从亮点、问题、建议、评分四个角度给出反馈。</li>
   <li><strong>AI润色 / 重写 / 扩写 / 缩写</strong>：
     <br>· 润色：不改剧情，只改文笔  
@@ -7850,12 +7881,15 @@ body.theme-light .ed-scroll-btn{
   <li>生成后可以一键写回人物设定，也可以复制手动使用</li>
 </ul>
 
-<h3>20）角色关系可视化图谱</h3>
-<p>在人物设定页面点击「📊 可视化图谱」即可查看。</p>
+<h3>20）宇宙关系网（原"角色关系可视化图谱"）</h3>
+<p>在人物设定页面点击「🌠 星图」即可查看，v1.4.8起大升级为3D星系视觉。</p>
 <ul>
-  <li>所有角色（主角+NPC）会排列在一个圆上</li>
-  <li>有关系的角色之间会画彩色连线，颜色对应关系类型</li>
-  <li>核心角色=紫色，普通角色=蓝色，NPC=绿色</li>
+  <li>固定深色沉浸背景配星空特效，不跟随站点浅色/深色主题切换；星空首次生成后自动保存，之后直接复用不用重新渲染</li>
+  <li>核心角色=恒星、普通角色=行星、参考角色=小行星、NPC=矮行星，四种天体样式和配色各自固定，一眼就能区分角色类型</li>
+  <li>人物首字显示在星球下方；关系线是带渐变的柔和光带，不再是僵直的直线</li>
+  <li>拖拽星球可调整位置，自动保存；下次新增同类型角色会安置在附近</li>
+  <li>左右滑动可切换观察角度，星球和背景星空都会联动变化；双指或滚轮缩放看细节；放大/缩小/重置按钮为半透明磨砂样式</li>
+  <li>点击星球弹出角色信息卡片（性格标签/设定简介/关系列表）；底部筛选栏可按角色筛选，只看该角色的关系网</li>
   <li>至少需要2个有名字的角色才能显示</li>
 </ul>
 
@@ -8335,7 +8369,7 @@ body.theme-light .ed-scroll-btn{
 </div>
 <div style="text-align:center;margin-top:28px">
   <img src="./Logo.png" style="max-width:220px;width:65%;height:auto;display:block;margin:0 auto 10px">
-  <p style="color:var(--text2);font-size:11px;margin:0">v1.4.7 · Created by 心田<br>让每一个灵感都有机会长成作品</p>
+  <p style="color:var(--text2);font-size:11px;margin:0">v1.4.8 · Created by 心田<br>让每一个灵感都有机会长成作品</p>
 </div>
 
 </div>
@@ -8404,11 +8438,12 @@ body.theme-light .ed-scroll-btn{
   </div>
   <div class="hb-body">
     <h3>星叙 使用协议</h3>
-    <p><strong>版本：</strong>v2.0 &nbsp;|&nbsp; <strong>生效时间：</strong>用户首次访问、使用本网页或点击"同意"时立即生效。</p>
+    <p>这份协议是我自己写的，不是律师起草的正式法律文件。星叙是我业余时间做的一个开源小项目，希望协议也能像项目本身一样简单直接——如果你只想知道"能不能用、要注意什么"，读完这份就够了。</p>
+    <p><strong>版本：</strong>v1.2 &nbsp;|&nbsp; <strong>生效时间：</strong>用户首次访问、使用本网页或点击"确认"时立即生效。</p>
 
-    <h3>1. 版权声明与所有权</h3>
-    <p>1.1 本网页（星叙）的整体代码、界面设计、交互逻辑、视觉风格、功能命名、原创文案、专属图标、吉祥物形象（包括但不限于"星笺"角色形象及配图）等，均为作者"心田"独立创作开发，依法享有完整著作权及相关知识产权。</p>
-    <p>1.2 以下内容为本网页的核心独创性功能模块，受著作权法保护，禁止任何形式的抄袭、仿制、套壳或实质性相似复用：</p>
+    <h3>1. 代码和创意归属</h3>
+    <p>星叙的整体代码、界面设计、交互逻辑、原创文案、专属图标，以及"星笺"这个虚拟角色形象，都是我（心田）自己业余时间独立做出来的，著作权归我所有。</p>
+    <p>下面这几个功能是我比较看重的原创设计：</p>
     <ul>
       <li>星笺（智能聊天向导及对应交互逻辑）</li>
       <li>精华压缩器（设定压缩与存储机制）</li>
@@ -8416,69 +8451,54 @@ body.theme-light .ed-scroll-btn{
       <li>伏笔追踪器（伏笔管理与回收体系）</li>
       <li>资源广场（设定打包、分享与导入体系）</li>
       <li>高级创作（自定义与逐章创作）</li>
-      <li>其他未列明但具有原创性的功能设计及交互方式</li>
     </ul>
 
-    <h3>2. 禁止行为</h3>
-    <p>任何个人或组织在使用、参考、学习本网页时，不得实施以下行为：</p>
-    <p><strong>2.1 禁止抄袭功能：</strong>不得以任何形式复制、模仿、重写本网页的上述独创性功能模块，包括但不限于功能名称、操作流程、界面布局、提示文案、数据存储结构。</p>
-    <p><strong>2.2 禁止套壳与仿制：</strong>不得开发与本网页功能、界面、交互方式高度相似的"换皮产品"或"二次封装产品"，无论是否用于商业用途。</p>
-    <p><strong>2.3 禁止使用相同或高度近似的视觉元素：</strong>不得复制、修改、仿制本网页的专属图标、星笺形象、Logo、配色方案、主题风格，不得使他人对产品来源产生混淆或误认。</p>
-    <p><strong>2.4 禁止冒充原创：</strong>不得将本网页或其任意部分（包括但不限于代码、功能逻辑、界面设计、文案）作为自己的原创作品发布、出售、开源或用于商业宣传。用户使用本网页进行内容创作所产生的生成内容归用户所有，但不得将本网页工具本身包装为自己独立开发的AI产品。</p>
-    <p><strong>2.5 禁止逆向工程（竞争目的）：</strong>不得以开发竞争性产品为目的，对本网页的代码、脚本、数据存储结构进行反编译、反汇编、破解或提取核心逻辑。依据《计算机软件保护条例》，仅为实现互操作性目的进行的合理技术研究不在本条禁止范围内。</p>
-    <p><strong>2.6 禁止恶意滥用：</strong>不得利用本网页生成违法、违规、侵权、虚假信息，或用于任何损害本网页声誉及他人合法权益的行为。</p>
-
-    <h3>3. 授权范围与生成内容</h3>
-    <p>3.1 本网页为个人创作者免费提供的公益工具，用户可自由使用本网页进行个人创作、学习、非商业分享。</p>
-    <p>3.2 用户在遵守本协议的前提下，可使用本网页生成的内容并享有该生成内容的著作权（在法律允许的范围内）。<strong>需注意：AI直接生成内容的著作权状态在中国及多数国家的法律实践中存在不确定性，相关法律规定可能随时调整，用户应自行了解并关注。</strong>用户不得以"本网页的AI技术由本人独立开发"等形式误导他人。</p>
-    <p>3.3 作者不额外限制生成内容的商业化使用，用户可将衍生成果（经充分二次创作后）用于约稿、供稿、签约、出版、付费阅读、参赛等商业场景。用户务必：</p>
+    <h3>2. 关于抄袭和套壳</h3>
+    <p>星叙的代码在 GitHub 上是公开的，欢迎阅读、学习、二次开发用于个人非商业用途，也欢迎自己部署一份来用——这是我把代码开源的初衷。但有几件事希望你不要做：</p>
     <ul>
-      <li>自行了解并遵守所在内容平台对AI生成内容的管理规则；</li>
-      <li>在平台规则要求时，主动向合作方声明使用了AI辅助工具；</li>
-      <li>确保最终内容符合著作权法对原创性的要求。</li>
+      <li>不要把星叙整个或者核心功能换个名字、套个壳，包装成你自己原创的产品去发布、售卖或商业宣传；</li>
+      <li>不要直接照搬上面提到的独创功能设计、界面视觉、星笺形象，做一个高度相似的"换皮产品"，让人搞不清楚来源；</li>
+      <li>不要用星叙生成违法、侵权或者虚假信息，或者做其他损害星叙声誉、他人合法权益的事。</li>
     </ul>
-    <p>因用户使用生成内容引发的任何纠纷（包括但不限于平台违规处罚、第三方侵权索赔等）由用户自行承担全部责任，与作者无关。</p>
-    <p>3.4 作者保留对本网页进行更新、维护、关闭或更改授权方式的权利，除紧急情况外会提前不少于7日以适当方式告知用户。</p>
+    <p>简单说：欢迎学、欢迎用、欢迎在这基础上做自己的东西，但请别把别人辛苦做的东西说成是自己原创的。</p>
+
+    <h3>3. 生成的内容归你</h3>
+    <p>用星叙生成的内容归你自己所有，我不主张任何权利。有几点需要你留意：</p>
+    <ul>
+      <li>AI直接生成内容的著作权状态，在国内外的法律实践中都还存在一些不确定性，相关规定可能会调整，建议自己留意一下；</li>
+      <li>如果要投稿、发布，记得了解一下对方平台对AI辅助创作内容的规则，需要时主动向合作方说明用了AI工具；</li>
+      <li>因使用生成内容产生的纠纷（比如平台处罚、第三方版权索赔等），需要你自己承担，与我无关。</li>
+    </ul>
+    <p>另外，星叙只是帮你把内容转发给你自己配置的AI接口，AI模型本身不是我开发的，所以不能说"星叙背后的AI是我自己做的"。</p>
 
     <h3>4. 隐私与数据</h3>
-    <p>4.1 <strong>星叙 本身不存储、不上传、不查看你的任何数据。</strong>你的所有笔记、设定、API Key 等全部仅存储在你自己设备的本地浏览器（localStorage / IndexedDB）中，作者无法访问或读取。</p>
-    <p>4.2 星叙 是纯前端工具，<strong>不提供 AI 服务</strong>。当你使用生成功能时，你的内容会发送给<strong>你自己配置的第三方 AI 服务商</strong>（如 OpenAI、DeepSeek、Claude 等）。这是 AI 功能运作的基本原理。</p>
-    <p>4.3 你的内容是否被第三方 AI 服务商存储、用于训练或被人工审查，<strong>取决于你所选择的服务商的隐私政策</strong>，与星叙无关，星叙对此不承担任何责任。建议在使用前阅读所选服务商的隐私条款，并避免在创作内容中填入高度敏感的个人信息。</p>
-    <p>4.4 你自行配置的 API Key 由你本人负责保管，星叙 不会上传、转发或记录该密钥。</p>
-    <p>4.5 本网页可能引用第三方资源（如 Font Awesome 图标库），访问时浏览器将与相关 CDN 建立连接，适用其各自的隐私政策。</p>
-    <p>4.6 用户可随时使用"导出数据"功能备份本地数据，也可通过清除浏览器本地存储的方式删除全部本地数据。</p>
+    <p><strong>星叙本身不存储、不上传、也不会查看你的任何数据。</strong>你的所有笔记、设定、聊天记录等，全部只保存在你自己设备的本地浏览器中（localStorage / IndexedDB），我这边完全访问不到，也没有后台可以看。</p>
+    <p>星叙是纯前端工具，<strong>不提供 AI 服务</strong>。当你使用生成功能时，你的内容会发送给<strong>你自己配置的第三方 AI 服务商</strong>（比如 OpenAI、DeepSeek、Claude 等）——这是 AI 功能运作的基本原理。你的内容会不会被这些服务商存储、用来训练模型，取决于<strong>你所选服务商自己的隐私政策</strong>，星叙管不到，也不承担相应责任。建议使用前留意一下所选服务商的隐私条款，避免在创作内容里填入过于敏感的个人信息。</p>
+    <p>你自行配置的 API Key 只保存在本地，星叙不会上传、转发或记录。本网页可能会引用一些第三方资源（比如 Font Awesome 图标库），访问时浏览器会与相关 CDN 建立连接，适用它们各自的隐私政策。</p>
+    <p>你可以随时用"导出数据"功能备份本地数据，也可以通过清除浏览器本地存储的方式删掉全部数据。</p>
 
     <h3>5. 未成年人使用</h3>
-    <p>5.1 本网页适合具备完全民事行为能力的成年人（年满18周岁）使用。未成年人须在监护人的陪同、指导和同意下使用本网页。</p>
-    <p>5.2 监护人应对未成年人使用本网页的行为及其产生的内容负责，并对AI生成内容进行适当审查，防止未成年人接触不适宜内容。</p>
+    <p>星叙比较适合成年人使用。如果是未成年人想用，最好有监护人陪同、了解之后再使用，监护人也需要留意一下AI生成内容是否合适。</p>
 
-    <h3>6. 侵权处理与投诉机制</h3>
-    <p>6.1 如发现任何个人或组织违反本协议，作者保留采取法律手段维权的权利，包括但不限于要求停止侵权、删除仿制内容、公开道歉、赔偿损失等。</p>
-    <p>6.2 任何抄袭、仿制、套壳本网页的行为，一经发现，作者将主动在社区、平台曝光，并保留向相关平台投诉下架的权利。</p>
-    <p>6.3 用户若发现他人侵权，欢迎通过协议末尾的联系方式向作者反馈。</p>
-    <p>6.4 <strong>第三方版权投诉通道：</strong>若第三方权利人认为用户通过本工具生成的内容侵犯其合法权益，可通过协议末尾的联系方式提交书面投诉，需提供：①权利人身份证明；②被侵权内容的具体描述及版权凭证；③侵权内容的具体位置信息。</p>
+    <h3>6. 如果发现抄袭</h3>
+    <p>如果发现有人明显抄袭、套壳星叙，我一般会先尝试私下沟通；实在解决不了的话，可能会通过平台投诉或其他合理方式处理。如果你发现星叙生成的内容侵犯了第三方的合法权益，也欢迎通过协议末尾的联系方式告诉我，我会尽量配合处理。</p>
 
     <h3>7. 免责声明</h3>
-    <p>7.1 星叙 是免费提供的纯前端创作辅助工具，按"现状"提供，不保证绝对稳定、无错误或不中断使用。</p>
-    <p>7.2 <strong>星叙 本身不提供 AI 服务，仅作为你与第三方 AI 服务商之间的调用界面。</strong>因此，AI 回复质量、生成内容的准确性与合法性、第三方服务中断、计费错误、数据被第三方服务商存储等，均由用户自行承担，作者不对第三方 AI 服务商的行为负任何连带责任。</p>
-    <p>7.3 用户使用本工具生成的内容，包括其合法性、版权归属、使用后果，由用户自行负责。用户应确保输入内容不包含未授权的他人作品及违法有害信息。</p>
-    <p>7.4 因不可抗力（如网络故障、政策变化等）导致服务中断或本地数据丢失，作者不承担责任。建议定期使用"导出数据"功能自行备份。</p>
-    <p>7.5 对于因作者直接过错导致的用户直接损失，作者的赔偿责任上限为人民币一千元（¥1,000）。该责任限制不适用于因作者故意或重大过失导致的损失。</p>
+    <p>星叙是免费提供的业余项目，我会尽量让它稳定好用，但没法保证100%不出bug、不中断。星叙本身不提供 AI 服务，只是帮你转发请求到你自己配置的第三方接口，所以 AI 回复的质量、内容是否合规合法、第三方服务本身出的问题，都不是我能控制的，需要你自己判断和承担相应后果。</p>
+    <p>因为不可抗力（比如网络故障、政策变化）导致的服务中断或者本地数据丢失，我没法承担责任，强烈建议你定期用"导出数据"功能自己备份。如果真的遇到意外丢失数据的情况，我会尽量帮忙看看有没有办法找回，但不能保证一定能恢复。</p>
 
-    <h3>8. 协议更新与生效</h3>
-    <p>8.1 本协议自用户在首次使用或版本更新后，在协议确认弹窗中勾选并点击"确认"时正式生效。用户主动点击确认即代表已阅读、理解并同意本协议全部内容。</p>
-    <p>8.2 作者可能根据需要更新本协议，协议版本号及生效时间将在页面内标注。协议版本号变更后，用户下次访问时将再次看到协议确认弹窗，需重新确认后方可继续使用。</p>
-    <p>8.3 如不同意本协议任何条款，请在弹窗中点击"放弃"，停止使用本网页并清除本地数据。</p>
+    <h3>8. 协议什么时候会变</h3>
+    <p>如果协议内容有比较大的调整，这里的版本号会更新，你下次访问时会再看到确认弹窗，需要重新确认后才能继续使用。如果不同意协议的任何内容，直接关闭网页、不再使用就好——星叙不是必需品，好聚好散，不会有任何强制手段。</p>
 
     <h3>9. 联系方式</h3>
-    <p>如对本协议有任何疑问或发现侵权行为，可通过以下方式联系作者：</p>
+    <p>有问题、建议，或者发现了什么状况，都欢迎联系我：</p>
     <ul>
       <li>小红书：27418565861</li>
       <li>（推荐）邮箱：a13380324832@qq.com</li>
       <li>QQ：962005530</li>
     </ul>
 
-    <p style="margin-top:20px;text-align:center;"><strong>使用即代表你已阅读、理解并同意本协议的全部内容。</strong></p>
+    <p style="margin-top:20px;text-align:center;"><strong>继续使用星叙，就代表你已经读过、也认可上面这些内容。</strong></p>
   </div>
 </div>
 <!-- GLOBAL SEARCH 全局搜索 -->
@@ -8662,11 +8682,11 @@ body.theme-light .ed-scroll-btn{
 <div class="tool-item" onclick="closeAllToolPanels();toggleEdMdToolbar()" id="edMdToggleBtn"><i class="fas fa-pen"></i> Markdown <span class="ti-desc">格式化工具栏</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();openEdReadMode()" style="border-color:var(--accent);color:var(--accent2)"><i class="fas fa-book-open"></i> 阅读模式 <span class="ti-desc">翻页式预览</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();formatEditorText()"><i class="fas fa-paragraph"></i> 自动排版 <span class="ti-desc">整理空行换行</span></div>
+<div class="tool-item" onclick="closeAllToolPanels();openFmtRuleOv()"><i class="fas fa-sliders-h"></i> 排版规则 <span class="ti-desc">缩进/空行/清理</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();toggleEdWriteSettings()"><i class="fas fa-font"></i> 排版设置 <span class="ti-desc">字号行高字距</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();renameCurrentWork()"><i class="fas fa-heading"></i> 作品更名 <span class="ti-desc">修改标题</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();copyEditorContent()"><i class="fas fa-copy"></i> 复制全文</div>
 <div class="tool-item" onclick="closeAllToolPanels();exportEdToTxt()"><i class="fas fa-file-export"></i> 导出TXT <span class="ti-desc">保存到本地</span></div>
-<div class="tool-item" onclick="closeAllToolPanels();toggleImmersiveEdit()" id="immersiveEditBtn2"><i class="fas fa-moon"></i> 沉浸写作 <span class="ti-desc">全屏专注</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();openAmbiencePanel()" style="border-color:rgba(108,92,231,.6);color:var(--accent2)"><i class="fas fa-cloud-moon"></i> 氛围写作 <span class="ti-desc">音效+计时</span></div>
 </div>
 </div>
@@ -8683,14 +8703,14 @@ body.theme-light .ed-scroll-btn{
 </div>
 </div>
 <div class="tool-group">
-<div class="tool-group-title"><i class="fas fa-tasks"></i> 章节管理</div>
+<div class="tool-group-title" id="edChGroupTitle"><i class="fas fa-tasks"></i> 章节管理</div>
 <div class="tool-grid">
 <div class="tool-item" onclick="closeAllToolPanels();viewOutline()" id="edOutlineBtnNew" style="display:none"><i class="fas fa-list-alt"></i> 查看总大纲</div>
 <div class="tool-item" onclick="closeAllToolPanels();openChOutline()" id="edChOutlineBtnNew" style="display:none"><i class="fas fa-list-ol"></i> 章节大纲 <span class="ti-desc">为每章设摘要</span></div>
 <div class="tool-item" onclick="closeAllToolPanels();renameEdChapter()" id="edRenameBtnNew"><i class="fas fa-tag"></i> 章节命名 <span class="ti-desc">给本章起名</span></div>
-<div class="tool-item" onclick="closeAllToolPanels();saveChapterVersion()"><i class="fas fa-floppy-disk"></i> 保存版本 <span class="ti-desc">保存当前章为一个版本</span></div>
+<div class="tool-item" onclick="closeAllToolPanels();saveChapterVersion()"><i class="fas fa-floppy-disk"></i> 保存版本 <span class="ti-desc" id="edSaveVerDesc">保存当前章为一个版本</span></div>
 <div class="tool-item simple-hide" onclick="closeAllToolPanels();openVersionList()"><i class="fas fa-layer-group"></i> 版本管理 <span class="ti-desc">查看/切换/对比版本</span></div>
-<div class="tool-item danger" onclick="closeAllToolPanels();deleteEdChapter()"><i class="fas fa-trash"></i> 删除本章 <span class="ti-desc">不可恢复</span></div>
+<div class="tool-item danger" onclick="closeAllToolPanels();deleteEdChapter()"><i class="fas fa-trash"></i> <span id="edDelChLabel">删除本章</span> <span class="ti-desc">不可恢复</span></div>
 </div>
 </div>
 <div class="tool-group">
@@ -8736,8 +8756,10 @@ body.theme-light .ed-scroll-btn{
 <div class="rd-s-row"><span class="rd-s-label">行高</span><input type="range" min="1.4" max="3.5" step="0.1" value="2" oninput="setEdLine(this.value)"><span class="rd-s-val" id="edLineVal">2.0</span></div>
 <div class="rd-s-row"><span class="rd-s-label">字距</span><input type="range" min="0" max="6" step="0.5" value="0" oninput="setEdLetterSpacing(this.value)"><span class="rd-s-val" id="edLsVal">0</span></div>
 </div>
-  <button class="immersive-exit" onclick="toggleImmersiveEdit()"><i class="fas fa-times"></i> 退出沉浸</button>
-<textarea class="ed-textarea" id="edTextarea" data-no-resize="true" placeholder="开始写作..." oninput="onEditorInput()"></textarea>
+<textarea class="ed-textarea" id="edTextarea" data-no-resize="true" placeholder="开始写作..." oninput="onEditorInput()" onselect="_edTrackSelection()" onkeyup="_edTrackSelection()" onclick="_edTrackSelection()" ontouchend="_edTrackSelection()"></textarea>
+<!-- 自定义滚动条：轨道+滑块都是绝对定位的浮层，不占用 #edTextarea 的宽度，具体逻辑见
+     _initEdCustomScrollbar()（文件末尾"编辑器自定义滚动条"一节） -->
+<div class="ed-custom-scrollbar" id="edCustomScrollbar"><div class="ed-custom-scrollbar-thumb" id="edCustomScrollbarThumb"></div></div>
 </div>
 <div id="edWordBar" style="height:2px;background:var(--border);margin:0 14px">
 <div id="edWordBarInner" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s;border-radius:1px"></div>
@@ -9688,15 +9710,31 @@ body.theme-light .ed-scroll-btn{
 </div>
 </div>
 <!-- 章节大纲编辑弹窗 -->
-<div class="res-exp-ov" id="chOutlineOv" onclick="if(event.target===this)closeChOutline()">
-<div class="res-exp-box" style="max-width:420px;max-height:85vh;display:flex;flex-direction:column">
-<h3><i class="fas fa-list-ol"></i> 章节大纲管理</h3>
-<p style="font-size:11px;color:var(--text2);margin-bottom:12px">为每章设置大纲，AI续写时会参考</p>
-<div id="chOutlineList" style="flex:1;overflow-y:auto;margin-bottom:12px"></div>
-<div class="res-exp-btns">
-<button class="dlg-cancel" onclick="closeChOutline()">关闭</button>
-<button class="dlg-ok" onclick="saveChOutlines()"><i class="fas fa-floppy-disk"></i> 保存大纲</button>
+<div class="set-modal" id="chOutlineOv" role="dialog" aria-label="章节大纲">
+<div class="set-modal-hdr">
+<button onclick="closeChOutline()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button>
+<h2><i class="fas fa-list-ol"></i> 章节大纲</h2>
+<button onclick="saveChOutlines()" style="flex-shrink:0;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;"><i class="fas fa-floppy-disk"></i> 保存</button>
 </div>
+<div class="set-modal-body">
+<p style="font-size:11px;color:var(--text2);margin-bottom:12px">为每章设置大纲，AI续写时会参考；可以打标签分类，方便长篇里快速筛选</p>
+<div class="mat-toolbar">
+<div class="mat-filter-row" id="chOutlineFilterRow">
+<button class="mat-sort-btn" id="chOutlineSortBtn" onclick="openChOutlineSortPicker()">
+<span id="chOutlineSortLabel">从旧到新</span><i class="fas fa-chevron-down"></i>
+</button>
+<div class="mat-tag-filter" id="chOutlineTagFilter"></div>
+</div>
+</div>
+<div id="chOutlineList" style="padding-bottom:24px"></div>
+</div>
+</div>
+<!-- 章节大纲排序方式选择 -->
+<div class="res-exp-ov" id="chOutlineSortPickerOv" onclick="if(event.target===this)closeChOutlineSortPicker()">
+<div class="res-exp-box" style="max-width:320px">
+<h3 style="display:flex;align-items:center;gap:8px"><i class="fas fa-sort-amount-down" style="color:var(--accent2)"></i> 排序方式</h3>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:4px" id="chOutlineSortPickerList"></div>
+<button onclick="closeChOutlineSortPicker()" style="width:100%;margin-top:16px;padding:12px;border-radius:10px;border:none;background:var(--card2);color:var(--text2);font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent">取消</button>
 </div>
 </div>
 <!-- AI扩写/缩写弹窗 -->
@@ -9723,6 +9761,42 @@ body.theme-light .ed-scroll-btn{
 <div class="res-exp-btns" id="expandBtns">
 <button class="dlg-cancel" onclick="closeExpandOv()">取消</button>
 <button class="dlg-ok" id="expandDoBtn" onclick="doExpand()">开始处理</button>
+</div>
+</div>
+</div>
+<!-- 排版规则设置 -->
+<div class="res-exp-ov" id="fmtRuleOv" onclick="if(event.target===this)closeFmtRuleOv()">
+<div class="res-exp-box" style="max-width:380px">
+<h3><i class="fas fa-sliders-h"></i> 排版规则</h3>
+<p style="font-size:11px;color:var(--text2);margin-bottom:14px">自定义"自动排版"整理正文时使用的规则，设置会自动保存</p>
+<div class="fg">
+<label class="fl">首段缩进</label>
+<div style="display:flex;gap:6px;flex-wrap:wrap">
+<span class="tag fmt-indent-opt" data-v="0" onclick="setFmtIndent(0)">不缩进</span>
+<span class="tag fmt-indent-opt" data-v="2" onclick="setFmtIndent(2)">2字符</span>
+<span class="tag fmt-indent-opt" data-v="4" onclick="setFmtIndent(4)">4字符</span>
+</div>
+</div>
+<div class="fg">
+<label class="fl">段间空行</label>
+<div style="display:flex;flex-direction:column;gap:6px">
+<span class="tag fmt-blank-opt" data-v="none" onclick="setFmtBlankMode('none')" style="justify-content:flex-start;border-radius:10px">无空行（单换行分段）</span>
+<span class="tag fmt-blank-opt" data-v="skip" onclick="setFmtBlankMode('skip')" style="justify-content:flex-start;border-radius:10px">不处理空行（保留原有换行结构）</span>
+<span class="tag fmt-blank-opt" data-v="blank" onclick="setFmtBlankMode('blank')" style="justify-content:flex-start;border-radius:10px">空一行</span>
+<span class="tag fmt-blank-opt" data-v="blank-indent" onclick="setFmtBlankMode('blank-indent')" style="justify-content:flex-start;border-radius:10px">空一行 + 首段缩进</span>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--border);margin-top:6px">
+<span style="font-size:12px">清除多余空行<br><span style="font-size:10px;color:var(--text2)">3行以上的连续空行会被压缩成1行</span></span>
+<div style="position:relative;width:40px;height:22px;cursor:pointer;flex-shrink:0" onclick="toggleAdvSwitch('fmtClearExtraChk');setFmtClearExtra(document.getElementById('fmtClearExtraChk').checked)">
+<input type="checkbox" id="fmtClearExtraChk" style="display:none">
+<div style="width:40px;height:22px;border-radius:11px;background:var(--border);transition:background .3s" id="fmtClearExtraChkTrack">
+<div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)" id="fmtClearExtraChkThumb"></div>
+</div>
+</div>
+</div>
+<div class="res-exp-btns">
+<button class="dlg-ok" style="width:100%" onclick="closeFmtRuleOv()">完成</button>
 </div>
 </div>
 </div>
@@ -9762,7 +9836,7 @@ body.theme-light .ed-scroll-btn{
 </div>
 <!-- SETTINGS MODALS -->
 <div class="set-modal" id="setModalApi" role="dialog" aria-label="API设置">
-<div class="set-modal-hdr"><button onclick="closeSetModal('api')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button><h2><i class="fas fa-key"></i> API设置</h2><a href="./api-guide.html" target="_blank" style="flex-shrink:0;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;text-decoration:none;"><i class="fas fa-book-open"></i> 配置教程</a></div>
+<div class="set-modal-hdr"><button onclick="closeSetModal('api')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button><h2><i class="fas fa-key"></i> API设置</h2><a href="./api-guide.html" target="_blank" id="apiGuideBtn" style="flex-shrink:0;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;text-decoration:none;"><i class="fas fa-book-open"></i> 配置教程</a></div>
 <div class="set-modal-body">
 <div class="fg"><label class="fl">API地址</label><input class="fi" id="apiUrl" placeholder="https://api.openai.com/v1"></div>
 <div class="fg"><label class="fl">API密钥 <span style="font-size:9px;color:var(--danger);font-weight:400">（仅存本地，勿在公共设备使用）</span></label><div style="display:flex;gap:6px"><input class="fi" id="apiKey" type="password" placeholder="sk-..." style="flex:1"><button class="btn-s" onclick="const k=document.getElementById('apiKey');k.type=k.type==='password'?'text':'password'" style="width:auto;padding:6px 10px;margin:0"><i class="fas fa-eye"></i></button></div></div>
@@ -9854,7 +9928,7 @@ body.theme-light .ed-scroll-btn{
 <span><i class="fas fa-project-diagram"></i> 人物关系图</span>
 <div style="display:flex;gap:6px">
 <button class="btn-s" onclick="addRelation()" style="margin:0;padding:5px 10px;font-size:10px"><i class="fas fa-plus"></i> 添加关系</button>
-<button class="btn-s" onclick="openRelGraph()" style="margin:0;padding:5px 10px;font-size:10px"><i class="fas fa-project-diagram"></i> 图谱</button>
+<button class="btn-s" onclick="openRelGraph()" style="margin:0;padding:5px 10px;font-size:10px"><i class="fas fa-meteor"></i> 星图</button>
 <button class="btn-s" onclick="aiGenRelations()" style="margin:0;padding:5px 10px;font-size:10px"><i class="fas fa-robot"></i> AI生成</button>
 </div>
 </div>
@@ -10577,6 +10651,10 @@ body.theme-light .ed-scroll-btn{
 <div class="res-exp-box" style="max-width:460px;max-height:90vh;display:flex;flex-direction:column">
 <h3 id="versionTitle"><i class="fas fa-book"></i> 章节版本管理</h3>
 <p style="font-size:11px;color:var(--text2);margin-bottom:10px" id="versionSubtitle">当前章节的所有版本</p>
+<div class="mat-search-wrap" style="margin-bottom:10px;flex:none">
+<input type="text" id="versionSearchInput" placeholder="搜索版本名称…" oninput="debounceVersionSearch()">
+<button class="mat-search-clear" id="versionSearchClear" onclick="clearVersionSearch()">✕</button>
+</div>
 <div id="versionListBody" style="flex:1;overflow-y:auto;margin-bottom:10px"></div>
 <div id="versionCompare" style="display:none;margin-bottom:10px">
 <div style="font-size:12px;font-weight:600;color:var(--accent2);margin-bottom:8px"><i class="fas fa-chart-bar"></i> 版本对比</div>
@@ -10753,7 +10831,7 @@ body.theme-light .ed-scroll-btn{
   <img src="./Software%20icon.png" style="width:88px;height:88px;border-radius:22px;object-fit:contain;box-shadow:0 6px 20px rgba(108,92,231,.25)">
   <div style="font-size:19px;font-weight:700;color:var(--text);margin-top:12px;letter-spacing:1px">星叙</div>
   <div style="font-size:12px;color:var(--accent2);margin-top:4px">AI辅助创作工坊 · 构筑你的故事宇宙</div>
-  <div style="font-size:10px;color:var(--text2);margin-top:6px">当前版本 <span id="aboutVerText">v1.4.7</span> · Created by 心田</div>
+  <div style="font-size:10px;color:var(--text2);margin-top:6px">当前版本 <span id="aboutVerText">v1.4.8</span> · Created by 心田</div>
 </div>
 
 <div class="data-section">
@@ -11433,11 +11511,11 @@ body.theme-light .ed-scroll-btn{
 <!-- REL GRAPH FULLSCREEN 全屏关系图谱 -->
 <div class="rel-graph-modal" id="relGraphModal">
 <div class="rgm-hdr">
-<button onclick="closeRelGraphModal()" style="background:none;border:none;color:var(--accent2);font-size:13px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:5px">
+<button onclick="closeRelGraphModal()" style="background:none;border:none;color:#c9c3ff;font-size:13px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:5px">
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M15 18l-6-6 6-6"/></svg>返回
 </button>
-<h2><i class="fas fa-link"></i> 角色关系图谱</h2>
-<button onclick="rgmResetView()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:11px;cursor:pointer">重置视图</button>
+<h2><i class="fas fa-meteor"></i> 宇宙关系网</h2>
+<button onclick="rgmResetView()" style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;font-size:11px;cursor:pointer">重置视图</button>
 </div>
 <div class="rgm-body" id="rgmBody">
 <div class="rgm-canvas-wrap" id="rgmCanvasWrap">
@@ -12438,153 +12516,165 @@ body.theme-light .ed-scroll-btn{
 <script>
 /*
 ╔══════════════════════════════════════════════════════════════════
-║  星叙 index.html — JS 结构目录  v1.4.7
-║  文件共约 50000 行 | HTML+CSS: 1~12123 | JS: 12124~50030
+║  星叙 index.html — JS 结构目录  v1.4.8
+║  文件共约 49000 行 | HTML+CSS: 1~12526 | JS: 12527~49002
 ╠══════════════════════════════════════════════════════════════════
-║ [A] 基础设施            12124 ~ 13063
-║   IndexedDB 存储         12125
-║   版本号 APP_VER         12272
-║   存储键常量 K{}          12278
-║   ld() / sv() / _flushSv 12283
-║   全局状态变量 STATE       12360
-║   后台保活 & 生成队列      12428
-║   内置官方资源包           12525
-║   页面 Loading 系统       12635
-║   Toast / Dialog / Inp   12719
-║   输入限制工具             12792
-║   统一错误处理             12904
-║   工具函数 UTILITY        12912
-║   Token 估算             12935
+║ [A] 基础设施            12692 ~ 13643
+║   IndexedDB 存储         12692
+║   版本号 APP_VER         12839
+║   存储键常量 K{}          12845
+║   ld() / sv() / _flushSv 12850
+║   全局状态变量 STATE       12925
+║   后台保活 & 生成队列      12995
+║   内置官方资源包           13092
+║   页面 Loading 系统       13201
+║   Toast / Dialog / Inp   13285
+║   输入限制工具             13366
+║   统一错误处理             13478
+║   工具函数 UTILITY        13486
+║   Token 估算             13509
 ║
-║ [B] 导航 & 标签          13064 ~ 13535
-║   NAV / switchPage       13064
-║   TAGS 标签管理           13126
-║   TYPE SWITCH            13386
-║   ARTICLES RENDER        13394
+║ [B] 导航 & 标签          13644 ~ 14142
+║   NAV / switchPage       13644
+║   TAGS 标签管理           13706
+║   TYPE SWITCH            13984
+║   ARTICLES RENDER        13992
 ║
-║ [C] API & 角色设定       13536 ~ 16400
-║   SYNC HELPER            13536
-║   API CONFIG getCurApi   13584
-║   CHARACTER MANAGEMENT   14041
-║   人物关系图              14081
-║   NPC 设定               14351
-║   万能输入框（全屏页）      14380
-║   今日一写               14531 ~ 14874
-║   自定义灵感 / 三句话人设   14876
-║   懒人通道               15444
-║   SYSTEM PROMPT          15726
-║   STREAM API CALL        15984
+║ [C] API & 角色设定       14143 ~ 17008
+║   SYNC HELPER            14143
+║   API CONFIG getCurApi   14191
+║   CHARACTER MANAGEMENT   14649
+║   人物关系图              14689
+║   NPC 设定               14959
+║   万能输入框（全屏页）      14988
+║   今日一写               15140 ~ 15482
+║   自定义灵感 / 三句话人设   15484
+║   懒人通道               16052
+║   SYSTEM PROMPT          16334
+║   STREAM API CALL        16592
 ║
-║ [D] 生成 & 收藏系统      16401 ~ 17653
-║   GENERATE ARTICLE       16401
-║   收藏夹系统              16545
-║   快捷短语收藏            16847
+║ [D] 生成 & 收藏系统      17009 ~ 18265
+║   GENERATE ARTICLE       17009
+║   收藏夹系统              17157
+║   快捷短语收藏            17459
 ║
-║ [E] 阅读器              17654 ~ 20316
-║   READING 入口           17654
-║   阅读页核心              17707
-║   翻页阅读器（全面重构）    17846
-║   阅读器浮层菜单          18338
-║   NOTES 笔记系统          18853
-║   阅读页全屏编辑          19412
-║   阅读器内搜索            19582
-║   IMMERSIVE READ 沉浸     19685
-║   CONTINUE CHAPTER 续写   19888
-║   自动章节摘要            20180
+║ [E] 阅读器              18266 ~ 20892
+║   READING 入口           18266
+║   阅读页核心              18319
+║   翻页阅读器（全面重构）    18458
+║   阅读器浮层菜单          18950
+║   NOTES 笔记系统          19477
+║   阅读页全屏编辑          20077
+║   阅读器搜索（内嵌浮层版，物理位置后移，见R区前段）45301
+║   IMMERSIVE READ 沉浸     20350
+║   CONTINUE CHAPTER 续写   20553
+║   自动章节摘要            20845
 ║
-║ [F] 设置中心            20228 ~ 22426
-║   COPY                  20228
-║   COLLECTIONS 收藏页      20319
-║   弹出菜单公共工具         20579
-║   SETTINGS MODAL        20824
-║   全局/局部设定管理        21140
-║   自定义系统提示词预设      21181
-║   预设绑定美化器           21391
-║   APPEARANCE 外观         21963
-║   内置字体               22136
+║ [F] 设置中心            20893 ~ 23260
+║   COPY                  20893
+║   COLLECTIONS 收藏页      21048
+║   弹出菜单公共工具         21308
+║   SETTINGS MODAL        21587
+║   全局/局部设定管理        22009
+║   自定义系统提示词预设      22050
+║   预设绑定美化器           22260
+║   APPEARANCE 外观         22832
+║   内置字体               23005
+║   API设置页配置教程引导（v1.4.8新增，闪烁提示+星笺气泡）21677
 ║
-║ [G] 数据管理            22427 ~ 23094
-║   DATA IMPORT/EXPORT     22427
-║   cleanOldData           22835
-║   compressData           34627
-║   clearOldGenLog         34679
+║ [G] 数据管理            23261 ~ 24044
+║   DATA IMPORT/EXPORT     23261
+║   cleanOldData           23783
+║   compressData           36898（物理位置见M区）
+║   clearOldGenLog         36950（物理位置见M区）
 ║
-║ [H] 创作页 & 编辑器     23095 ~ 25437
-║   CREATE PAGE            23095
-║   编辑器核心              24068
-║   章节拖拽排序            24233
-║   写作排版设置            24500
-║   编辑器搜索              24609
-║   Markdown 编辑          25319
+║ [H] 创作页 & 编辑器     24045 ~ 26547
+║   CREATE PAGE            24045
+║   创作工具箱·搜索作品（v1.4.8新增）24085
+║   编辑器核心              25051
+║   章节拖拽排序（v1.4.8修复：同步标签/大纲修改时间/版本历史迁移）25220
+║   写作排版设置(字号行高字距) + 排版规则弹窗(v1.4.8新增缩进/空行/清除多余空行) 25525
+║   编辑器搜索              25649
+║   编辑器撤回功能 edPushUndo/edUndo 25385
+║   Markdown 编辑（v1.4.8修复光标定位，不再固定在段首）26359
 ║
-║ [I] AI 工具集           25439 ~ 28402
-║   AI REVIEW             25439
-║   AI 深度校对            25505
-║   AI 错别字检查           25744
-║   资源广场 RESOURCE       25998
-║   HANDBOOK 手册           26812
-║   设定健康检查            26966
-║   写作统计               27133
-║   OUTLINE GENERATOR      27613
-║   章节多版本管理          27633
-║   收藏批量管理            27756
-║   导入 TXT               27893
-║   快速设置向导            28060
+║ [I] AI 工具集           26548 ~ 30023
+║   AI REVIEW             26548
+║   AI 深度校对            26614
+║   AI 错别字检查           26853
+║   章节大纲：标签 + 排序筛选（v1.4.8全屏化，样式参考素材工坊）27024
+║   章节目录长按删除（共享，v1.4.8修复平行数组同步 + 版本历史迁移）27257
+║   资源广场 RESOURCE       27356
+║   HANDBOOK 手册           28255
+║   设定健康检查            28409
+║   写作统计               28576
+║   OUTLINE GENERATOR      29127
+║   章节多版本管理（v1.4.8新增搜索框，卡片按钮改纯图标）29147
+║   收藏批量管理            29312
+║   导入 TXT               29514
+║   快速设置向导            29681
 ║
-║ [J] 精华压缩器 & 重写    28403 ~ 30435
-║   精华压缩器              28403
-║   AI REWRITE 阅读器入口   29085
-║   文章重写（编辑器）       29940
-║   修订模式差异对比        30193
+║ [J] 精华压缩器 & 重写    30024 ~ 32415
+║   精华压缩器              30024
+║   AI REWRITE（AI润色/重写，v1.4.8修复未接入撤回栈的问题）30706
+║   文章重写（编辑器）       31856
+║   修订模式差异对比        32171
 ║
-║ [K] 创意工具            30436 ~ 32499
-║   故事转盘               30436
-║   NAME GENERATOR         30947
-║   写作基因提取器          31122
-║   角色设计器              31683
-║   情节分支器              32363
+║ [K] 创意工具            32416 ~ 34551
+║   故事转盘               32416
+║   NAME GENERATOR         32927
+║   写作基因提取器          33102
+║   角色设计器              33735
+║   情节分支器              34415
 ║
-║ [L] 高级续写            32500 ~ 33858
-║   高级创作模式            32500
-║   上下文编辑器            33201
-║   全局变量 _rdContChCount  32503
-║   智能续写 smartContinue   33441
-║   continueChapterWithCtx  33559
+║ [L] 高级续写            34552 ~ 36129
+║   高级创作模式（v1.4.8修复：type转换bug导致"本章暂无内容"、续接指针缺失）34552
+║   上下文编辑器            35458
+║   智能续写 smartContinue   35698
+║   continueChapterWithContext 35816
 ║
-║ [M] 伏笔 & 数据维护     33859 ~ 35231
-║   伏笔追踪器              33859
-║   续写质量反馈            34100
-║   GEN LOG 生成日志        34225
-║   清除所有数据            34399
-║   AUTO BACKUP            34693
-║   TTS 语音朗读            34741
+║ [M] 伏笔 & 数据维护     36130 ~ 37249
+║   伏笔追踪器              36130
+║   续写质量反馈            36371
+║   GEN LOG 生成日志        36496
+║   清除所有数据            36670
+║   compressData           36898
+║   clearOldGenLog         36950
+║   AUTO BACKUP            36964
+║   TTS 语音朗读            37012
 ║
-║ [N] 星笺精灵            35232 ~ 37167
-║   星笺全局浮动精灵        35232
-║   XJ_SKINS 皮肤定义       35512
-║   星笺皮肤功能函数        34979
-║   星笺聊天核心            36343
-║   星笺批量选择删除        37067
+║ [N] 星笺精灵            37250 ~ 39487
+║   星笺皮肤功能函数        37250
+║   星笺全局浮动精灵        37503
+║   星笺聊天               37767
+║   XJ_SKINS 皮肤定义       37783
+║   星笺聊天核心            38662
+║   星笺批量选择删除        39387
 ║
-║ [O] 系统功能            37168 ~ 38444
-║   勿扰模式 & 铃声         37168
-║   开发者调试面板          37251
-║   自定义系统提示词        37570
-║   创作目标               37655
-║   回归用户检测            37833
-║   LOCK 密码锁             38188
+║ [O] 系统功能            39488 ~ 40764
+║   勿扰模式 & 铃声         39488
+║   开发者调试面板          39571
+║   自定义系统提示词        39890
+║   创作目标               39975
+║   回归用户检测            40153
+║   LOCK 密码锁             40508
 ║
-║ [P] 初始化 & 开关管理   38445 ~ 41531
-║   SPLASH & INIT          38445
-║   随机小技巧提示          38825
-║   主题背景功能            39395
-║   星笺显示/气泡开关       39457
-║   toggleSwitch7 统一管理  39562
-║   重新生成（附反馈）       39686
-║   全屏关系图谱            39823
-║   作品时间线              40400
-║   自定义生成模板          40977
-║   设置中心搜索            41335
+║ [P] 初始化 & 开关管理   40765 ~ 46373
+║   SPLASH & INIT          40765
+║   随机小技巧提示          41156
+║   主题背景功能            41761
+║   星笺显示/气泡开关       41823
+║   toggleSwitch7 统一管理  41924
+║   重新生成（附反馈）       42044
+║   宇宙关系网（原「角色关系图谱/全屏关系图谱」，v1.4.8星系版大升级：
+║     3D视差分层、固定深色星空背景（不跟随主题）、恒星/行星/小行星/矮
+║     行星四种天体各固定1色、拖拽调整位置自动保存、新角色安置在同类
+║     型旁边、关系线渐变光带、左右滑动切换观察视角）42181 ~ 43160
+║   作品时间线              43161
+║   自定义生成模板          43772
+║   设置中心搜索            44130
+║   （44218~46373 为书库/番外篇/阅读器内嵌搜索/全局搜索等功能，
+║     未逐项列出，可用上方 grep 关键词直接定位）
 ║
 ║ [Q] 角色模拟 RP 系统 —— 已分离为独立文件 juesemoni.html（v1.4.7起）
 ║   本文件仅保留入口按钮（更多菜单→跳转 juesemoni.html）
@@ -12593,11 +12683,16 @@ body.theme-light .ed-scroll-btn{
 ║   角色通讯录/世界书/群聊/群聊剧场/RP消息管理/AI访谈/角色日记/角色小剧场
 ║   等均已迁移至 juesemoni.html，并新增独立设置页（API/页面/数据管理/其他设置）
 ║
-║ [R] 全局浮窗 & 附加脚本  48205 ~ 50030
-║   GLOBAL FLOAT BUTTON    48205
-║   使用协议确认逻辑        48721
-║   素材工坊 JS             48910 ~ 49738
-║   QUALITY ENHANCE 反幻觉  49740
+║ [R] 全局浮窗 & 附加脚本  46374 ~ 49002
+║   GLOBAL FLOAT BUTTON    46374
+║   使用协议确认逻辑        46922
+║   输入框 .fta 自动包裹（拖拽逻辑已统一交给下方 _initTxResize）47036
+║   素材工坊 JS             47081 ~ 47990
+║   QUALITY ENHANCE 反幻觉  48231
+║   章节版本快照系统        48486
+║   编辑器置顶/置底悬浮按钮  48714
+║   输入框右下角拖拽扩大 _initTxResize（v1.4.8新增，全局委托）48774
+║   编辑器自定义滚动条（v1.4.8：滚动条从贴边改为 right:6px）48820
 ╚══════════════════════════════════════════════════════════════════
 */
 // ==================== IndexedDB 存储系统 ====================
@@ -12747,11 +12842,11 @@ async function getDBStorageUsage() {
     });
 }
 // ==================== CONFIG ====================
-const APP_VER='v1.4.7';
-const UPDATE_VER='1.4.7';
+const APP_VER='v1.4.8';
+const UPDATE_VER='1.4.8';
 // 协议版本号：老用户不需要重新确认
 // 用 var（而非 const/let）以确保挂载到 window 上，跨 script 块可靠访问
-var AGREEMENT_VER='1.1';
+var AGREEMENT_VER='1.2';
 // ==================== STORAGE ====================
 const K={
 tags:'bj_tags',apiP:'bj_apiP',charP:'bj_charP',worldP:'bj_worldP',
@@ -12901,6 +12996,7 @@ let isFS=false;
 let abortCtrl=null;// for aborting stream
 let crWorks=ld('bj_crWorks',[]);// 创作作品列表
 let crTab='draft';// 当前创作页tab
+let crSearchKw='';// 创作工具箱顶部搜索框的关键词，非空时 renderCrList() 会按名称/创建日期过滤当前 tab
 let _streamBreakpoint = {}; // {articleId, partialText, chNum, timestamp}
 // ==================== 后台保活 & 生成队列 ====================
 let _bgGenerating = false; // 当前是否有生成任务在运行
@@ -13240,9 +13336,14 @@ function showDlg(title,msg,onOk,danger=false,asHtml=false){
 function closeDlg(){
   navPop('dlgOv');
   document.getElementById('dlgOkBtn').style.display='';
-  // 恢复取消按钮显示，防止个别调用（如收款码保存结果提示）临时隐藏后忘记还原，影响后续所有弹窗
+  // 恢复取消按钮显示、文案和点击行为，防止个别调用（如401/404报错弹窗、进度续接确认弹窗）
+  // 临时自定义后忘记还原，把自定义的onclick"泄漏"到下一个完全无关的弹窗上
   const cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
-  if(cancelBtn)cancelBtn.style.display='';
+  if(cancelBtn){
+    cancelBtn.style.display='';
+    cancelBtn.textContent='取消';
+    cancelBtn.onclick=closeDlg;
+  }
   document.getElementById('dlgOv').classList.remove('show');
 
   // 关闭时恢复 dlgMsg 的滚动样式（避免影响其他弹窗）
@@ -13430,6 +13531,21 @@ function estimateTokens(text){
   if(punctMatch) tokens += punctMatch.length;
   return Math.ceil(tokens);
 }
+// 根据模型名称粗略估算它的总上下文窗口（输入+输出token总预算）。
+// 用途：像"高级创作"这类会主动设置较大max_tokens（输出token）的场景，如果只关注输入prompt的大小、
+// 完全不管请求的输出token本身是否已经逼近甚至超过模型总窗口，即使把输入精简到极致也还是会报"上下文超限"——
+// 这个函数统一供各处使用，避免各写一份、后续维护时不一致。
+function _guessModelContextWindow(modelName){
+  const m=(modelName||'').toLowerCase();
+  if(m.includes('gpt-4o')||m.includes('gpt-4')) return 128000;
+  if(m.includes('gpt-3.5')) return 16384;
+  if(m.includes('claude')) return 200000;
+  if(m.includes('qwen')) return 32768;
+  if(m.includes('deepseek')) return 65536;
+  if(m.includes('llama')) return 8192;
+  if(m.includes('gemma')) return 8192;
+  return 8192; // 默认保守估计
+}
 
 // 计算完整系统提示词的Token数
 function getFullPromptTokens(){
@@ -13487,17 +13603,8 @@ function refreshCtxTokenCount(){
   const inputTotal = sysTokens + summaryTokens + fsTokens + charStateTokens + dirTokens + outlineTokens + reqTokens + lastChTokens + firstChTokens + estFactsTokens;
   
   // 估算一个常见模型的上下文窗口
-  const contextWindows = {4096:4096, 8192:8192, 16384:16384, 32768:32768, 65536:65536, 131072:131072};
   const modelName = (document.getElementById('apiModel').value || '').toLowerCase();
-  let ctxWindow = 8192; // 默认假设8k
-  if(modelName.includes('gpt-4o')) ctxWindow = 128000;
-  else if(modelName.includes('gpt-4')) ctxWindow = 128000;
-  else if(modelName.includes('gpt-3.5')) ctxWindow = 16384;
-  else if(modelName.includes('claude')) ctxWindow = 200000;
-  else if(modelName.includes('qwen')) ctxWindow = 32768;
-  else if(modelName.includes('llama')) ctxWindow = 8192;
-  else if(modelName.includes('deepseek')) ctxWindow = 65536;
-  else if(modelName.includes('gemma')) ctxWindow = 8192;
+  let ctxWindow = _guessModelContextWindow(modelName);
   
   const outputReserve = maxTokens; // 留给输出的Token
   const availableForInput = ctxWindow - outputReserve;
@@ -13603,6 +13710,13 @@ _checkFirstVisitHint(pg);
 if(needsLoading) hidePageLoading();
 }
 // ==================== TAGS ====================
+// 标签筛选生效后重新渲染作品列表：如果搜索框里有关键词，走关键词筛选那条路径（同时叠加标签），
+// 否则走普通的 renderArticles()（selTags 已经在其内部的筛选逻辑里生效）
+function _wsRefreshAfterTagChange(){
+  var kw=(document.getElementById('searchInput')&&document.getElementById('searchInput').value||'').trim();
+  if(kw){filterWorkshopArticles(kw);}
+  else{renderArticles._force=true;renderArticles();}
+}
 function renderTags(){
 const w=document.getElementById('tagsWrap');w.innerHTML='';
 tags.forEach((tag,i)=>{
@@ -13611,7 +13725,7 @@ const el=document.createElement('span');
 el.className='tag'+(isAct?' act':'');
 el.innerHTML=esc(tag)+'<span class="tdel" onclick="event.stopPropagation();rmTag('+i+')">✕</span>';
 el.onclick=(e)=>{
-  if(e.detail===2&&selTags.length>0){selTags=[];renderTags();showToast('已清空所有标签');return;}
+  if(e.detail===2&&selTags.length>0){selTags=[];renderTags();_wsRefreshAfterTagChange();showToast('已清空所有标签');return;}
   const idx=selTags.indexOf(tag);
   if(idx>-1){selTags.splice(idx,1);}
   else{
@@ -13619,6 +13733,9 @@ el.onclick=(e)=>{
     selTags.push(tag);
   }
   renderTags();
+  // 标签按钮不只是给"待生成小说"选主题，也同时用来筛选下方作品列表：
+  // 选中的标签之间是"且"关系——作品必须同时具备所有选中标签才会显示，一个都不选则不筛选
+  _wsRefreshAfterTagChange();
 };
 w.appendChild(el);
 });
@@ -13630,7 +13747,15 @@ if(!tags.includes(t)){tags.push(t);sv(K.tags,tags);renderTags();}
 });
 w.appendChild(ab);
 }
-function rmTag(i){selTags=selTags.filter(t=>t!==tags[i]);tags.splice(i,1);sv(K.tags,tags);renderTags();}
+function rmTag(i){
+const _removed=tags[i];
+selTags=selTags.filter(t=>t!==_removed);
+tags.splice(i,1);
+sv(K.tags,tags);
+renderTags();
+// 删掉的标签如果正好在筛选中生效，列表也要跟着刷新，不然界面上标签消失了但筛选效果还残留着
+_wsRefreshAfterTagChange();
+}
 let cmpParts = { char:true, rel:true, npc:true, world:true, rule:true, style:true, ban:true, extra:false };
 // ✅ 新增：标记是否在压缩 & 中止控制器
 let cmpIsRunning = false;
@@ -13888,9 +14013,18 @@ _wsTypeCache[type]={ver:ws.length,data:ws.filter(a=>a&&a.type===type)};
 }
 return _wsTypeCache[type].data;
 }
-const allFiltered=getWsByType(curType); const filtered=allFiltered.slice(0,wsDisplayCount);
+const _byType=getWsByType(curType);
+// 标签筛选：作坊页的标签按钮身兼两职——既是"待生成小说"的主题标签选择，也是下方作品列表的筛选器。
+// 选中的多个标签之间是"且"关系：作品必须同时具备所有选中的标签才会显示，少一个都不行；
+// 不选任何标签则不筛选、显示该类型下全部作品。
+const allFiltered=selTags.length===0?_byType:_byType.filter(a=>selTags.every(t=>(a.tags||[]).includes(t)));
+const filtered=allFiltered.slice(0,wsDisplayCount);
 if(filtered.length===0){
+if(selTags.length>0){
+list.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><p>没有命中所选标签的'+(curType==='long'?'长篇连载':'短篇一发')+'<br>试试取消部分标签，或换个标签组合 🏷️</p></div>';
+}else{
 list.innerHTML='<div class="empty-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><p>还没有作品<br><br><i class="fas fa-lightbulb"></i> 试试这样开始：<br>1. 在上方输入框描述你想要的故事<br>2. 选择几个氛围标签<br>3. 点击「生成」按钮<br><br>或者点击右上角「转盘」获取创意 ✨</p></div>';
+}
 return;
 }
 list.innerHTML='';
@@ -16774,8 +16908,8 @@ async function callAPINonStream(messages, _retryLeft=2, _opts={}){
             switchPage('settings',document.querySelector('.bnav-i:nth-child(4)'));
           },false);
           document.getElementById('dlgOkBtn').textContent='去设置 →';
-          // 加取消按钮
-          var cancelBtn=document.getElementById('dlgCancelBtn');
+          // 加取消按钮（取消按钮在dlgOv里只有class，没有id，用querySelector才能找到）
+          var cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
           if(cancelBtn){cancelBtn.style.display='';cancelBtn.textContent='稍后再说';}
         },400);
       }else if(resp.status===404){
@@ -16785,7 +16919,7 @@ async function callAPINonStream(messages, _retryLeft=2, _opts={}){
             switchPage('settings',document.querySelector('.bnav-i:nth-child(4)'));
           },false);
           document.getElementById('dlgOkBtn').textContent='去设置 →';
-          var cancelBtn=document.getElementById('dlgCancelBtn');
+          var cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
           if(cancelBtn){cancelBtn.style.display='';cancelBtn.textContent='稍后再说';}
         },400);
       }else if(resp.status===429){
@@ -16994,7 +17128,11 @@ function filterWorkshopArticles(kw){
 kw=(kw||'').trim().toLowerCase();
 if(!kw){renderArticles();return;}
 const list=document.getElementById('articleList');
-const filtered=ws.filter(a=>a&&a.type===curType&&(
+// 关键词搜索也要叠加上已选中的标签筛选（selTags 是"且"关系，逻辑和 renderArticles() 里保持一致），
+// 不然选好标签后一在搜索框打字，标签筛选就被悄悄绕过了，两套筛选各管各的会让人摸不着头脑
+const filtered=ws.filter(a=>a&&a.type===curType
+&&(selTags.length===0||selTags.every(t=>(a.tags||[]).includes(t)))
+&&(
 (a.title||'').toLowerCase().includes(kw)||
 (a.prompt||'').toLowerCase().includes(kw)||
 (a.tags||[]).some(t=>t.toLowerCase().includes(kw))
@@ -19916,9 +20054,13 @@ function confirmDeleteRdChapterAt(idx){
 function deleteRdChapterAt(idx){
   if(!curRd||!curRd.chapters||idx<0||idx>=curRd.chapters.length)return;
   if(curRd.chapters.length<=1){showToast('至少保留一章');return;}
+  var _chCountBefore=curRd.chapters.length;
+  _shiftChapterVersionsAfterDelete(curRd.id,idx,_chCountBefore);
   curRd.chapters.splice(idx,1);
   if(curRd.chNames&&curRd.chNames.length>idx)curRd.chNames.splice(idx,1);
   if(curRd.chOutlines&&curRd.chOutlines.length>idx)curRd.chOutlines.splice(idx,1);
+  if(curRd.chOutlineTags&&curRd.chOutlineTags.length>idx)curRd.chOutlineTags.splice(idx,1);
+  if(curRd.chOutlineUpdatedAt&&curRd.chOutlineUpdatedAt.length>idx)curRd.chOutlineUpdatedAt.splice(idx,1);
   if(curRd.chSummaries&&curRd.chSummaries.length>idx)curRd.chSummaries.splice(idx,1);
   if(curCh>=curRd.chapters.length)curCh=curRd.chapters.length-1;
   else if(curCh>idx)curCh--;
@@ -21477,6 +21619,16 @@ navPush(id);
   // 打开其他设置时恢复氛围写作控件状态
   if(type==='other') setTimeout(_restoreAmbienceSettings, 50);
 document.getElementById('bnav').classList.add('hide');
+if(type==='api'){
+  // 首次进入API设置页：仅对"新用户"显示按钮闪红光 + 星笺气泡引导，老用户不会看到，且每人只展示一次
+  if(ld('bj_isNewUserFlag', false) && !ld('bj_apiGuideOnboardShown', false)){
+    sv('bj_apiGuideOnboardShown', true);
+    window._apiGuideOnboardTimer = setTimeout(function(){
+      window._apiGuideOnboardTimer = null;
+      showApiGuideOnboarding();
+    }, 600);
+  }
+}
 if(type==='char'){renderCharCards();renderCustomTraitList();renderRelList();renderNpcCards();}
 if(type==='other'){updateXjVisibleUI();updateXjBubbleUI();updateContQualityUINew();initAll7Switches();}
 if(type==='theme'){syncBuiltinFontActiveState();}
@@ -21518,11 +21670,85 @@ if(type==='api'){
   if(_fb){_fb.disabled=false;_fb.innerHTML='<i class="fas fa-cloud-arrow-down"></i> 拉取';}
   var _tfb=document.getElementById('fetchToolModelsBtn');
   if(_tfb){_tfb.disabled=false;_tfb.innerHTML='<i class="fas fa-cloud-arrow-down"></i> 拉取';}
+  // 关闭页面时清理"配置教程"新手引导的残留状态（还没点掉就退出设置页的情况）
+  if(window._apiGuideOnboardTimer){clearTimeout(window._apiGuideOnboardTimer);window._apiGuideOnboardTimer=null;}
+  if(typeof window._apiGuideDismiss==='function'){window._apiGuideDismiss();}
 }
 document.getElementById(id).classList.remove('show');
 navPop(id);
 document.getElementById('bnav').classList.remove('hide');
 saveCurSettings();
+}
+// ===== API设置页：配置教程 首次新手引导 =====
+function showApiGuideOnboarding(){
+  var btn=document.getElementById('apiGuideBtn');
+  if(!btn) return;
+  // 防御性清理：如果上一次的引导还没消失就被再次调用，先清掉，避免重复创建导致的界面残留
+  if(typeof window._apiGuideDismiss==='function'){
+    window._apiGuideDismiss();
+  }
+
+  btn.classList.add('api-guide-flash');
+
+  var badge=document.createElement('div');
+  badge.className='api-guide-xj-badge';
+  badge.style.visibility='hidden';
+  var badgeImg=document.createElement('img');
+  badgeImg.src='./xinx.png';
+  badgeImg.alt='星笺';
+  badge.appendChild(badgeImg);
+
+  var skinClass=(typeof xjSkin!=='undefined' && xjSkin && xjSkin!=='default')?(' skin-'+xjSkin):'';
+  var bubble=document.createElement('div');
+  bubble.className='xj-gb-bubble'+skinClass;
+  var uName=(typeof userCard!=='undefined' && userCard && userCard.name)?userCard.name:'你';
+  bubble.textContent=uName+'，记得点这里看配置教程哦～也可以自己上网搜「API使用教程」多了解一下。想快速用起来的话，可以试试注册公益站或中转站；不过站点质量参差不齐，星笺没法保证一定好用，请自行甄别～';
+  bubble.style.visibility='hidden';
+
+  document.body.appendChild(badge);
+  document.body.appendChild(bubble);
+
+  requestAnimationFrame(function(){
+    // 元素可能在这一帧渲染前就被closeSetModal提前清理掉，先确认还挂在页面上
+    if(!badge.parentNode || !bubble.parentNode) return;
+    var btnRect=btn.getBoundingClientRect();
+    var vw=window.innerWidth, vh=window.innerHeight;
+
+    // 星笺小头像：吸附在"配置教程"按钮右下角（沿用主页悬浮星笺的比例，显示完整形象，不裁剪）
+    var badgeW=44, badgeH=56;
+    var badgeLeft=btnRect.right-badgeW/2;
+    var badgeTop=btnRect.bottom-badgeH/2;
+    badgeLeft=Math.max(4,Math.min(vw-badgeW-4,badgeLeft));
+    badgeTop=Math.max(4,Math.min(vh-badgeH-4,badgeTop));
+    badge.style.left=Math.round(badgeLeft)+'px';
+    badge.style.top=Math.round(badgeTop)+'px';
+
+    // 对话气泡：默认显示在星笺头像下方，放不下则自动翻到上方
+    var bw=bubble.offsetWidth||220;
+    var bh=bubble.offsetHeight||60;
+    var bubbleLeft=badgeLeft+badgeW/2-bw/2;
+    var bubbleTop=badgeTop+badgeH+10;
+    if(bubbleTop+bh>vh-16) bubbleTop=badgeTop-bh-10;
+    if(bubbleTop<8) bubbleTop=8;
+    if(bubbleLeft<8) bubbleLeft=8;
+    if(bubbleLeft+bw>vw-8) bubbleLeft=vw-bw-8;
+    bubble.style.left=Math.round(bubbleLeft)+'px';
+    bubble.style.top=Math.round(bubbleTop)+'px';
+
+    badge.style.visibility='visible';
+    bubble.style.visibility='visible';
+  });
+
+  // 点击页面任意处，引导效果全部消失
+  function dismiss(){
+    btn.classList.remove('api-guide-flash');
+    if(badge.parentNode) badge.remove();
+    if(bubble.parentNode) bubble.remove();
+    document.removeEventListener('click',dismiss,true);
+    window._apiGuideDismiss=null;
+  }
+  window._apiGuideDismiss=dismiss;
+  document.addEventListener('click',dismiss,true);
 }
 function toggleGrp(el){el.classList.toggle('exp');el.nextElementSibling.classList.toggle('show');}
 
@@ -23862,12 +24088,61 @@ panel.classList.remove('open');
 btn.classList.remove('open');
 }
 }
+// ==================== 创作页顶部「创作工具箱」按钮：搜索作品 ====================
+// 这里的「创作工具箱」specifically 指创作页最顶部那一整条按钮（id=crToolToggle，图标+文字+
+// 展开箭头那条，点了会展开下面的抽屉），不是抽屉里的某个子按钮。
+// 点按钮右侧的放大镜后，这条按钮本身从"图标+创作工具箱+新建/AI辅助/导出"整体换成
+// "对勾+搜索框"；抽屉（#crToolPanel）本身完全没变，只是如果搜索时抽屉正好开着，顺手收起来
+// 避免两块内容挤在一起。搜索不单开结果区域——草稿箱/我的小说本来就是天然的分类栏目，
+// 搜索直接过滤当前选中 tab 下面那个已有的列表（#crList，逻辑在 renderCrList() 里，见
+// crSearchKw），命中的显示、不命中的隐藏，点作品和平时一样直接进编辑器。
+// 点对勾图标退出搜索、按钮恢复原状、列表恢复未过滤的完整状态。
+function openCrToolSearch(){
+var panel=document.getElementById('crToolPanel');
+var toggle=document.getElementById('crToolToggle');
+if(panel&&panel.classList.contains('open')){
+panel.classList.remove('open');
+if(toggle)toggle.classList.remove('open');
+}
+document.getElementById('crToolNormalLabel').style.display='none';
+document.getElementById('crToolSearchTrigger').style.display='none';
+document.getElementById('crToolSearchRow').style.display='flex';
+var input=document.getElementById('crToolSearchInput');
+input.value='';
+crSearchKw='';
+renderCrList();
+setTimeout(function(){input.focus();},80);
+}
+function closeCrToolSearch(){
+document.getElementById('crToolNormalLabel').style.display='flex';
+document.getElementById('crToolSearchTrigger').style.display='flex';
+document.getElementById('crToolSearchRow').style.display='none';
+crSearchKw='';
+renderCrList();
+}
+function filterCrListBySearch(kw){
+crSearchKw=kw||'';
+renderCrList();
+}
 function renderCrList(){
 const list=document.getElementById('crList');
-const filtered=crWorks.filter(w=>w.type===crTab);
+let filtered=crWorks.filter(w=>w.type===crTab);
+// 创作工具箱顶部搜索框：按名称或创建日期过滤当前 tab（草稿箱/我的小说各自独立筛选，
+// 不新开单独的结果区域——草稿箱/我的小说本来就是天然的分类栏目，直接复用这个列表就够了）
+const kw=(crSearchKw||'').trim().toLowerCase();
+if(kw){
+filtered=filtered.filter(function(w){
+var dateStr=new Date(w.createdAt).toLocaleDateString();
+return (w.title||'').toLowerCase().includes(kw)||dateStr.includes(kw);
+});
+}
 filtered.sort(function(a,b){return (b.pinned?1:0)-(a.pinned?1:0);});
 if(filtered.length===0){
+if(kw){
+list.innerHTML='<div class="empty-st"><p>没有找到匹配"'+esc(crSearchKw.trim())+'"的'+(crTab==='draft'?'草稿':'小说')+'</p></div>';
+}else{
 list.innerHTML='<div class="empty-st"><p>'+(crTab==='draft'?'还没有草稿<br>点击上方「新建草稿」开始写作':'还没有小说<br>点击上方「新建小说」开始连载')+'</p></div>';
+}
 return;
 }
 list.innerHTML='';
@@ -24054,8 +24329,6 @@ doCopy(header+text.trim()+footer);
 }
 
 // ==================== EDITOR ====================
-// ==================== IMMERSIVE EDIT ====================
-let isImmersiveEdit=false;
 // ==================== 氛围写作 ====================
 var ambienceMode=false;
 var ambienceType=null;
@@ -24730,20 +25003,6 @@ function _restoreAmbienceSettings(){
   if(rb)rb.checked=true;
   setAmbienceBgMode(ambienceBgMode);
 }
-// ==================== 原有沉浸写作函数 ====================
-function toggleImmersiveEdit(){
-const modal=document.getElementById('edModal');
-isImmersiveEdit=!isImmersiveEdit;
-if(isImmersiveEdit){
-modal.classList.add('immersive');
-try{document.getElementById('immersiveEditBtn2').innerHTML='<i class="fas fa-sun"></i> 普通 <span class="ti-desc">退出沉浸</span>';}catch(e){logError('op',e)}
-if(document.documentElement.requestFullscreen)document.documentElement.requestFullscreen().catch(()=>{});
-}else{
-modal.classList.remove('immersive');
-try{document.getElementById('immersiveEditBtn2').innerHTML='<i class="fas fa-moon"></i> 沉浸写作 <span class="ti-desc">全屏专注</span>';}catch(e){logError('op',e)}
-if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});
-}
-}
 // ==================== 编辑器折叠工具栏 ====================
 function closeAllToolPanels(){
 document.getElementById('toolOverlay').style.display='none';
@@ -24820,6 +25079,10 @@ document.getElementById('edSaveStatus').textContent='已保存';
 try{document.getElementById('edOutlineBtnNew').style.display=(work.outline?'flex':'none');}catch(e){logError('op',e)}
 try{document.getElementById('edChOutlineBtnNew').style.display=(work.type==='novel'?'flex':'none');}catch(e){logError('op',e)}
 try{document.getElementById('edRenameBtnNew').style.display=(work.type==='novel'?'flex':'none');}catch(e){logError('op',e)}
+// 草稿没有"章节"概念，这一整组功能本质是一样的（保存/管理/删除），只是文案换成"草稿"更贴切
+try{document.getElementById('edChGroupTitle').innerHTML=work.type==='novel'?'<i class="fas fa-tasks"></i> 章节管理':'<i class="fas fa-tasks"></i> 草稿管理';}catch(e){logError('op',e)}
+try{document.getElementById('edSaveVerDesc').textContent=work.type==='novel'?'保存当前章为一个版本':'保存当前草稿为一个版本';}catch(e){logError('op',e)}
+try{document.getElementById('edDelChLabel').textContent=work.type==='novel'?'删除本章':'删除草稿';}catch(e){logError('op',e)}
 applyCrBg();
 try{document.getElementById('edToolPanel').classList.remove('open');}catch(e){logError('op',e)}
 try{document.getElementById('edToolToggle').innerHTML='<i class="fas fa-tools"></i> 更多工具 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:12px;height:12px"><path d="M6 9l6 6 6-6"/></svg>';}catch(e){logError('op',e)}
@@ -24903,7 +25166,6 @@ function _doCloseEditor(){
   if(document.getElementById('edModal').classList.contains('ed-read-mode')){closeEdReadMode();}
   if(autoSaveInterval){clearInterval(autoSaveInterval);autoSaveInterval=null;}
   saveEditorContent();
-  if(isImmersiveEdit){document.getElementById('edModal').classList.remove('immersive');isImmersiveEdit=false;}
   document.getElementById('edModal').classList.remove('show');
   document.getElementById('bnav').classList.remove('hide');
   curEd=null;
@@ -25020,6 +25282,8 @@ function bindEdChDragSort(listEl){
       dragEl.classList.remove('dragging');
 
       if(targetIdx>=0&&targetIdx!==dragIdx&&curEd&&curEd.chapters){
+        // 版本历史要在chapters本身被splice之前搬移，此时chapters.length还是搬移前的章节总数（搬移不改变总数）
+        _moveChapterVersions(curEd.id,dragIdx,targetIdx,curEd.chapters.length);
         // 执行章节交换
         var ch=curEd.chapters.splice(dragIdx,1)[0];
         curEd.chapters.splice(targetIdx,0,ch);
@@ -25032,6 +25296,16 @@ function bindEdChDragSort(listEl){
         if(curEd.chOutlines){
           var ol=curEd.chOutlines.splice(dragIdx,1)[0];
           curEd.chOutlines.splice(targetIdx,0,ol);
+        }
+        // 同步章节大纲标签
+        if(curEd.chOutlineTags){
+          var tg=curEd.chOutlineTags.splice(dragIdx,1)[0];
+          curEd.chOutlineTags.splice(targetIdx,0,tg);
+        }
+        // 同步章节大纲修改时间
+        if(curEd.chOutlineUpdatedAt){
+          var ut=curEd.chOutlineUpdatedAt.splice(dragIdx,1)[0];
+          curEd.chOutlineUpdatedAt.splice(targetIdx,0,ut);
         }
         // 同步章节摘要
         if(curEd.chSummaries){
@@ -25118,11 +25392,13 @@ curEd.content=text;
 let edUndoStack=[];
 const ED_UNDO_MAX=30;
 
-function edPushUndo(){
+// text/ch 可以显式传入"要记住的状态"；不传时退回到读取当前文本框（适合在改动发生前主动调用的场景，
+// 比如useVersion切换版本前调用edPushUndo()，此时文本框里还是改动前的旧内容）
+function edPushUndo(text,ch){
 if(!curEd)return;
 const snapshot={
-ch:curEdCh,
-text:document.getElementById('edTextarea').value||'',
+ch: ch!==undefined ? ch : curEdCh,
+text: text!==undefined ? text : (document.getElementById('edTextarea').value||''),
 time:Date.now()
 };
 // 避免重复记录（内容一样不记）
@@ -25157,12 +25433,13 @@ btn.title=edUndoStack.length+'步可撤回';
 }
 function saveEditorContent(){
 if(!curEd)return;
-// 只在内容确实变化时才推入撤回栈
+// 只在内容确实变化时才推入撤回栈；入栈的是"变化前"的旧文本，这样点撤回才能真正回到变化之前，
+// 而不是把刚发生的这次改动原样再存一遍（那样撤回第一下会是个看不出效果的空操作）
 var _curText=document.getElementById('edTextarea').value||'';
 var _savedText='';
 if(curEd.type==='novel'&&curEd.chapters){_savedText=curEd.chapters[curEdCh]||'';}
 else{_savedText=curEd.content||'';}
-if(_curText!==_savedText) edPushUndo();
+if(_curText!==_savedText) edPushUndo(_savedText,curEdCh);
 // 记录保存前的字数（用于计算增量）
 let oldWc=0;
 const oldWork=crWorks.find(w=>w.id===curEd.id);
@@ -25212,7 +25489,30 @@ document.addEventListener('touchstart',handler);
 }
 e.stopPropagation();
 }
+// 记录光标位置：手机浏览器点击工具栏按钮（比如Markdown格式化按钮）时，输入框会先失焦，
+// 部分移动端浏览器一失焦selectionStart/selectionEnd就会被重置成0，导致后续插入操作全部落在文本最开头，
+// 跟光标实际停在哪完全没关系。这里持续记录"最后一次在输入框里的光标位置"，工具栏按钮点击时如果发现
+// 输入框已经不是当前焦点（说明selectionStart可能已经不可信了），就改用这个记住的位置。
+let _edLastSelStart=0;
+let _edLastSelEnd=0;
+function _edTrackSelection(){
+const ta=document.getElementById('edTextarea');
+if(!ta)return;
+_edLastSelStart=ta.selectionStart;
+_edLastSelEnd=ta.selectionEnd;
+}
+function _edGetSelection(){
+const ta=document.getElementById('edTextarea');
+if(document.activeElement===ta){
+// 输入框仍然是当前焦点，selectionStart/End绝对可信，直接用
+return {start:ta.selectionStart, end:ta.selectionEnd};
+}
+// 输入框已经失焦（比如刚点了工具栏按钮），改用之前记住的位置
+return {start:_edLastSelStart, end:_edLastSelEnd};
+}
+
 function onEditorInput(){
+    _edTrackSelection();
     // 字数统计用200ms防抖，避免每次按键都计算
     if(_edWcTimer) clearTimeout(_edWcTimer);
     _edWcTimer = setTimeout(updateEdWc, 400);
@@ -25232,6 +25532,14 @@ function onEditorInput(){
 let edFontSize=ld('bj_edFontSize',15);
 let edLineHeight=ld('bj_edLineHeight',2);
 let edLetterSpacing=ld('bj_edLetterSpacing',0);
+
+// ==================== 自动排版·排版规则 ====================
+// 默认值刻意贴合原来formatEditorText固定写死的行为（不缩进/段间空一行/清除多余空行），
+// 这样老用户升级后第一次点"自动排版"效果和以前完全一样，不会有突兀的变化
+let edFmtIndentOn=ld('bj_edFmtIndentOn',false);
+let edFmtIndentChars=ld('bj_edFmtIndentChars',2);
+let edFmtBlankMode=ld('bj_edFmtBlankMode','blank');// 'none'|'skip'|'blank'|'blank-indent'
+let edFmtClearExtra=ld('bj_edFmtClearExtra',true);
 
 function toggleEdWriteSettings(){
 const el=document.getElementById('edWriteSettings');
@@ -25268,6 +25576,9 @@ if(!ta)return;
 ta.style.setProperty('--ed-fontsize',edFontSize+'px');
 ta.style.setProperty('--ed-lineheight',edLineHeight);
 ta.style.setProperty('--ed-letterspacing',edLetterSpacing+'px');
+// 字号/行高/字距会改变每行能容纳的字数，从而改变 scrollHeight——用 requestAnimationFrame
+// 等浏览器按新样式重新排完版再同步滚动条，不然读到的还是改样式前的旧高度
+try{requestAnimationFrame(function(){_edSyncCustomScrollbar();});}catch(e){}
 }
 
 function loadEdWriteSettings(){
@@ -25288,6 +25599,10 @@ applyEdWriteStyle();
 function updateEdWc(){
 const ta=document.getElementById('edTextarea');
 if(!ta)return;
+// 内容变化后顺带同步一下自定义滚动条的滑块高度/位置（内容变长变短都会影响 scrollHeight）。
+// updateEdWc() 几乎在每个"文本框内容被改动"的地方都会被调用（打字、切章、AI改写、格式化…），
+// 放在这一个函数里统一同步，不用去每个改动内容的地方都补一遍
+try{_edSyncCustomScrollbar();}catch(e){}
 const text=ta.value||'';
 const wc=countWords(text);
 const wcEl=document.getElementById('edWc');
@@ -26061,9 +26376,11 @@ function toggleEdMdToolbar(){
 function edMdInsert(before,after){
   const ta=document.getElementById('edTextarea');
   if(!ta||edPreviewMode)return;
-  const start=ta.selectionStart;
-  const end=ta.selectionEnd;
+  const sel=_edGetSelection();
+  const start=sel.start;
+  const end=sel.end;
   const text=ta.value;
+  edPushUndo(text,curEdCh); // 插入前先记撤回点，不依赖3秒防抖
   const selected=text.substring(start,end);
   const newText=text.substring(0,start)+before+(selected||'文字')+after+text.substring(end);
   ta.value=newText;
@@ -26073,14 +26390,17 @@ function edMdInsert(before,after){
   }else{
     ta.setSelectionRange(start+before.length,start+before.length+2);
   }
+  _edTrackSelection();
   onEditorInput();
 }
 
 function edMdInsertLine(prefix){
   const ta=document.getElementById('edTextarea');
   if(!ta||edPreviewMode)return;
-  const start=ta.selectionStart;
+  const sel=_edGetSelection();
+  const start=sel.start;
   const text=ta.value;
+  edPushUndo(text,curEdCh); // 插入前先记撤回点，不依赖3秒防抖
   // 找到当前行的开头
   let lineStart=start;
   while(lineStart>0&&text[lineStart-1]!=='\n')lineStart--;
@@ -26088,6 +26408,7 @@ function edMdInsertLine(prefix){
   ta.value=newText;
   ta.focus();
   ta.setSelectionRange(lineStart+prefix.length,lineStart+prefix.length);
+  _edTrackSelection();
   onEditorInput();
 }
 
@@ -26147,26 +26468,89 @@ function renderMarkdown(text){
 function formatEditorText(){
 const ta=document.getElementById('edTextarea');
 if(!ta)return;
+edPushUndo(); // 排版前先记一个撤回点，不依赖3秒自动保存的防抖，排完版立刻就能撤回
 let text=ta.value||'';
-// 先把多个连续空行合并成一个
-text=text.replace(/\n{3,}/g,'\n\n');
-// 把单个换行（没有空行分隔的段落）变成空行分隔
-const lines=text.split('\n');
-let result=[];
-for(let i=0;i<lines.length;i++){
-const line=lines[i];
-result.push(line);
-if(line.trim()&&i+1<lines.length&&lines[i+1].trim()){
-result.push('');
+
+const blankMode=edFmtBlankMode; // 'none'|'skip'|'blank'|'blank-indent'
+const forceIndent=blankMode==='blank-indent';
+const indentN=(edFmtIndentOn||forceIndent) ? Math.max(1,edFmtIndentChars||2) : 0;
+const indentStr=indentN>0 ? '　'.repeat(indentN) : '';
+
+if(blankMode==='skip'){
+  // 不处理空行结构：不合并/拆分段落换行，只做"按行加缩进"和"清除多余空行"
+  if(edFmtClearExtra){
+    text=text.replace(/\n{3,}/g,'\n\n');
+  }
+  if(indentStr){
+    text=text.split('\n').map(function(line){
+      const body=line.replace(/^[\s　]+/,'');
+      return body.trim() ? indentStr+body : line;
+    }).join('\n');
+  }
+}else{
+  // 按段落重新组织：任意一段换行（不管单个还是多个）都视为段落边界，再按设置的分隔方式重新拼接
+  const paras=text.split(/\n+/).map(function(p){return p.trim();}).filter(function(p){return p.length>0;});
+  const sep=blankMode==='none' ? '\n' : '\n\n';
+  const rebuilt=paras.map(function(p){
+    const body=p.replace(/^[\s　]+/,'');
+    return indentStr ? indentStr+body : body;
+  });
+  text=rebuilt.join(sep);
+  if(edFmtClearExtra){
+    text=text.replace(/\n{3,}/g,'\n\n');
+  }
 }
-}
-text=result.join('\n');
-text=text.replace(/\n{3,}/g,'\n\n');
-text=text.trim();
+// 只清理首尾多余的换行，不用trim()——trim()会把首段刚加上的全角空格缩进也一起吃掉
+text=text.replace(/^\n+/,'').replace(/\n+$/,'');
 ta.value=text;
 onEditorInput();
 showToast('排版完成 ¶');
 }
+
+// ==================== 排版规则设置弹窗 ====================
+function openFmtRuleOv(){
+_syncFmtRuleUI();
+document.getElementById('fmtRuleOv').classList.add('show');
+navPush('fmtRuleOv');
+}
+function closeFmtRuleOv(){
+navPop('fmtRuleOv');
+document.getElementById('fmtRuleOv').classList.remove('show');
+}
+function _syncFmtRuleUI(){
+document.querySelectorAll('.fmt-indent-opt').forEach(function(el){
+el.classList.toggle('act', parseInt(el.dataset.v,10)===(edFmtIndentOn?edFmtIndentChars:0));
+});
+document.querySelectorAll('.fmt-blank-opt').forEach(function(el){
+el.classList.toggle('act', el.dataset.v===edFmtBlankMode);
+});
+var chk=document.getElementById('fmtClearExtraChk');
+if(chk){chk.checked=edFmtClearExtra;updateAdvSwitch('fmtClearExtraChk');}
+}
+function setFmtIndent(n){
+n=parseInt(n,10)||0;
+edFmtIndentOn = n>0;
+edFmtIndentChars = n>0 ? n : edFmtIndentChars; // 选"不缩进"时不清空已记住的字符数，方便下次再打开时数值还在
+sv('bj_edFmtIndentOn',edFmtIndentOn);
+sv('bj_edFmtIndentChars',edFmtIndentChars);
+_syncFmtRuleUI();
+}
+function setFmtBlankMode(mode){
+edFmtBlankMode=mode;
+sv('bj_edFmtBlankMode',mode);
+// "空一行+缩进"这个预设选中时，如果缩进还没开，顺手把缩进也打开（默认2字符），方便一键达到"缩进+空一行"的效果；
+// 用户之后仍然可以在"首段缩进"里单独调整字符数或关掉
+if(mode==='blank-indent' && !edFmtIndentOn){
+edFmtIndentOn=true;
+sv('bj_edFmtIndentOn',true);
+}
+_syncFmtRuleUI();
+}
+function setFmtClearExtra(v){
+edFmtClearExtra=!!v;
+sv('bj_edFmtClearExtra',edFmtClearExtra);
+}
+
 // ==================== AI REVIEW ====================
 async function requestAIReview(){
 if(!curEd)return;
@@ -26643,38 +27027,194 @@ function viewOutline(){
 if(!curEd||!curEd.outline){showToast('这篇作品没有大纲');return;}
 showDlg('📋 总大纲',curEd.outline.substring(0,500)+(curEd.outline.length>500?'...':''),()=>{});
 }
+// ==================== 章节大纲：标签 + 排序筛选 ====================
+var _chOutlineSortValue='seq-asc';
+var _chOutlineSelTags=[];
+var _chOutlineSortOptions=[
+{value:'seq-asc',label:'从旧到新'},
+{value:'seq-desc',label:'从新到旧'},
+{value:'words-desc',label:'从多到少'},
+{value:'words-asc',label:'从少到多'},
+{value:'recent',label:'最近修改'}
+];
+
 function openChOutline(){
 if(!curEd||curEd.type!=='novel')return;
 if(!curEd.chOutlines)curEd.chOutlines=[];
-const list=document.getElementById('chOutlineList');
-list.innerHTML='';
-curEd.chapters.forEach((_,i)=>{
-const outline=curEd.chOutlines[i]||'';
-const preview=(curEd.chapters[i]||'').replace(/\n/g,' ').substring(0,30);
-const item=document.createElement('div');
-item.className='ch-outline-item';
-item.innerHTML=
-'<div class="ch-outline-item-hdr"><span>第'+(i+1)+'章</span><span style="font-size:10px;color:var(--text2);font-weight:400">'+esc(preview)+'...</span></div>'+
-'<textarea data-ch="'+i+'" placeholder="【必填内容】本章必须出现的事件、人物行为、情绪走向、要埋的伏笔、禁止出现的内容...写得越详细AI越听话">'+esc(outline)+'</textarea>';;
-list.appendChild(item);
-});
+if(!curEd.chOutlineTags)curEd.chOutlineTags=[];
+if(!curEd.chOutlineUpdatedAt)curEd.chOutlineUpdatedAt=[];
+_chOutlineSortValue='seq-asc';
+_chOutlineSelTags=[];
+var lbl=document.getElementById('chOutlineSortLabel');
+if(lbl)lbl.textContent='从旧到新';
+renderChOutlineFilterTags();
+renderChOutlineList();
 document.getElementById('chOutlineOv').classList.add('show');
 navPush('chOutlineOv');
 }
 function closeChOutline(){
-  navPop('chOutlineOv');
+navPop('chOutlineOv');
 document.getElementById('chOutlineOv').classList.remove('show');
 }
-function saveChOutlines(){
+
+// 静默保存所有大纲文本框（不关闭弹窗、不弹提示），供切换排序/标签筛选前调用，
+// 避免重新渲染列表时把用户还没点"保存"的编辑内容弄丢
+function _autoSaveChOutlineTextareas(){
 if(!curEd)return;
 if(!curEd.chOutlines)curEd.chOutlines=[];
-document.querySelectorAll('#chOutlineList textarea').forEach(ta=>{
-const ch=parseInt(ta.dataset.ch);
-curEd.chOutlines[ch]=ta.value;
+if(!curEd.chOutlineUpdatedAt)curEd.chOutlineUpdatedAt=[];
+var now=Date.now();
+var changed=false;
+document.querySelectorAll('#chOutlineList textarea[data-ch]').forEach(function(ta){
+var ch=parseInt(ta.dataset.ch,10);
+var newVal=ta.value;
+if(curEd.chOutlines[ch]!==newVal){
+curEd.chOutlines[ch]=newVal;
+curEd.chOutlineUpdatedAt[ch]=now;
+changed=true;
+}
 });
-saveEditorContent();
+if(changed)saveEditorContent();
+}
+
+function saveChOutlines(){
+if(!curEd)return;
+_autoSaveChOutlineTextareas();
 closeChOutline();
 showToast('章节大纲已保存 📋');
+}
+
+// ---- 排序方式选择弹窗 ----
+function openChOutlineSortPicker(){
+var listEl=document.getElementById('chOutlineSortPickerList');
+if(!listEl)return;
+var html='';
+_chOutlineSortOptions.forEach(function(o){
+var sel=o.value===_chOutlineSortValue;
+html+='<button class="col-fp-item'+(sel?' selected':'')+'" onclick="pickChOutlineSort(\''+o.value+'\')">'+
+'<span>'+o.label+'</span>'+(sel?'<i class="fas fa-check fp-check"></i>':'')+
+'</button>';
+});
+listEl.innerHTML=html;
+document.getElementById('chOutlineSortPickerOv').classList.add('show');
+navPush('chOutlineSortPickerOv');
+}
+function pickChOutlineSort(value){
+closeChOutlineSortPicker();
+_chOutlineSortValue=value;
+var opt=_chOutlineSortOptions.find(function(o){return o.value===value;});
+var lbl=document.getElementById('chOutlineSortLabel');
+if(lbl&&opt)lbl.textContent=opt.label;
+_autoSaveChOutlineTextareas();
+renderChOutlineList();
+}
+function closeChOutlineSortPicker(){
+navPop('chOutlineSortPickerOv');
+document.getElementById('chOutlineSortPickerOv').classList.remove('show');
+}
+
+// ---- 标签筛选行（按出现频率排列，和素材工坊的标签筛选逻辑一致）----
+function renderChOutlineFilterTags(){
+if(!curEd)return;
+var freq={};
+(curEd.chOutlineTags||[]).forEach(function(tags){
+(tags||[]).forEach(function(t){freq[t]=(freq[t]||0)+1;});
+});
+var sorted=Object.keys(freq).sort(function(a,b){return freq[b]-freq[a];});
+var wrap=document.getElementById('chOutlineTagFilter');
+if(!wrap)return;
+wrap.innerHTML=sorted.map(function(t){
+return '<span class="mat-tag-chip'+(_chOutlineSelTags.indexOf(t)!==-1?' act':'')+'" onclick="toggleChOutlineTagFilter(\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+'</span>';
+}).join('');
+}
+function toggleChOutlineTagFilter(tag){
+_autoSaveChOutlineTextareas();
+var idx=_chOutlineSelTags.indexOf(tag);
+if(idx===-1)_chOutlineSelTags.push(tag);else _chOutlineSelTags.splice(idx,1);
+renderChOutlineFilterTags();
+renderChOutlineList();
+}
+
+// ---- 列表渲染：按当前排序方式+标签筛选生成章节顺序（只影响这个管理弹窗里的浏览顺序，
+// 不会改变小说本身的实际章节顺序）----
+function renderChOutlineList(){
+if(!curEd)return;
+var list=document.getElementById('chOutlineList');
+if(!list)return;
+var indices=curEd.chapters.map(function(_,i){return i;});
+if(_chOutlineSelTags.length>0){
+indices=indices.filter(function(i){
+var tags=(curEd.chOutlineTags&&curEd.chOutlineTags[i])||[];
+return _chOutlineSelTags.every(function(t){return tags.indexOf(t)!==-1;});
+});
+}
+var sortFns={
+'seq-asc':function(a,b){return a-b;},
+'seq-desc':function(a,b){return b-a;},
+'words-desc':function(a,b){return countWords(curEd.chapters[b]||'')-countWords(curEd.chapters[a]||'');},
+'words-asc':function(a,b){return countWords(curEd.chapters[a]||'')-countWords(curEd.chapters[b]||'');},
+'recent':function(a,b){
+var ua=(curEd.chOutlineUpdatedAt&&curEd.chOutlineUpdatedAt[a])||0;
+var ub=(curEd.chOutlineUpdatedAt&&curEd.chOutlineUpdatedAt[b])||0;
+return ub-ua;
+}
+};
+indices.sort(sortFns[_chOutlineSortValue]||sortFns['seq-asc']);
+if(indices.length===0){
+list.innerHTML='<div style="text-align:center;padding:30px;color:var(--text2);font-size:12px">没有匹配的章节<br>试试清除标签筛选</div>';
+return;
+}
+list.innerHTML=indices.map(function(i){return _renderChOutlineItem(i);}).join('');
+}
+function _renderChOutlineTagChips(i,tags){
+var html='';
+(tags||[]).forEach(function(t){
+html+='<span class="mat-tag-chip act" onclick="removeChOutlineTag('+i+',\''+t.replace(/'/g,"\\'")+'\')">'+esc(t)+' ✕</span>';
+});
+html+='<span class="mat-tag-chip" onclick="addChOutlineTag('+i+')" style="border-style:dashed"><i class="fas fa-plus" style="font-size:9px"></i> 标签</span>';
+return html;
+}
+function _renderChOutlineItem(i){
+var outline=curEd.chOutlines[i]||'';
+var tags=(curEd.chOutlineTags&&curEd.chOutlineTags[i])||[];
+var chWords=countWords(curEd.chapters[i]||'');
+var chName=(curEd.chNames&&curEd.chNames[i])?(' '+curEd.chNames[i]):'';
+var preview=(curEd.chapters[i]||'').replace(/\n/g,' ').substring(0,30);
+return '<div class="ch-outline-item" data-ch="'+i+'">'+
+'<div class="ch-outline-item-hdr"><span>第'+(i+1)+'章'+esc(chName)+'</span><span style="font-size:10px;color:var(--text2);font-weight:400">'+chWords+'字 · '+esc(preview)+(preview.length>=30?'…':'')+'</span></div>'+
+'<div class="ch-outline-tags" id="chOutlineTags'+i+'" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">'+_renderChOutlineTagChips(i,tags)+'</div>'+
+// 用 .tx-wrap 包住输入框，右下角配一个紫色拖拽三角——和"续写上下文设置"里的章节大纲输入框用的是
+// 同一套全局拖拽扩大机制（见文件末尾 _initTxResize 的事件委托），不需要额外写一遍拖拽逻辑，
+// 长按/按住三角往下拖就能把输入框拉高，方便大段大纲不用来回滚动查看
+'<div class="tx-wrap"><textarea data-ch="'+i+'" placeholder="【必填内容】本章必须出现的事件、人物行为、情绪走向、要埋的伏笔、禁止出现的内容...写得越详细AI越听话">'+esc(outline)+'</textarea><div class="tx-resize-handle"></div></div>'+
+'</div>';
+}
+function addChOutlineTag(i){
+if(!curEd)return;
+showInp('添加标签','给第'+(i+1)+'章的大纲加一个标签（如：主线、感情线、伏笔）',function(tag){
+tag=(tag||'').trim();
+if(!tag)return;
+if(!curEd.chOutlineTags)curEd.chOutlineTags=[];
+if(!curEd.chOutlineTags[i])curEd.chOutlineTags[i]=[];
+if(curEd.chOutlineTags[i].indexOf(tag)===-1){
+curEd.chOutlineTags[i].push(tag);
+saveEditorContent();
+}
+var tagsEl=document.getElementById('chOutlineTags'+i);
+if(tagsEl)tagsEl.innerHTML=_renderChOutlineTagChips(i,curEd.chOutlineTags[i]);
+renderChOutlineFilterTags();
+});
+}
+function removeChOutlineTag(i,tag){
+if(!curEd||!curEd.chOutlineTags||!curEd.chOutlineTags[i])return;
+var idx=curEd.chOutlineTags[i].indexOf(tag);
+if(idx>-1){
+curEd.chOutlineTags[i].splice(idx,1);
+saveEditorContent();
+}
+var tagsEl=document.getElementById('chOutlineTags'+i);
+if(tagsEl)tagsEl.innerHTML=_renderChOutlineTagChips(i,curEd.chOutlineTags[i]||[]);
+renderChOutlineFilterTags();
 }
 function renameEdChapter(){
 if(!curEd||curEd.type!=='novel')return;
@@ -26693,19 +27233,32 @@ if(f&&current)f.value=current;
 },120);
 }
 function deleteEdChapter(){
-if(!curEd||curEd.type!=='novel')return;
-if(curEd.chapters.length<=1){showToast('至少保留一章');return;}
-const chWc=countWords(curEd.chapters[curEdCh]||'');
-edPushUndo();
-showDlg('删除章节','确定要删除第'+(curEdCh+1)+'章吗？('+chWc+'字)\n\n⚠️ 此操作不可恢复！',()=>{
-curEd.chapters.splice(curEdCh,1);
-if(curEdCh>=curEd.chapters.length)curEdCh=curEd.chapters.length-1;
-document.getElementById('edTextarea').value=curEd.chapters[curEdCh]||'';
-updateEdWc();
-renderEdChBar();
-saveEditorContent();
-showToast('已删除');
-},true);
+if(!curEd)return;
+if(curEd.type!=='novel'){
+  // 草稿没有"章节"概念，这里删除的是整个草稿
+  var draftId=curEd.id;
+  var draftWc=countWords(curEd.content||'');
+  showDlg('删除草稿','确定要删除这篇草稿吗？('+draftWc+'字)\n\n⚠️ 此操作不可恢复！',function(){
+    crWorks=crWorks.filter(function(w){return w.id!==draftId;});
+    sv('bj_crWorks',crWorks);
+    showToast('已删除');
+    // 直接关闭编辑器，不走closeEditor()——那个函数会重新保存当前内容，
+    // 但作品已经被删了，保存会往一个不存在的作品上写入无意义的数据
+    navPop('edModal');
+    if(autoSaveInterval){clearInterval(autoSaveInterval);autoSaveInterval=null;}
+    if(edAutoSaveTimer){clearTimeout(edAutoSaveTimer);edAutoSaveTimer=null;}
+    document.getElementById('edModal').classList.remove('show');
+    document.getElementById('bnav').classList.remove('hide');
+    curEd=null;
+    try{if(!document.querySelector('.pg.act#pg-settings'))document.getElementById('xjGlobalFloat').style.display='';}catch(e){}
+    renderCrList();
+  },true);
+  return;
+}
+// 小说：委托给"按索引删除"的实现（confirmDeleteEdChapterAt → deleteEdChapterAt），
+// 和章节目录里长按删除走同一套逻辑，会同步清理章节名/大纲/标签/版本历史等所有平行数据，
+// 不再单独维护一份不完整的删除代码（之前这里只删了chapters数组，chNames/chOutlines等都没跟着删，会导致后面章节的名字/大纲错位）
+confirmDeleteEdChapterAt(curEdCh);
 }
 // ==================== 章节目录：长按删除（共享工具，创作页/阅读页目录通用） ====================
 // item：目录列表中的单个章节DOM项；onLongPress：长按触发后要执行的回调（不含参数，由调用方通过闭包传入具体索引）
@@ -26756,14 +27309,45 @@ function confirmDeleteEdChapterAt(idx){
     deleteEdChapterAt(idx);
   },true);
 }
-// 创作页目录：按索引执行删除（同步清理章节名/大纲/摘要等平行数组，避免索引错位）
+// 拖拽调整章节顺序后，version历史存储也要跟着"搬家"，语义和chapters.splice(dragIdx,1)[0]/splice(targetIdx,0,item)完全对应：
+// 取出该章的版本历史，插到新位置，中间跨过的章节顺移一位。不这样做的话，拖动章节顺序后，版本历史还留在原来的序号上，
+// 后续点"版本管理"看到的会是别的章节的历史记录。
+function _moveChapterVersions(workId,dragIdx,targetIdx,chapterCount){
+if(!workId)return;
+var all=[];
+for(var i=0;i<chapterCount;i++){
+all.push(getChapterVersions(workId,i));
+}
+var moved=all.splice(dragIdx,1)[0];
+all.splice(targetIdx,0,moved);
+for(var j=0;j<all.length;j++){
+saveChapterVersions(workId,j,all[j]);
+}
+}
+// 删除某章后，把该章之后所有章节的"版本历史"存储都往前挪一位，跟上新的章节序号。
+// 版本历史是按"作品id_章节序号"存的独立存储条目，不会随curEd.chapters.splice()自动跟着变——
+// 如果不处理，删掉第3章后，原来第4章的版本历史会错位地对应到新的第3章上，越往后错位越明显。
+function _shiftChapterVersionsAfterDelete(workId,deletedIdx,chapterCountBeforeDelete){
+if(!workId)return;
+for(var i=deletedIdx;i<chapterCountBeforeDelete-1;i++){
+var nextVersions=getChapterVersions(workId,i+1);
+saveChapterVersions(workId,i,nextVersions);
+}
+// 最后一个位置已经没有章节对应了，清空避免残留数据一直占着存储空间
+sv('bj_chVer_'+workId+'_'+(chapterCountBeforeDelete-1),[]);
+}
+// 创作页目录：按索引执行删除（同步清理章节名/大纲/标签/摘要/版本历史等所有平行数据，避免索引错位）
 function deleteEdChapterAt(idx){
   if(!curEd||!curEd.chapters||idx<0||idx>=curEd.chapters.length)return;
   if(curEd.chapters.length<=1){showToast('至少保留一章');return;}
   edPushUndo();
+  var _chCountBefore=curEd.chapters.length;
+  _shiftChapterVersionsAfterDelete(curEd.id,idx,_chCountBefore);
   curEd.chapters.splice(idx,1);
   if(curEd.chNames&&curEd.chNames.length>idx)curEd.chNames.splice(idx,1);
   if(curEd.chOutlines&&curEd.chOutlines.length>idx)curEd.chOutlines.splice(idx,1);
+  if(curEd.chOutlineTags&&curEd.chOutlineTags.length>idx)curEd.chOutlineTags.splice(idx,1);
+  if(curEd.chOutlineUpdatedAt&&curEd.chOutlineUpdatedAt.length>idx)curEd.chOutlineUpdatedAt.splice(idx,1);
   if(curEd.chSummaries&&curEd.chSummaries.length>idx)curEd.chSummaries.splice(idx,1);
   if(curEdCh>=curEd.chapters.length)curEdCh=curEd.chapters.length-1;
   else if(curEdCh>idx)curEdCh--;
@@ -28576,10 +29160,10 @@ sv('bj_chVer_'+workId+'_'+chIdx,versions);
 }
 
 function saveChapterVersion(){
-if(!curEd||curEd.type!=='novel'){showToast('仅小说模式支持版本管理');return;}
+if(!curEd){showToast('请先打开一篇作品');return;}
 saveEditorChapter();
-var text=curEd.chapters[curEdCh]||'';
-if(countWords(text)<5){showToast('当前章节内容太少，至少写5个字再保存版本');return;}
+var text=curEd.type==='novel'?(curEd.chapters[curEdCh]||''):(curEd.content||'');
+if(countWords(text)<5){showToast('当前内容太少，至少写5个字再保存版本');return;}
 var versions=getChapterVersions(curEd.id,curEdCh);
 var defaultName='版本'+(versions.length+1);
 showInp('保存版本','给这个版本起个名字（如：初稿、修改版、甜蜜线）',function(name){
@@ -28596,14 +29180,21 @@ showToast('版本「'+name+'」已保存 💾 (共'+versions.length+'个版本)'
 }
 
 function openVersionList(){
-if(!curEd||curEd.type!=='novel'){showToast('仅小说模式支持版本管理');return;}
-var chName=(curEd.chNames&&curEd.chNames[curEdCh])?curEd.chNames[curEdCh]:'';
-document.getElementById('versionTitle').textContent='📚 第'+(curEdCh+1)+'章'+(chName?' '+chName:'')+' 的版本';
+if(!curEd){showToast('请先打开一篇作品');return;}
+var chName=(curEd.type==='novel'&&curEd.chNames&&curEd.chNames[curEdCh])?curEd.chNames[curEdCh]:'';
+document.getElementById('versionTitle').textContent=curEd.type==='novel'
+  ? '📚 第'+(curEdCh+1)+'章'+(chName?' '+chName:'')+' 的版本'
+  : '📚 「'+(curEd.title||'未命名草稿')+'」的版本';
 var versions=getChapterVersions(curEd.id,curEdCh);
 var currentText=document.getElementById('edTextarea').value||'';
 var currentWc=countWords(currentText);
 document.getElementById('versionSubtitle').textContent='当前内容 '+currentWc+' 字 · 共 '+versions.length+' 个保存的版本';
 document.getElementById('versionCompare').style.display='none';
+_versionSearchQ='';
+var sInp=document.getElementById('versionSearchInput');
+if(sInp)sInp.value='';
+var sClr=document.getElementById('versionSearchClear');
+if(sClr)sClr.style.display='none';
 renderVersionList(versions,currentText);
 document.getElementById('versionOv').classList.add('show');
 navPush('versionOv');
@@ -28614,14 +29205,31 @@ function closeVersionList(){
 document.getElementById('versionOv').classList.remove('show');
 }
 
+var _verListCache=[];
+var _verCurrentTextCache='';
+var _versionSearchQ='';
+
 function renderVersionList(versions,currentText){
+_verListCache=versions;
+_verCurrentTextCache=currentText;
 var body=document.getElementById('versionListBody');
 if(versions.length===0){
-body.innerHTML='<div style="text-align:center;padding:30px;color:var(--text2);font-size:12px">还没有保存的版本<br><br>在编辑器工具栏点击「<i class="fas fa-floppy-disk"></i> 保存版本」<br>可以保存当前章节的一个快照</div>';
+body.innerHTML='<div style="text-align:center;padding:30px;color:var(--text2);font-size:12px">还没有保存的版本<br><br>在编辑器工具栏点击「<i class="fas fa-floppy-disk"></i> 保存版本」<br>可以保存当前内容的一个快照</div>';
+return;
+}
+var q=(_versionSearchQ||'').trim().toLowerCase();
+// 保留原始索引（i），这样使用/对比/复制/删除时依然能定位到versions数组里正确的那一项，不受搜索筛选影响
+var filtered=versions.map(function(v,i){return {v:v,i:i};});
+if(q){
+filtered=filtered.filter(function(item){return (item.v.name||'').toLowerCase().indexOf(q)!==-1;});
+}
+if(filtered.length===0){
+body.innerHTML='<div style="text-align:center;padding:30px;color:var(--text2);font-size:12px">没有名称匹配「'+esc(_versionSearchQ)+'」的版本</div>';
 return;
 }
 var html='';
-versions.forEach(function(v,i){
+filtered.forEach(function(item){
+var v=item.v,i=item.i;
 var time=v.time?new Date(v.time).toLocaleString():'';
 var preview=(v.text||'').replace(/\n/g,' ').substring(0,60);
 html+='<div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;transition:all .2s">';
@@ -28633,22 +29241,40 @@ html+='</div>';
 html+='<span style="font-size:9px;color:var(--text2)">'+time+'</span>';
 html+='</div>';
 html+='<div style="font-size:11px;color:var(--text2);line-height:1.6;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(preview)+'</div>';
-html+='<div style="display:flex;gap:6px">';
-html+='<button onclick="useVersion('+i+')" style="flex:1;padding:5px;border-radius:7px;border:1px solid var(--accent);background:transparent;color:var(--accent2);font-size:10px;cursor:pointer"><i class="fas fa-check-circle"></i> 使用此版本</button>';
-html+='<button onclick="compareVersion('+i+')" style="flex:1;padding:5px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:10px;cursor:pointer"><i class="fas fa-chart-bar"></i> 与当前对比</button>';
-html+='<button onclick="copyVersionText('+i+')" style="padding:5px 8px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer"><i class="fas fa-copy"></i></button>';
-html+='<button onclick="deleteVersion('+i+')" style="padding:5px 8px;border-radius:7px;border:1px solid rgba(255,107,107,.3);background:transparent;color:var(--danger);font-size:10px;cursor:pointer"><i class="fas fa-trash-alt">️</button>';
+html+='<div style="display:flex;gap:2px;justify-content:flex-end">';
+html+='<button class="ver-icon-btn accent" onclick="useVersion('+i+')" title="使用此版本"><i class="fas fa-check-circle"></i></button>';
+html+='<button class="ver-icon-btn" onclick="compareVersion('+i+')" title="与当前对比"><i class="fas fa-chart-bar"></i></button>';
+html+='<button class="ver-icon-btn" onclick="copyVersionText('+i+')" title="复制文本"><i class="fas fa-copy"></i></button>';
+html+='<button class="ver-icon-btn danger" onclick="deleteVersion('+i+')" title="删除"><i class="fas fa-trash-alt"></i></button>';
 html+='</div>';
 html+='</div>';
 });
 body.innerHTML=html;
 }
 
+var _versionSearchTimer=null;
+function debounceVersionSearch(){
+var inp=document.getElementById('versionSearchInput');
+var clr=document.getElementById('versionSearchClear');
+if(inp)_versionSearchQ=inp.value;
+if(clr)clr.style.display=_versionSearchQ?'block':'none';
+clearTimeout(_versionSearchTimer);
+_versionSearchTimer=setTimeout(function(){renderVersionList(_verListCache,_verCurrentTextCache);},250);
+}
+function clearVersionSearch(){
+var inp=document.getElementById('versionSearchInput');
+var clr=document.getElementById('versionSearchClear');
+if(inp)inp.value='';
+if(clr)clr.style.display='none';
+_versionSearchQ='';
+renderVersionList(_verListCache,_verCurrentTextCache);
+}
+
 function useVersion(idx){
 if(!curEd)return;
 var versions=getChapterVersions(curEd.id,curEdCh);
 if(idx<0||idx>=versions.length)return;
-showDlg('切换版本','将当前章节内容替换为「'+versions[idx].name+'」的内容？\n\n建议先保存当前版本再切换。',function(){
+showDlg('切换版本','将当前内容替换为「'+versions[idx].name+'」的内容？\n\n建议先保存当前版本再切换。',function(){
 edPushUndo();
 document.getElementById('edTextarea').value=versions[idx].text;
 onEditorInput();
@@ -30164,6 +30790,7 @@ async function _doPolishWithReq(ovId){
     ta.disabled=false;
     if(result){
       var polishOld=text;
+      edPushUndo(text,curEdCh); // 润色前先记撤回点，和其它工具（自动排版/Markdown插入/切换版本/AI扩写缩写）保持一致，diff对比里的"恢复原文"只是当次可见，撤回栈才能长期保留这一步
       ta.value=result;updateEdWc();saveEditorContent();statusEl.textContent='润色完成 ✓';
       showToast('AI润色完成！✨ 正在显示差异对比...',3000);
       showDiffCompare(polishOld,result,'editor',-1);
@@ -30233,6 +30860,9 @@ async function _doRewriteWithReq(ovId){
   }
   const userMsg=chInfo+contextInfo+'\n\n请重写以下章节内容：\n\n'+text;
   const messages=[{role:'system',content:sysMsg},{role:'user',content:userMsg}];
+  // 重写前先记一个撤回点（用原始text，此时ta.value还没被流式回调改动），和AI润色/自动排版等工具保持一致；
+  // 放在流式/非流式分支之前统一记一次，避免流式回调里每收到一段增量文本就重复入栈
+  edPushUndo(text,curEdCh);
   if(useStream){
     await callAPIStream(messages,
     (fullText)=>{ta.value=fullText;updateEdWc();},
@@ -30495,13 +31125,47 @@ async function _doMultiChapterRewrite(startIdx,endIdx,userReq){
     showToast(wasAborted?'⏹ 已停止，完成 '+doneCount+' 章':'✅ 多章节重写完成，共 '+total+' 章',3000);
   },1500);
 }
+// 打开扩写/缩写弹窗时，如果用户在正文里选中了一段文字，自动把选中内容带进"原文内容"框，
+// 不用再手动复制粘贴——这也是"点了AI扩写像没反应"的一个重要原因：弹窗默认是空的，
+// 用户选中文字点按钮后，本以为会自动处理选中内容，结果框是空的，点"开始处理"只弹出一条容易被忽略的提示，
+// 体验上跟完全没反应没什么区别
+function _prefillExpandInput(){
+var ta=document.getElementById('edTextarea');
+var inputEl=document.getElementById('expandInput');
+if(!inputEl)return;
+if(ta){
+var sel=_edGetSelection();
+if(sel&&sel.end>sel.start){
+inputEl.value=ta.value.substring(sel.start,sel.end);
+return;
+}
+}
+inputEl.value='';
+}
+// AI扩写入口——之前这个函数在全文里完全没有定义，点"AI扩写"按钮实际上是JS报错、什么反应都没有，
+// 现在补上，写法和openAiShrink保持一致（doExpand内部本来就已经处理了expandMode==='expand'的分支）
+function openAiExpand(){
+if(!curEd){showToast('请先打开一篇文章');return;}
+expandMode='expand';
+document.getElementById('expandTitle').textContent='📈 AI扩写';
+document.getElementById('expandDesc').textContent='选中要扩写的段落再点这里，AI会添加更多细节描写（也可以手动粘贴）';
+document.getElementById('expandDoBtn').textContent='🚀 开始扩写';
+_prefillExpandInput();
+document.getElementById('expandHint').value='';
+document.getElementById('expandOutput').value='';
+document.getElementById('expandResult').style.display='none';
+document.getElementById('expandBtns').style.display='flex';
+document.getElementById('expandOv').classList.add('show');
+navPush('expandOv');
+setTimeout(()=>document.getElementById('expandInput').focus(),200);
+}
 function openAiShrink(){
 if(!curEd){showToast('请先打开一篇文章');return;}
 expandMode='shrink';
 document.getElementById('expandTitle').textContent='📉 AI缩写';
-document.getElementById('expandDesc').textContent='选择或粘贴要缩写的段落，AI会精简内容、保留核心信息';
+document.getElementById('expandDesc').textContent='选中要缩写的段落再点这里，AI会精简内容、保留核心信息（也可以手动粘贴）';
 document.getElementById('expandDoBtn').textContent='🚀 开始缩写';
-document.getElementById('expandInput').value='';
+_prefillExpandInput();
 document.getElementById('expandHint').value='';
 document.getElementById('expandOutput').value='';
 document.getElementById('expandResult').style.display='none';
@@ -30567,8 +31231,8 @@ userMsg+=input;
 if(hint)userMsg+='\n\n【特别要求】'+hint;
 const messages=[{role:'system',content:sysMsg},{role:'user',content:userMsg}];
 const outputEl=document.getElementById('expandOutput');
-// 扩写/缩写统一使用非流式
-const result=await callAPINonStream(messages);
+// 扩写/缩写属于工具类功能，统一走工具专用API（未单独配置工具API时会自动回退到通用API，行为不变）
+const result=await callToolAPINonStream(messages);
 btn.disabled=false;
 btn.textContent=expandMode==='expand'?'🚀 开始扩写':'🚀 开始缩写';
 if(result){
@@ -31709,6 +32373,7 @@ const original=document.getElementById('expandInput').value;
 // 尝试替换原文
 const currentText=ta.value;
 if(currentText.includes(original)){
+edPushUndo(currentText,curEdCh); // 替换前先记撤回点，不依赖3秒防抖，点了就能立刻撤回
 ta.value=currentText.replace(original,text);
 onEditorInput();
 closeExpandOv();
@@ -31716,6 +32381,7 @@ showToast('已替换原文 ✅');
 }else{
 // 原文不在当前章节，追加到末尾
 showDlg('无法定位原文','原文不在当前章节中，是否将结果追加到章节末尾？',()=>{
+edPushUndo(currentText,curEdCh); // 用户确认追加后才记撤回点，不然点"取消"也会留下一个没意义的撤回点
 ta.value=currentText+'\n\n'+text;
 onEditorInput();
 closeExpandOv();
@@ -33892,6 +34558,10 @@ showToast('已复制路线 📋');
 // ==================== 高级创作模式 ====================
 let advChapters=[];// 章节大纲列表
 let advCreateAbort=false;
+// 记录"最近一次高级创作"如果中途停止或失败，对应crWorks里的哪部作品的id。
+// 不需要用户先手动"保存项目"——只要标题和总章数不变，下次点"开始创作"就会自动检测到并询问是否续接，
+// 而不是每次都从第一章重新生成、把已经写好的内容晾在一边不好找。
+let _advResumeNovelId=ld('bj_advResumeNovelId','');
 var _rdContChCount=1;// 本次续写章节数（1-10）
 var _batchContRemain=0;// 批量续写：剩余待生成章节数
 var _batchArticleId='';// 批量续写时锁定的文章ID，防止串书
@@ -33949,19 +34619,6 @@ showDlg('删除标签','确定要删除标签「'+tag+'」吗？',function(){del
 showToast('默认标签不可删除');
 }
 };
-span.ontouchend=function(){clearTimeout(lpTimer);};
-span.ontouchcancel=function(){clearTimeout(lpTimer);};
-// PC端右键删除
-span.oncontextmenu=function(e){
-e.preventDefault();
-if(idx>=10){
-if(confirm('删除标签「'+tag+'」？')){
-deleteAdvGenre(idx);
-}
-}else{
-showToast('默认标签不可删除');
-}
-};
 container.appendChild(span);
 });
 }
@@ -34011,15 +34668,65 @@ document.getElementById('advStartBtn').disabled=false;
 document.getElementById('advStartBtn').textContent='开始创作';
 // 重置标签
 document.querySelectorAll('#advGenreTags .tag').forEach(t=>t.classList.remove('act'));
-// 重置开关
-['advUseChars','advUseWorld','advUseStyle'].forEach(id=>{
-document.getElementById(id).checked=true;
-updateAdvSwitch(id);
+// 重置开关（advUseRules 之前漏掉了，导致上次如果关过"使用当前规则设定"，
+// 下次重新打开高级创作时勾选框状态没跟着重置，和其余三个开关表现不一致）
+['advUseChars','advUseWorld','advUseStyle','advUseRules'].forEach(id=>{
+var _cb=document.getElementById(id);
+if(_cb){_cb.checked=true;updateAdvSwitch(id);}
 });
 renderAdvChapterList();
 document.getElementById('advCreateOv').classList.add('show');
 document.getElementById('bnav').classList.add('hide');
 navPush('advCreateOv');
+// 若存在未写完的进度，自动把表单恢复回去，并给出清晰可见的"继续创作"入口——
+// 见 _advPrefillResumeIfAny() 里的详细说明
+_advPrefillResumeIfAny();
+}
+
+// 恢复未完成的高级创作进度。
+// 背景：startAdvCreate() 里早就有"标题+章数都匹配就自动续接"的检测逻辑，但触发它需要用户
+// 自己重新打开「高级创作」、一字不差地填回原来的标题和章节数、再点"开始创作"——这个操作路径
+// 完全没有任何界面提示，等于做了功能却没人找得到（对应反馈：生成失败后找不到"接着生成"的选项）。
+// 这里改成主动式：只要一打开「高级创作」面板就检查有没有未写完的进度，有的话直接把表单和章节
+// 大纲都填回去，用户睁眼就能看到"欸，还在这儿，点一下就能接着写"，而不用凭空猜一个隐藏功能。
+function _advPrefillResumeIfAny(){
+  if(!_advResumeNovelId)return;
+  var existing=crWorks.find(function(w){return w.id===_advResumeNovelId;});
+  // 进度已经失效（作品被删除 / 已经全部写完 / 数据被破坏），清掉过期指针，避免以后一直误判
+  if(!existing||existing.type!=='novel'||!Array.isArray(existing.chapters)
+     ||!Array.isArray(existing.chOutlines)||existing.chOutlines.length===0
+     ||existing.chapters.length>=existing.chOutlines.length){
+    _advResumeNovelId='';
+    sv('bj_advResumeNovelId','');
+    return;
+  }
+  document.getElementById('advTitle').value=existing.title||'';
+  document.getElementById('advWordsPerCh').value=existing.wordsPerCh||1500;
+  document.getElementById('advTheme').value=existing.advTheme||'';
+  document.getElementById('advSynopsis').value=existing.advSynopsis||'';
+  document.getElementById('advAvoid').value=existing.avoid||'';
+  // 恢复类型标签选中状态（标签是异步渲染出来的，等一拍再去找 DOM 节点，和 loadAdvProject 的写法一致）
+  setTimeout(function(){
+    document.querySelectorAll('#advGenreTags .tag').forEach(function(t){
+      t.classList.toggle('act',(existing.tags||[]).includes(t.textContent));
+    });
+  },50);
+  document.getElementById('advUseChars').checked=existing.advUseChars!==false;
+  document.getElementById('advUseWorld').checked=existing.advUseWorld!==false;
+  document.getElementById('advUseStyle').checked=existing.advUseStyle!==false;
+  if(document.getElementById('advUseRules'))document.getElementById('advUseRules').checked=existing.advUseRules!==false;
+  ['advUseChars','advUseWorld','advUseStyle','advUseRules'].forEach(function(id){
+    if(document.getElementById(id))updateAdvSwitch(id);
+  });
+  // 恢复章节大纲+标题（chTitles 是旧数据可能没有的新字段，缺失时按空字符串兜底，不会报错）
+  advChapters=existing.chOutlines.map(function(ol,idx){
+    return {outline:ol||'',title:(existing.chTitles&&existing.chTitles[idx])||''};
+  });
+  renderAdvChapterList();
+  currentAdvProject=null;
+  var startBtn=document.getElementById('advStartBtn');
+  if(startBtn)startBtn.innerHTML='<i class="fas fa-play"></i> 继续创作（已完成'+existing.chapters.length+'/'+existing.chOutlines.length+'章）';
+  showToast('已为你恢复未完成的创作《'+existing.title+'》，已完成'+existing.chapters.length+'/'+existing.chOutlines.length+'章，可直接点击下方按钮继续',5000);
 }
 
 function closeAdvancedCreate(){
@@ -34120,8 +34827,8 @@ style="padding:4px 8px;border-radius:6px;border:1px solid var(--border);backgrou
 onchange="advChapters[${idx}].title=this.value">
 </div>
 <div style="display:flex;gap:4px">
-<button onclick="moveAdvChapterUp(${idx})" style="padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer" ${idx===0?'disabled style="opacity:.3"':''}>↑</button>
-<button onclick="moveAdvChapterDown(${idx})" style="padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer" ${idx===advChapters.length-1?'disabled style="opacity:.3"':''}>↓</button>
+<button onclick="moveAdvChapterUp(${idx})" ${idx===0?'disabled':''} style="padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer;${idx===0?'opacity:.3':''}">↑</button>
+<button onclick="moveAdvChapterDown(${idx})" ${idx===advChapters.length-1?'disabled':''} style="padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer;${idx===advChapters.length-1?'opacity:.3':''}">↓</button>
 <button onclick="deleteAdvChapter(${idx})" style="padding:2px 6px;border-radius:4px;border:1px solid rgba(255,107,107,.3);background:transparent;color:var(--danger);font-size:10px;cursor:pointer">✕</button>
 </div>
 </div>
@@ -34306,6 +35013,53 @@ const useStyle=document.getElementById('advUseStyle').checked;
 const useRules=document.getElementById('advUseRules')&&document.getElementById('advUseRules').checked;
 const totalCh=advChapters.length;
 
+// ── 检测是否有可以续接的未完成进度 ──
+// 判断依据：标题和总章数都要一致才认为是"同一个创作任务"，避免误续到不相关的旧记录；
+// 只看"数量"不看逐字内容，是因为用户可能在续接前又调整了大纲文字，这种情况仍然应该允许续接。
+let _advResumeNovel=null;
+if(_advResumeNovelId){
+  const _existing=crWorks.find(w=>w.id===_advResumeNovelId);
+  if(_existing&&_existing.type==='novel'&&_existing.title===title
+     &&(_existing.chOutlines||[]).length===totalCh
+     &&_existing.chapters&&_existing.chapters.length>0&&_existing.chapters.length<totalCh){
+    _advResumeNovel=_existing;
+  }else{
+    // 记录的进度已经不匹配了（标题变了/已经写完/被删除了），清掉过期指针，避免以后一直误判
+    _advResumeNovelId='';
+    sv('bj_advResumeNovelId','');
+  }
+}
+if(_advResumeNovel){
+  const _doResume=await new Promise(function(resolve){
+    var _resolved=false;
+    function _finish(v){ if(_resolved)return; _resolved=true; resolve(v); }
+    showDlg('📂 发现未完成的进度','《'+title+'》上次创作到第'+_advResumeNovel.chapters.length+'/'+totalCh+'章时中断了，是否从下一章继续？直接重新开始会覆盖之前已经生成的章节。',function(){_finish(true);},false);
+    setTimeout(function(){
+      var okBtn=document.getElementById('dlgOkBtn');
+      if(okBtn)okBtn.textContent='继续创作';
+      var cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
+      if(cancelBtn){
+        cancelBtn.style.display='';
+        cancelBtn.textContent='重新开始';
+        cancelBtn.onclick=function(){closeDlg();_finish(false);};
+      }
+    },30);
+    // 兜底：如果用户是点弹窗外的背景关闭的（不会触发上面两个按钮的onclick），也要让Promise正常resolve，
+    // 否则"开始创作"会一直卡在这里没有响应
+    var _dlgOv=document.getElementById('dlgOv');
+    if(_dlgOv){
+      var _mo=new MutationObserver(function(){
+        if(!_dlgOv.classList.contains('show')){
+          _finish(false);
+          _mo.disconnect();
+        }
+      });
+      _mo.observe(_dlgOv,{attributes:true,attributeFilter:['class']});
+    }
+  });
+  if(!_doResume)_advResumeNovel=null;
+}
+
 // 预估 token 风险提示
 (function(){
   try{
@@ -34315,8 +35069,9 @@ const totalCh=advChapters.length;
     const _estOutput=Math.ceil(wordsPerCh*1.8)+800;
     const _cfg2=getCurApi();
     const _modelMax=_cfg2.maxTokens||4096;
-    if(_estInput+_estOutput>32000){
-      showToast('⚠️ 预估总 Token 较大，如遇 500 错误请减少人设/世界观内容',5000);
+    const _preflightCtxWindow=_guessModelContextWindow(_cfg2.model);
+    if(_estInput+_estOutput>_preflightCtxWindow-1000){
+      showToast('⚠️ 预估总Token（约'+(_estInput+_estOutput)+'）已接近当前模型上下文窗口（约'+_preflightCtxWindow+'），生成中可能触发"上下文超限"，建议减少每章字数或人设/世界观内容',6000);
     }else if(_modelMax<Math.ceil(wordsPerCh*1.8)){
       showToast('⚠️ Max Tokens 设置('+_modelMax+')可能不足以生成'+wordsPerCh+'字，已自动提升',4000);
     }
@@ -34335,20 +35090,53 @@ if(_sdInit){_sdInit.style.display='none';_sdInit.innerHTML='';}
 var _sbInit=document.getElementById('advStopBtn');
 if(_sbInit)_sbInit.style.display='block';
 advCreateAbort=false;
+// novel 声明在try外面，这样即使中途抛出异常，catch块里也能拿到已经生成的章节，
+// 给出和正常收尾一致的"已保存，可继续编辑"提示，而不是让用户只看到一句干巴巴的报错
+let novel=null;
 try{
-// 创建小说对象
-const novel={
-id:uid(),
-type:'novel',
-title:title,
-chapters:[],
-chOutlines:advChapters.map(ch=>ch.outline||''),
-advTheme:theme,
-advSynopsis:synopsis,
-tags:genres,
-createdAt:new Date().toISOString(),
-updatedAt:new Date().toISOString()
-};
+// 创建或续接小说对象
+if(_advResumeNovel){
+  novel=_advResumeNovel;
+  // 续接时把大纲/主题/梗概/标签/每章字数/规避内容/章节标题/开关状态都更新为这次最新的输入——
+  // 用户可能在续接前又调整过后面章节的大纲，也可能是从"高级创作"面板自动恢复表单后直接续接，
+  // 这些字段都要跟着最新表单走，否则续接出来的设定和用户刚看到的表单对不上
+  novel.chOutlines=advChapters.map(ch=>ch.outline||'');
+  novel.chTitles=advChapters.map(ch=>ch.title||'');
+  novel.advTheme=theme;
+  novel.advSynopsis=synopsis;
+  novel.tags=genres;
+  novel.wordsPerCh=wordsPerCh;
+  novel.avoid=avoid;
+  novel.advUseChars=useChars;
+  novel.advUseWorld=useWorld;
+  novel.advUseStyle=useStyle;
+  novel.advUseRules=useRules;
+}else{
+  novel={
+    id:uid(),
+    type:'novel',
+    title:title,
+    chapters:[],
+    chOutlines:advChapters.map(ch=>ch.outline||''),
+    // chTitles 是新增字段，专门给"高级创作"恢复表单用的（chOutlines 是纯大纲字符串数组，
+    // 全站很多地方按这个格式在读，不能改动它的结构；章节标题另存一份，互不影响）
+    chTitles:advChapters.map(ch=>ch.title||''),
+    advTheme:theme,
+    advSynopsis:synopsis,
+    tags:genres,
+    wordsPerCh:wordsPerCh,
+    avoid:avoid,
+    advUseChars:useChars,
+    advUseWorld:useWorld,
+    advUseStyle:useStyle,
+    advUseRules:useRules,
+    createdAt:new Date().toISOString(),
+    updatedAt:new Date().toISOString()
+  };
+  // 立即记下续接指针：万一这次又中途停止/失败，下次能自动找到接着写
+  _advResumeNovelId=novel.id;
+  sv('bj_advResumeNovelId',novel.id);
+}
 // 构建系统提示词
 let sysPrompt='';
 if(useChars||useWorld||useStyle){
@@ -34382,7 +35170,7 @@ sysPrompt+='5. 伏笔管理：大纲中提到要埋的伏笔必须自然融入�
 sysPrompt+='6. 情感节奏：不要每章都是高潮，要有张有弛，参考"起承转合"的节奏\n';
 sysPrompt+='7. 对话占比控制在30%-50%之间，不要全是对话也不要全是叙述\n';
 // 逐章创作
-for(let i=0;i<totalCh;i++){
+for(let i=novel.chapters.length;i<totalCh;i++){
 if(advCreateAbort){
 showToast('创作已停止，已完成'+novel.chapters.length+'章');
 break;
@@ -34438,10 +35226,9 @@ userMsg+='- 不要在本章解决所有矛盾，留有余地给后续章节\n';
 userMsg+='- 这是最后一章，需要：①解决核心矛盾 ②回收主要伏笔 ③给主角一个有成长感的结局 ④结尾留有余韵\n';
 }
 if(avoid)userMsg+='- 严禁出现：'+avoid+'\n';
-// 动态计算 max_tokens：每章字数 × 1.8 token/字，至少 4096，最多不超过用户配置的 2 倍
+// 动态计算这一章目标字数需要的输出token（下面会结合模型上下文窗口再算出真正下发的max_tokens）
 const cfg2=getCurApi();
 const neededTokens=Math.max(4096, Math.ceil(wordsPerCh*1.8)+800);
-const advMaxTokens=cfg2.maxTokens?Math.max(neededTokens,cfg2.maxTokens):neededTokens;
 
 // ── Token 三级降级策略 ──
 // 精简备用提示词（超限时用）
@@ -34483,6 +35270,20 @@ if(estimateTokens(finalSysPrompt)+estimateTokens(finalUserMsg)>13000){
 
 const messages=[{role:'system',content:finalSysPrompt},{role:'user',content:finalUserMsg}];
 
+// ── max_tokens 安全上限 ──
+// 不能无脑取"目标字数需要的token"和"用户配置的Max Tokens"两者中较大者：用户配置的Max Tokens可能是为别的
+// 场景设的一个较大数值，如果直接当作这一章的max_tokens，很容易让"输入+输出"总token数超过模型实际的上下文窗口，
+// 导致500报错——这跟大纲精不精简毫无关系，精简大纲只会减少输入token，对"输出token本身就请求过大"这个问题没有帮助。
+// 这里改成：先估算模型的上下文窗口，再用"窗口-实际输入-安全余量"作为硬上限。
+const _advCtxWindow=_guessModelContextWindow(cfg2.model);
+const _advFirstInputEst=estimateTokens(finalSysPrompt)+estimateTokens(finalUserMsg);
+const _advFirstSafeMax=Math.max(2048,_advCtxWindow-_advFirstInputEst-1000);
+const advMaxTokens=Math.min(_advFirstSafeMax, cfg2.maxTokens?Math.max(neededTokens,cfg2.maxTokens):neededTokens);
+// 如果目标字数在当前模型窗口下根本达不到，提前提示一次，帮用户定位原因，而不是让它反复报错
+if(advMaxTokens<neededTokens*0.7){
+  showToast('⚠️ 第'+chNum+'章：当前模型上下文窗口（约'+_advCtxWindow+' tokens）偏小，可能不足以稳定生成'+wordsPerCh+'字，建议减少每章字数或更换上下文更大的模型',5000);
+}
+
 // ── 调用 API，失败后用最小提示词自动重试一次 ──
 let result=await callAPINonStream(messages,2,{maxTokens:advMaxTokens});
 if(!result&&!advCreateAbort){
@@ -34490,10 +35291,12 @@ if(!result&&!advCreateAbort){
   showToast('第'+chNum+'章出错，3秒后用精简提示词重试...',3000);
   await new Promise(r=>setTimeout(r,3000));
   if(!advCreateAbort){
+    const _advRetryInputEst=estimateTokens(_minSys)+estimateTokens(finalUserMsg);
+    const _advRetrySafeMax=Math.max(2048,_advCtxWindow-_advRetryInputEst-1000);
     result=await callAPINonStream(
       [{role:'system',content:_minSys},{role:'user',content:finalUserMsg}],
       1,
-      {maxTokens:Math.min(neededTokens,6000)}
+      {maxTokens:Math.min(_advRetrySafeMax, Math.min(neededTokens,6000))}
     );
   }
 }
@@ -34536,7 +35339,9 @@ document.getElementById('advStartBtn').textContent='开始创作';
 })();
 
 if(novel.chapters.length===0){
-  // 完全失败：0 章都没生成
+  // 完全失败：0 章都没生成，没什么可续接的，清掉指针
+  _advResumeNovelId='';
+  sv('bj_advResumeNovelId','');
   document.getElementById('advProgressBar').style.width='0%';
   document.getElementById('advProgressBar').style.background='var(--danger)';
   document.getElementById('advProgressInfo').textContent='❌ 创作失败，未生成任何章节';
@@ -34549,9 +35354,12 @@ document.getElementById('advProgressBar').style.width=_donePct+'%';
 if(novel.chapters.length===totalCh&&!advCreateAbort){
   document.getElementById('advProgressInfo').textContent='🎉 全部创作完成！共'+_totalWords+'字';
   showToast('🎉 创作完成！共'+novel.chapters.length+'章，'+_totalWords+'字',4000);
+  // 全部完成，没什么可续接的了，清掉指针
+  _advResumeNovelId='';
+  sv('bj_advResumeNovelId','');
 }else{
   document.getElementById('advProgressInfo').textContent='⏸ 已完成 '+novel.chapters.length+'/'+totalCh+' 章，共 '+_totalWords+' 字（已自动保存）';
-  showToast('已保存前'+novel.chapters.length+'章（共'+_totalWords+'字），可在创作页继续编辑',5000);
+  showToast('已保存前'+novel.chapters.length+'章（共'+_totalWords+'字）。重新打开「高级创作」点"开始创作"可自动续接，也可在作品页直接编辑',6000);
 }
 
 // 保存到创作页（去重）
@@ -34561,7 +35369,14 @@ else{crWorks.unshift(JSON.parse(JSON.stringify(novel)));}
 sv('bj_crWorks',crWorks);
 
 // 自动收藏（去重）
+// 注意：novel.type 在"创作工坊"体系里固定是 'novel'（crWorks/编辑器都按这个判断"是不是长篇"），
+// 但"阅读/收藏"体系（cols.books、openReading、renderChContent...）判断长篇的依据是 type==='long'，
+// 两边类型定义不一样。如果直接把 novel 深拷贝过去而不转换 type，openReading 里所有
+// curRd.type==='long' 的判断都会失败，转而去读 curRd.content——但长篇作品根本没有 content 字段，
+// 正文全在 chapters 数组里，结果就是打开预览显示"（本章暂无内容）"，其实章节内容都好好保存着。
+// 这里必须显式转换成 'long'，收藏/阅读体系才能正确识别为长篇多章节作品。
 const colCopy=JSON.parse(JSON.stringify(novel));
+colCopy.type='long';
 colCopy.cover=null;
 colCopy.status='ongoing';// 不自动完结，由用户手动在收藏页标记
 colCopy.rating=0;
@@ -34574,14 +35389,70 @@ setTimeout(()=>{
 closeAdvancedCreate();
 renderCrList();
 renderCollections();
-var _dlgMsg=novel.chapters.length===totalCh
+var _isFullyDone=novel.chapters.length===totalCh&&!advCreateAbort;
+var _dlgMsg=_isFullyDone
   ?'创作完成！是否立即阅读《'+novel.title+'》？'
   :'已保存'+novel.chapters.length+'章，是否立即打开查看？';
 showDlg('创作完成',_dlgMsg,function(){openReading(colCopy);},true);
+if(!_isFullyDone){
+  // 没写完才需要一个显眼的"继续创作"入口——之前用户只能靠记住"重新打开高级创作、
+  // 输入一模一样的标题和章节数再点开始创作"这种隐藏操作来续接，根本没人找得到。
+  // 现在直接把弹窗的"取消"按钮改造成"继续创作"，点一下就回到高级创作面板，
+  // 面板会自动检测到未完成的进度并把表单填好（见 openAdvancedCreate 里的自动恢复逻辑）。
+  setTimeout(function(){
+    var cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
+    if(cancelBtn){
+      cancelBtn.style.display='';
+      cancelBtn.textContent='继续创作';
+      cancelBtn.onclick=function(){closeDlg();openAdvancedCreate();};
+    }
+  },30);
+}
 },1000);
 }catch(e){
 console.error('[startAdvCreate]',e);
-showToast('创作中断：'+e.message,5000);
+// novel 声明在try外面，即使中途抛出了没预料到的异常，这里也能访问到已经生成的章节——
+// 循环里每章生成后都立即保存过一份到crWorks，不会丢失，这里要给出和"正常收尾"一样清晰的引导，
+// 而不是让用户只看到一句干巴巴的报错、不知道已经写好的内容在哪、要怎么继续
+if(novel&&novel.chapters&&novel.chapters.length>0){
+  const _errIdx=crWorks.findIndex(w=>w.id===novel.id);
+  if(_errIdx>-1){crWorks[_errIdx]=JSON.parse(JSON.stringify(novel));}
+  else{crWorks.unshift(JSON.parse(JSON.stringify(novel)));}
+  sv('bj_crWorks',crWorks);
+  // 和"正常收尾"分支一样自动收藏一份，并把 type 转成 'long'（原因见上面"有内容：保存并展示结果"
+  // 分支里的详细注释）。之前这里只存进了 crWorks 就完事，收藏页/阅读页都找不到这部分内容，
+  // 而且就算传给 openReading 的是 crWorks 里那份 type==='novel' 的原始对象，一样会触发
+  // "本章暂无内容"的显示问题——两个分支必须用同一套转换逻辑，不能一个改了一个漏掉。
+  const _errColCopy=JSON.parse(JSON.stringify(novel));
+  _errColCopy.type='long';
+  _errColCopy.cover=null;
+  _errColCopy.status='ongoing';
+  _errColCopy.rating=0;
+  const _errColIdx=cols.books.findIndex(function(b){return b.id===novel.id;});
+  if(_errColIdx>-1){cols.books[_errColIdx]=_errColCopy;}
+  else{cols.books.push(_errColCopy);}
+  sv(K.cols,cols);
+  showToast('创作中断（'+(e.message||'未知错误')+'），已保存前'+novel.chapters.length+'章。重新打开「高级创作」可自动续接',6000);
+  setTimeout(function(){
+    closeAdvancedCreate();
+    renderCrList();
+    renderCollections();
+    showDlg('创作中断','已保存前'+novel.chapters.length+'章，是否立即打开查看？',function(){
+      openReading(_errColCopy);
+    },false);
+    // 同样给一个直达的"继续创作"入口，逻辑和正常收尾分支保持一致
+    setTimeout(function(){
+      var cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
+      if(cancelBtn){
+        cancelBtn.style.display='';
+        cancelBtn.textContent='继续创作';
+        cancelBtn.onclick=function(){closeDlg();openAdvancedCreate();};
+      }
+    },30);
+  },800);
+}else{
+  showToast('创作中断：'+(e.message||'未知错误'),5000);
+}
 }finally{
 var _sb=document.getElementById('advStartBtn');
 if(_sb){_sb.disabled=false;_sb.textContent='开始创作';}
@@ -36955,14 +37826,9 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 
 【创作者心田的形象】
 - 心田是星叙的作者，也是你的主人，是星笺最信赖的人。
-- 整体气质清冷又带着软嫩的少女感。
-- 她留着一头顺滑亮泽的乌黑齐肩直发，厚重的齐刘海刚好遮至眉眼上缘，衬得脸型愈发小巧精致。
-- 一双深紫红色的眼眸澄澈又带着淡淡的疏离感，眼型柔和，眼下晕着淡淡的绯红，为清冷的神态添了几分娇怯。
-- 她鼻梁小巧，唇线单薄，面无表情，自带安静内敛的氛围感。
-- 穿搭：内搭白色翻领长袖衬衫，领口系着黑色蝴蝶结领结，袖口以黑白条纹收口；外搭黑色背带长裙，腰身处点缀两颗金色圆扣，及膝的裙摆下缘拼接了精致的黑白蕾丝花边，柔化了整体的冷感。
-- 脚上穿着白色中筒袜，袜口缀有小巧的黑色蝴蝶结，搭配一双亮面黑色圆头小皮鞋，双手交叠轻放于身前，站姿乖巧。
-- 黑白配色的穿搭与她的黑发紫瞳相得益彰，乖顺又疏离的气质格外突出。
-- 如果用户问起心田长什么样，可以用上面的描述来描绘，语气温柔自然，像在说自己喜欢的人。
+- 这位气质清冷知性的年轻女性，长发过腰，墨黑发根渐变为薰衣草紫，刘海细碎，右侧鬓边别着金色月牙发饰。她肤色白皙，鹅蛋脸，青蓝眼眸修长而平静，唇色浅淡，神情沉稳疏离。
+- 她身着黑色长款开襟长袍，垂坠飘逸，袍身暗印金线星轨与月牙纹，衣摆细金包边。内搭白色翻领衬衫，系黑色细丝带领结。腰间束金色纹样黑腰带。黑色多层长裙外印金色星轨，内衬浅紫荷叶边，色彩由深至浅过渡。
+- 脚穿黑色粗跟系带短靴。右手抱着金色星盘图案的黑色厚书，左手捏触控笔，身旁悬浮两块紫色全息光屏，光屏上布满线路与数据，融合魔法与科技质感。整体黑、白、金、紫配色，精致优雅，星月元素贯穿细节。
 
 【星叙的名字与品牌】
 - 星叙的旧称是「笔记AI」（biji AI），后正式更名为星叙。
@@ -37000,7 +37866,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 3. 问题排查：API报错、功能异常等技术问题的排查指引
 4. 情感陪伴：缓解卡文焦虑、鼓励坚持、庆祝完成
 
-═══════ 第三章：网页功能全景（v1.4.7）═════
+═══════ 第三章：网页功能全景（v1.4.8）═════
 
 【素材工坊（更多菜单入口）】
 - 进入方式：首页右上角「更多」按钮 → 素材工坊
@@ -37014,7 +37880,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 
 📝 作坊（第1个按钮）
 - 核心功能：输入一句话描述 → 点击"生成" → AI写出长篇第一章或完整短篇
-- 标签区：可多选标签（现代/古风/悬疑/校园等），也可自己添加
+- 标签区：可多选标签（现代/古风/悬疑/校园等），也可自己添加；v1.4.8起标签身兼两职，还能筛选下方已生成的长篇连载/短篇一发作品，选中标签下方同类作品才会显示
 - 类型切换：「长篇连载」生成第一章可续写 / 「短篇一发」一次写完
 - 创意度滑块：0.5-0.7稳重，0.8-0.9推荐，1.0+狂野但容易跑偏
 - 「📋 查看当前生效设定」按钮：一键查看当前启用的人物/世界观/文风/规则/禁用词
@@ -37031,8 +37897,9 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 创作目标：设置周/月字数和章数目标，达成有弹窗+铃声庆祝，有年度折线图
 - 今日一写（右上角「更多」→「✍ 今日一写」）：每天一条灵感提示，写几段就行；AI可帮忙开头；达到100/300/500/1000字有小彩蛋；可保存历史/存为草稿/发展成长篇
 - 工具箱（页面顶部折叠按钮）：
+  · 🔍 搜索作品：点击放大镜图标，整个工具箱变为搜索框，可按作品名或创建时间筛选草稿箱/我的小说，点击结果直接进入；点输入框左侧对勾图标取消搜索
   · 📄 新建草稿 / 📖 新建小说
-  · 🎯 高级创作：按大纲逐章AI创作；创作设置支持使用当前人物/世界观/文风/规则四类设定开关
+  · 🎯 高级创作：按大纲逐章AI创作；创作设置支持使用当前人物/世界观/文风/规则四类设定开关；若上次生成中断或失败，重新打开会自动检测并恢复未完成的进度（标题/字数/大纲/章节标题/标签/开关状态），按钮显示为"继续创作（已完成 X/Y 章）"
   · 🧠 AI大纲：输入故事方向自动生成整本大纲；生成设置支持使用当前人物/世界观/文风/规则；生成完成后「确认并创建小说」可选择同时AI生成第一章
   · ✨ AI起名：人名/书名/地名
   · 🌿 情节分支：卡文时给3条不同走向
@@ -37047,8 +37914,8 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 顶部个人卡片：头像、昵称、简介、创作统计
 - 个人卡片左上角紫色浮动头像 = 星笺（就是我！点击打开聊天）
 - 右上角「🪄 快速向导」按钮：新手3步完成基础配置
-- API设置：地址、密钥、模型、Temperature、MaxTokens、流式开关、测试连接、多预设；新增「反重复参数」滑块（frequency_penalty 推荐0.25 / presence_penalty 推荐0.15，均默认关闭，一键应用推荐值可快速开启）
-- 人物设定：多角色、性格标签、重要度（核心/普通/参考）、详细设定、人物关系图、NPC设定、预设管理（支持自定义分类/双击改名）
+- API设置：地址、密钥、模型、Temperature、MaxTokens、流式开关、测试连接、多预设；新增「反重复参数」滑块（frequency_penalty 推荐0.25 / presence_penalty 推荐0.15，均默认关闭，一键应用推荐值可快速开启）；新用户首次进入本页会看到配置教程按钮闪烁提示和星笺的引导气泡，点任意处消失，之后不再出现
+- 人物设定：多角色、性格标签、重要度（核心/普通/参考）、详细设定、人物关系图（点「星图」进入「宇宙关系网」：3D星系视觉，恒星/行星/小行星/矮行星对应核心/普通/参考角色/NPC，深色沉浸背景，可拖拽调整位置并自动保存，支持左右滑动切换观察角度）、NPC设定、预设管理（支持自定义分类/双击改名）
 - 世界观设定：全局（始终生效）+ 局部（绑定角色预设），内置模板；页面顶部右侧「✨ 丰富」按钮可让AI扩充当前世界观内容
 - 文风设置：局部（绑定角色预设），内置模板；页面顶部「✨ 丰富」按钮可让AI扩充文风描述
 - 规则设置：全局 + 局部，内置模板；页面顶部「✨ 丰富」按钮可让AI补充创作规则
@@ -37190,10 +38057,10 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 顶部：返回、标题输入框
 - 第二行：保存按钮、🛠更多工具（折叠按钮）
 - 工具栏展开后：
-   · 基础编辑：Markdown工具栏、📖阅读模式（翻页式预览，支持Markdown渲染）、自动排版、排版设置（字号行高字距）、复制全文、导出（TXT / Markdown / EPUB草稿）、沉浸写作
+   · 基础编辑：Markdown工具栏、📖阅读模式（翻页式预览，支持Markdown渲染）、自动排版、排版规则（首段缩进/段间空行/清除多余空行）、排版设置（字号行高字距）、复制全文、导出（TXT / Markdown / EPUB草稿）
   · AI辅助：AI评价、AI润色、AI重写、AI扩写、AI缩写
-  · 章节管理：查看总大纲、章节大纲、章节命名、保存版本、版本管理、删除本章（长按章节会弹出确认删除弹窗）。目录中支持拖拽排序（长按☰拖动手柄）
-  · 其他：搜索定位、AI查错别字、撤回操作（最多30步）
+  · 章节管理（我的小说）/ 草稿管理（草稿箱，改名后功能一致，此前不可用的问题已修复）：查看总大纲、章节大纲（v1.4.8起改为下滑全屏弹窗，支持标签归类和5种排序方式，样式参考素材工坊）、章节命名、保存版本、版本管理（v1.4.8新增按名称搜索版本，卡片按钮改为纯图标）、删除本章（长按章节会弹出确认删除弹窗）。目录中支持拖拽排序（长按☰拖动手柄），删除或拖拽排序后章节名/大纲/标签/版本历史都会保持正确对应，不会错位
+  · 其他：搜索定位、AI查错别字、撤回操作（最多30步，已覆盖自动排版/AI润色/AI重写等操作）
 - 底部状态栏：点击可展开/收起详情，显示字数、目标字数进度条、阅读时间估算、Token估算（文本+系统提示词）、保存状态
 - 编辑器每8秒自动保存一次（如果有修改），手动修改2秒后也会自动保存
 · 氛围写作（创作页「更多工具」→「☁️ 氛围写作」）：
@@ -37227,6 +38094,23 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 📦 资源广场"素材"分类：原"经验"更名为"素材"，可选素材库内容或现场手写打包，新增禁用词打包导出，分类栏横向滑动；含图片素材仅导出文字描述
 🗂 打包导出全屏升级：与资源广场一致的横滑分类栏，实时显示已选择资源数
 🌌 启动页视觉升级：标语统一为"AI辅助创作工坊·构筑你的故事宇宙"，新增流星效果
+
+（v1.4.8 新增功能）
+🔧 排版规则升级：新增首段缩进字符数、4种段间空行样式、清除多余空行开关
+✍️ Markdown工具栏定位修复：格式化符号插入到光标所在位置，不再固定在段落开头
+↩️ 撤回功能补全：自动排版、AI润色、AI重写现在都能被"撤回操作"撤销
+📋 草稿管理：草稿箱的章节管理修复并改名为"草稿管理"，功能一致
+🗂 章节大纲全屏化：下滑全屏弹窗，支持标签归类和5种排序方式，样式参考素材工坊
+🔎 版本管理搜索：新增按名称搜索版本；版本卡片按钮改为纯图标，去掉边框和文字
+✂️ AI扩写修复：点击后毫无反应、无法使用的问题已修复
+🔗 章节数据同步修复：删除或拖拽调整章节顺序，不再导致名称/大纲/标签/版本历史错位
+🎯 高级创作续接修复：不再误显示"本章暂无内容"；中断后重新打开会自动恢复未完成的进度
+🌌 宇宙关系网：原角色关系图谱大升级，3D星系视觉+固定深色星空背景，恒星/行星/小行星/矮行星四种天体样式，位置可拖拽调整并自动保存，支持左右滑动切换观察角度
+💡 API设置新手引导：首次进入API设置页会有教程按钮闪烁提示和星笺引导语
+🏷 作坊标签筛选：标签按钮现在还能筛选下方已生成的长篇连载/短篇一发作品
+📐 章节大纲输入框可拖拽扩大：右下角新增紫色三角手柄，长按下拉扩大输入区
+📏 滚动条位置优化：写作页滚动条从贴边改为往里移了一点，不压文字
+🔍 创作工具箱搜索：点击放大镜图标可搜索草稿箱/我的小说，点结果直接进入
 
 （v1.4.5之前保留功能）页面加载动画，切换主页面或打开全屏功能时会短暂显示加载图标；氛围写作已修复多个稳定性问题，现在更可靠了
 注意：星笺皮肤解锁后永久保留，即使清空聊天记录也不会失去已获得的皮肤。只有「清除所有数据」才会重置。白雪天使的50次聊天是累计计数，清空对话不影响已累计的次数。
@@ -37328,11 +38212,13 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 保存当前人物+世界观+文风+规则+禁用词+Temperature为一个模板
 - 全屏管理界面，一键使用或删除
 - 适合在不同项目之间快速切换整套配置
-🔗 角色关系可视化图谱（人物设定 → 📊 可视化图谱）
-- 圆形布局展示所有角色（主角+NPC）的关系网络
-- 不同关系类型用不同颜色连线
-- 有方向的关系会显示箭头
-- 核心角色用紫色、普通角色用蓝色、NPC用绿色
+🌌 宇宙关系网（人物设定 → 🌠 星图，原"角色关系可视化图谱"，v1.4.8星系版大升级）
+- 3D星系视觉，固定深色沉浸背景+星空特效，不跟随站点浅色/深色主题切换
+- 核心角色=恒星、普通角色=行星、参考角色=小行星、NPC=矮行星，四种天体各自固定一种配色，样式分明好区分
+- 人物首字显示在星球下方；关系线是带渐变的柔和光带，不是僵直的直线
+- 拖拽星球可调整位置并自动保存，新增角色默认安置在同类型星球旁边
+- 左右滑动切换观察角度，星球和背景星空联动变化；双指或滚轮缩放；放大/缩小/重置按钮为磨砂玻璃样式
+- 点击星球弹出角色信息卡片，底部筛选栏可按角色筛选关系网
 ⏰ 作品时间线管理（阅读页工具栏 → ⏰ 时间线）
 - 手动添加时间节点：所在章节+故事内时间+事件描述
 - AI自动识别：分析全文自动生成时间线
@@ -37521,11 +38407,11 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
   · 可组合使用，例如：角色 site:我的小说 tag:修改 after:2025-03-01
 - 普通关键词搜索和之前一样，高级语法是额外的筛选条件
 
-🔗 角色关系图谱交互增强（人物设定 → 📊 可视化图谱）
-- 点击角色节点：弹出角色信息卡片，包含性格标签、设定简介、所有关系列表
-- 角色筛选：图谱底部有所有角色的按钮，点击某个角色名可以只显示该角色的关系网（其他角色变半透明）
+🔗 宇宙关系网交互细节（人物设定 → 🌠 星图）
+- 点击星球：弹出角色信息卡片，包含性格标签、设定简介、所有关系列表
+- 角色筛选：图谱底部有所有角色的按钮，点击某个角色名可以只显示该角色的关系网（其他连线和星球会变暗）
 - 点击「全部」可恢复显示所有关系
-- 当前被筛选的角色会用红色高亮显示
+- 当前被筛选的角色星球会用白色描边高亮显示
 - 信息卡片中可以直接点击「筛选此角色关系」按钮
 
 📡 离线模式体验升级
@@ -38084,7 +38970,7 @@ function _getCondensedXjPrompt(){
   '编辑器：更多工具折叠栏里有AI评价/润色/重写/扩缩写/版本管理/章节大纲\n' +
   '角色模拟：独立对话模式，记忆系统(短期+长期)，支持访谈和剧场\n' +
   '精华压缩器：设定过长时压缩，保存为预设不覆盖原设定\n' +
-  '版本：v1.4.7\n\n' +
+  '版本：v1.4.8\n\n' +
   '【输出规则】不用**加粗**，不用-列表，不用markdown，说人话像朋友聊天。不暴露思维过程。\n';
 }
 async function xjSendAllPending(){
@@ -40150,7 +41036,7 @@ var updateMsg =
 '<div style="text-align:center;padding:20px 0 10px">' +
   '<img src="./Logo.png" style="width:100%;max-width:240px;height:auto;display:block;margin:0 auto;object-fit:contain;">' +
   '<div style="font-size:12px;color:var(--accent2);margin-top:10px;font-weight:600;letter-spacing:1px">' + APP_VER + '</div>' +
-  '<div style="font-size:10px;color:var(--text2);margin-top:4px">2026.7.30 更新</div>' +
+  '<div style="font-size:10px;color:var(--text2);margin-top:4px">2026.8.20 更新</div>' +
   '<div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);margin:10px auto 0;border-radius:1px"></div>' +
 '</div>\n\n' +
 
@@ -40166,47 +41052,39 @@ var updateMsg =
 '</div>' +
 
 '<div style="background:linear-gradient(135deg,rgba(108,92,231,.12),rgba(162,155,254,.06));border:1px solid rgba(108,92,231,.25);border-radius:14px;padding:14px 16px;margin:8px 0 14px">' +
-  '<div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-sparkles" style="font-size:14px"></i> v1.4.7 本版更新</div>' +
+  '<div style="font-size:13px;font-weight:700;color:var(--accent2);margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-sparkles" style="font-size:14px"></i> v1.4.8 本版更新</div>' +
   '<div style="font-size:12px;line-height:2;color:var(--text)">' +
-  '<b>✦ 素材库长按选择</b>：长按素材卡片直接进入批量选择模式；编辑/收藏/删除/用于创作菜单移到卡片右上角"…"按钮，不影响原有操作<br>' +
-  '<b>✦ 素材挂载状态可视化</b>：书目"选择要挂载的素材"弹窗里，已挂载的素材自动置底并标红，一眼看出哪些已经用过<br>' +
-  '<b>✦ 素材续写定位修复</b>：注入写作方向续写当前书目时，改为先选定目标书目，彻底解决之前定位不准、内容丢失或串到别的书里的问题<br>' +
-  '<b>✦ 数据备份补全</b>：导出/导入数据现已包含素材库，以及此前遗漏的伏笔、时间线、角色扮演日记等内容，备份更完整<br>' +
-  '<b>✦ 全局搜索接入素材库</b>：搜索结果新增"素材"分类，点击可直接定位跳转到对应素材<br>' +
-  '<b>✦ 资源广场"素材"分类</b>：原"经验"分类更名为"素材"，可直接勾选素材库内容打包，也能现场手写一条临时素材；新增禁用词打包导出选项；分类栏改为横向滑动，选项再多也能完整展示<br>' +
-  '<b>✦ 打包导出全屏升级</b>：打包导出改为全屏页面，采用和资源广场一致的横滑分类栏，实时显示已选择资源数，确认后再填写资源包名/作者/简介<br>' +
-  '<b>✦ 启动页视觉升级</b>：标语与全站统一为"AI辅助创作工坊·构筑你的故事宇宙"，新增炫彩极光效果，星系氛围更浓，呼应"故事宇宙"的定位<br>' +
-  '<b>✦ 角色模拟独立分支</b>：角色模拟代码与星叙分离但仍属其分支，可继续读取星叙的书籍、API等数据；新增独立数据库，可单独导出/导入角色模拟数据，星叙也支持一并导出/导入<br>' +
-  '<b>✦ 角色模拟设置页上线</b>：参考穿书系统在底部栏新增设置页，含API设置/页面设置/数据管理/其他设置，原「其他设置」里角色流式输出、消息分段、时间感知开关已迁移至此<br>' +
-  '<b>✦ 新增「关于星叙」页面</b>：设置→数据管理最下方新增关于页，含软件介绍、创作理念、开发者信息、反馈问卷与邮箱反馈入口、赞赏码下载，底部配有不遮挡内容的星空特效<br>' +
-  '<b>✦ GitHub开源仓库上线</b>：关于页新增开源仓库入口，欢迎star及个人非商用部署，明确禁止抄袭、仿制、套壳等实质性相似复用<br>' +
-  '<b>✦ 移除多余访问统计</b>：创作者模式的访问统计已由Umami承担，删除冗余的不蒜子功能<br>' +
-  '<b>✦ 打包导出新增搜索框</b>：勾选分享内容的页面顶部新增预设名搜索，快速定位当前栏目资源<br>' +
-  '<b>✦ 阅读背景配色升级</b>：内置背景图新增更护眼的字体配色，浅色/深色模式下各自适配，兼顾清晰与耐看<br>' +
-  '<b>✦ 阅读页底部栏磨砂化</b>：章节/页码/字数信息栏改为半透明磨砂，跟随阅读主题切换<br>' +
+  '<b>✦ 排版规则升级</b>：自动排版按钮旁的"排版规则"新增首段缩进字符数、段间空行样式（无空行/不处理/空一行/含缩进空一行），并支持一键清除多余空行<br>' +
+  '<b>✦ Markdown工具栏定位修复</b>：格式化按钮现在会在光标所在位置插入符号，不再固定跳到段落开头<br>' +
+  '<b>✦ 撤回功能补全</b>：工具箱"撤回操作"补上了自动排版、AI润色、AI重写等场景，之前这几种操作做错了没法撤回<br>' +
+  '<b>✦ 草稿管理修复</b>：草稿页原本不可用的"章节管理"已修复并改名为"草稿管理"，功能一致<br>' +
+  '<b>✦ 章节大纲全面升级</b>：小弹窗改为下滑全屏弹窗，新增标签归类和5种排序方式（新旧、字数多少、最近修改等），弹窗样式统一到素材工坊风格<br>' +
+  '<b>✦ 版本管理优化</b>：新增按名称搜索版本；版本卡片按钮改为纯图标，去掉边框和文字说明，手机端显示更简洁<br>' +
+  '<b>✦ AI扩写修复</b>：修复点击后毫无反应、无法使用的问题<br>' +
+  '<b>✦ 章节删除/排序数据修复</b>：删除或拖拽调整章节顺序时，章节名/大纲/标签/版本历史不会再错位关联到别的章节上<br>' +
+  '<b>✦ 高级创作续接修复</b>：修复生成失败或中断后预览显示"本章暂无内容"的问题；重新打开高级创作会自动检测并恢复未完成的进度，按钮变为"继续创作"<br>' +
+  '<b>✦ 宇宙关系网大升级</b>（原角色关系图谱）：全新3D星系视觉，固定深色沉浸背景配星空特效；核心/普通/参考角色/NPC分别对应恒星/行星/小行星/矮行星四种天体样式，各自固定一种配色；位置可拖拽调整并自动保存；支持左右滑动切换观察角度<br>' +
+  '<b>✦ 新手引导优化</b>：首次进入API设置页会出现教程按钮闪烁提示和星笺引导语，帮你快速找到配置教程入口<br>' +
+  '<b>✦ 作坊标签筛选</b>：标签按钮现在还能筛选下方已生成的长篇连载/短篇一发作品，选中标签即可只看同类<br>' +
+  '<b>✦ 章节大纲输入框可拖拽扩大</b>：右下角新增紫色三角手柄，长按下拉即可扩大输入区域<br>' +
+  '<b>✦ 滚动条位置优化</b>：写作页滚动条从贴边改为往里移了一点，手机操作不再压着文字<br>' +
+  '<b>✦ 创作工具箱新增搜索</b>：点击放大镜图标即可搜索草稿箱/我的小说，按名称或创建时间筛选，点击结果直接进入<br>' +
   '</div>' +
   '</div>' +
 
 '<div style="background:linear-gradient(135deg,rgba(46,213,115,.10),rgba(16,172,132,.05));border:1px solid rgba(46,213,115,.3);border-radius:14px;padding:14px 16px;margin:8px 0 14px">' +
   '<div style="font-size:13px;font-weight:700;color:#16a085;margin-bottom:8px;display:flex;align-items:center;gap:6px"><i class="fas fa-gem" style="font-size:14px"></i> 如何用好新功能</div>' +
   '<div style="font-size:12px;line-height:2;color:var(--text)">' +
-  '<b><i class="fas fa-hand-pointer"></i> 素材长按选择</b>（素材工坊 → 长按任意卡片）<br>' +
-  '&nbsp;&nbsp;→ 长按卡片直接进入批量选择模式，可勾选多条统一打标签/删除<br>' +
-  '&nbsp;&nbsp;→ 想编辑、收藏或"用于创作"单条素材，点卡片右上角的"…"按钮<br>' +
-  '<b><i class="fas fa-book"></i> 素材续写定位</b>（素材卡片 → 用于创作 → 注入写作方向）<br>' +
-  '&nbsp;&nbsp;→ 若你有多部长篇，会先弹出书目列表，选好要续写的那一本再注入<br>' +
-  '&nbsp;&nbsp;→ 只有一部长篇时自动注入，不用多点一步<br>' +
-  '<b><i class="fas fa-search"></i> 全局搜索找素材</b>（更多 → 全局搜索 → 输入关键词）<br>' +
-  '&nbsp;&nbsp;→ 结果里点"素材"分类可只看素材库匹配项，点结果直接跳转定位<br>' +
-  '<b><i class="fas fa-boxes-stacked"></i> 资源广场打包素材/禁用词</b>（资源广场 → 打包导出）<br>' +
-  '&nbsp;&nbsp;→ 全屏勾选页横滑到"素材"分类，可直接勾已有素材，也能点"手写一条素材"现场写<br>' +
-  '&nbsp;&nbsp;→ 含图片的素材只会打包文字描述，图片本身不会被导出<br>' +
-  '&nbsp;&nbsp;→ 横滑到"禁用词"分类，可把全局/局部禁用词或已保存的禁用词预设一起打包分享<br>' +
-  '<b><i class="fas fa-circle-info"></i> 关于星叙 & 支持开发者</b>（设置 → 数据管理 → 最下方「关于星叙」）<br>' +
-  '&nbsp;&nbsp;→ 想说点什么、提建议或报bug，页面里有反馈问卷和邮箱两种入口，点击即可进入或自动复制<br>' +
-  '&nbsp;&nbsp;→ 同一页面下方有GitHub仓库入口，点个star就是对项目最好的支持<br>' +
-  '<b><i class="fas fa-sliders"></i> 角色模拟设置页</b>（角色模拟 → 底部导航「设置」）<br>' +
-  '&nbsp;&nbsp;→ API、页面显示、数据管理都集中在这里，角色模拟的数据可以单独备份，不影响星叙本体<br>' +
+  '<b><i class="fas fa-sliders"></i> 排版规则</b>（写作工具箱 → 自动排版旁边的"排版规则"）<br>' +
+  '&nbsp;&nbsp;→ 可设置首段缩进字数、段间空行样式，还能一键清除多余空行<br>' +
+  '<b><i class="fas fa-meteor"></i> 宇宙关系网</b>（人物设定 → 星图）<br>' +
+  '&nbsp;&nbsp;→ 左右滑动切换观察角度，双指或滚轮缩放看细节，拖动星球调整位置会自动保存<br>' +
+  '<b><i class="fas fa-list-ul"></i> 章节大纲</b>（写作工具箱 → 章节大纲）<br>' +
+  '&nbsp;&nbsp;→ 全屏弹窗支持按标签筛选、按修改时间/字数等排序，输入框右下角拖拽紫色三角可扩大编辑区<br>' +
+  '<b><i class="fas fa-magnifying-glass"></i> 创作工具箱搜索</b>（创作页顶部工具箱 → 放大镜图标）<br>' +
+  '&nbsp;&nbsp;→ 输入作品名或创建时间即可快速筛选草稿箱/我的小说，点击结果直接进入<br>' +
+  '<b><i class="fas fa-rotate-left"></i> 撤回操作</b>（写作工具箱 → 撤回操作）<br>' +
+  '&nbsp;&nbsp;→ 自动排版、AI润色、AI重写、切换版本等操作现在都能一键撤回了<br>' +
   '</div>' +
 '</div>' +
 
@@ -40309,7 +41187,7 @@ var _dailyTips=[
 '💡 章节目录里长按☰可以拖拽排序章节',
 '💡 文风提取器可以从喜欢的文章里提取写作风格',
 '💡 编辑器底部状态栏点击可以展开查看Token估算',
-'💡 双指缩放可以在角色关系图谱里放大查看细节'
+'💡 双指缩放可以在宇宙关系网里放大查看细节，左右滑动还能切换观察角度'
 ];
 function showDailyTip(){
   if(!localStorage.getItem('bj_hasVisited'))return;
@@ -40336,6 +41214,7 @@ setTimeout(showDailyTip,2000);
 // 首次使用引导（欢迎弹窗移至取名完成后触发，见 splashConfirmName）
 if(!localStorage.getItem('bj_hasVisited')){
   localStorage.setItem('bj_hasVisited','1');
+  sv('bj_isNewUserFlag', true); // 标记"这是一位全新用户"，供后续新手引导（如API配置教程）判断是否要提示
   // 标记待触发，由 splashConfirmName 完成后执行
   window._needFirstGuide = true;
 }
@@ -41317,15 +42196,294 @@ function applyRegenResult(article, fullText, feedback){
   showToast('🎉 已根据反馈重新生成！' + countWords(content) + '字', 3000);
 }
 
-// ==================== 全屏关系图谱（重构版） ====================
+// ==================== 宇宙关系网（角色关系图谱 · 星系版） ====================
 let _rgmScale = 1;
 let _rgmOffX = 0;
 let _rgmOffY = 0;
+let _rgmViewAngle = 0; // 观察视角：-1（左）~ 1（右），驱动星球与星空的视差
 let _rgmNodes = [];
 let _rgmFilter = '';
 let _rgmCanvasW = 0;
 let _rgmCanvasH = 0;
-let _rgmNodePositions = {}; // {name:{x,y}} 存储用户拖动后的节点位置
+let _rgmNodeMeta = {}; // {name:{x,y,z,bodyType,color}} 持久化：位置+深度+天体类型+配色
+let _rgmActiveNames = []; // 本次打开时收集到的角色列表缓存，动画循环里不用每帧重算
+let _rgmStarfield = null; // {stars:[{x,y,size,depth,phase,speed}]} 持久化的背景星空
+let _rgmAnimHandle = null;
+let _rgmAnimT = 0;
+let _rgmLastFrameTime = 0;
+let _rgmGesturesBound = false;
+
+// ---- 星球配色：每种天体类型固定唯一一色，不再同类型内随机挑选，避免同一图谱里色彩过杂 ----
+const RGM_COLORS = {
+  star:    '#ffd93d',
+  planet:  '#4a90d9',
+  asteroid:'#a0826d',
+  dwarf:   '#dfe6e9'
+};
+const RGM_REL_COLORS = {'恋人':'#ff6b6b','暗恋':'#ff9ff3','朋友':'#51cf66','青梅竹马':'#2ecc71','敌对':'#e67e22','宿敌':'#d35400','亲属':'#a29bfe','师徒':'#f1c40f','主仆':'#f1c40f','同事':'#3498db'};
+
+// ---- 角色 → 天体类型：核心=恒星，参考=小行星，NPC=矮行星，其余=行星 ----
+function _rgmBodyType(info){
+  if(info.type === 'npc') return 'dwarf';
+  if(info.priority === '核心') return 'star';
+  if(info.priority === '参考') return 'asteroid';
+  return 'planet';
+}
+
+// ---- 名字哈希：用于同一角色每次渲染都得到一致的"不规则感"（比如小行星的凹凸形状） ----
+function _rgmHash(str){
+  var h = 0;
+  var s = String(str||'');
+  for(var i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) & 0xfffff;
+  return h;
+}
+
+// ---- 颜色明暗调整（用于球体渐变高光/暗部） ----
+function _rgmShade(hex, percent){
+  var h = (hex||'#888888').replace('#','');
+  if(h.length===3){ h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2]; }
+  var num = parseInt(h,16);
+  if(isNaN(num)) return '#888888';
+  var r=(num>>16)&0xff, g=(num>>8)&0xff, b=num&0xff;
+  var amt = Math.round(2.55*percent);
+  r=Math.max(0,Math.min(255,r+amt));
+  g=Math.max(0,Math.min(255,g+amt));
+  b=Math.max(0,Math.min(255,b+amt));
+  return '#'+(0x1000000+r*0x10000+g*0x100+b).toString(16).slice(1);
+}
+
+// ---- 二次贝塞尔曲线上 t 处的点（关系连线用） ----
+function _rgmQuadPoint(p0, p1, p2, t){
+  var mt = 1-t;
+  return { x: mt*mt*p0.x + 2*mt*t*p1.x + t*t*p2.x, y: mt*mt*p0.y + 2*mt*t*p1.y + t*t*p2.y };
+}
+
+/* ---- 持久化：节点位置/深度/类型/配色 ---- */
+function _rgmLoadMeta(){
+  try{
+    var raw = ld('bj_rgmNodeMeta', {});
+    return (raw && typeof raw === 'object') ? raw : {};
+  }catch(e){
+    return {};
+  }
+}
+function _rgmSaveMeta(){
+  try{ sv('bj_rgmNodeMeta', _rgmNodeMeta); }catch(e){
+    // 存储异常时静默失败，不影响当前会话里图谱的正常显示和拖动
+  }
+}
+
+/* ---- 持久化：背景星空，首次生成后复用，避免每次进入都重新随机产生延迟 ---- */
+function _rgmEnsureStarfield(){
+  if(_rgmStarfield && _rgmStarfield.stars && _rgmStarfield.stars.length > 0) return;
+  var saved = null;
+  try{ saved = ld('bj_rgmStarfield', null); }catch(e){ saved = null; }
+  if(saved && saved.stars && saved.stars.length > 0){
+    _rgmStarfield = saved;
+    return;
+  }
+  var stars = [];
+  var starCount = 150;
+  for(var i=0;i<starCount;i++){
+    stars.push({
+      x: Math.random(),
+      y: Math.random(),
+      size: +(Math.random()*1.5+0.4).toFixed(2),
+      depth: +(Math.random()).toFixed(2),
+      phase: +(Math.random()*Math.PI*2).toFixed(2),
+      speed: +(0.6+Math.random()*0.9).toFixed(2)
+    });
+  }
+  _rgmStarfield = { stars: stars };
+  try{ sv('bj_rgmStarfield', _rgmStarfield); }catch(e){
+    // 存储异常时静默失败，本次会话仍可正常显示星空，只是下次可能会重新生成一份
+  }
+}
+
+/* ---- 轨道式初始布局：恒星居中，行星环 → 小行星带 → 矮行星环，由内向外分布 ---- */
+function _rgmRingRadii(){
+  var cx=_rgmCanvasW/2, cy=_rgmCanvasH/2;
+  var baseR=Math.min(cx,cy);
+  return { star: baseR*0.16, planet: baseR*0.44, asteroid: baseR*0.66, dwarf: baseR*0.86, base: baseR };
+}
+function _rgmComputeOrbitalLayout(names){
+  var cx=_rgmCanvasW/2, cy=_rgmCanvasH/2;
+  var ring=_rgmRingRadii();
+  var groups={star:[],planet:[],asteroid:[],dwarf:[]};
+  names.forEach(function(info){ groups[_rgmBodyType(info)].push(info); });
+  var positions={};
+  Object.keys(groups).forEach(function(bt){
+    var arr=groups[bt];
+    var r=ring[bt];
+    var jitterBand = bt==='asteroid' ? ring.base*0.11 : ring.base*0.035;
+    arr.forEach(function(info,i){
+      var angle=(Math.PI*2*i/Math.max(arr.length,1)) - Math.PI/2;
+      var h=_rgmHash(info.name);
+      var rJit=((h%100)/100-0.5)*2*jitterBand;
+      positions[info.name]={ x: cx+Math.cos(angle)*(r+rJit), y: cy+Math.sin(angle)*(r+rJit) };
+    });
+  });
+  return positions;
+}
+
+/* ---- 新增角色：优先安置在同类型星球附近，而不是打乱整体布局 ---- */
+function _rgmPlaceNewNode(info, bt){
+  var cx=_rgmCanvasW/2, cy=_rgmCanvasH/2;
+  var ring=_rgmRingRadii();
+  var r = ring[bt] || ring.base*0.5;
+
+  var sumX=0, sumY=0, siblingCount=0;
+  Object.keys(_rgmNodeMeta).forEach(function(nm){
+    var m=_rgmNodeMeta[nm];
+    if(!m || m.bodyType!==bt || nm===info.name) return;
+    var ang=Math.atan2(m.y-cy, m.x-cx);
+    sumX+=Math.cos(ang); sumY+=Math.sin(ang);
+    siblingCount++;
+  });
+
+  var baseAngle = (siblingCount>0 && (sumX!==0||sumY!==0)) ? Math.atan2(sumY,sumX) : (Math.random()*Math.PI*2);
+  var h = _rgmHash(info.name+'_'+siblingCount);
+  var angleJitter = ((h%100)/100-0.5) * (Math.PI*0.55);
+  var angle = baseAngle + angleJitter;
+  var radialJitter = (((h>>4)%37)/37-0.5) * ring.base * 0.08;
+
+  return { x: cx+Math.cos(angle)*(r+radialJitter), y: cy+Math.sin(angle)*(r+radialJitter) };
+}
+
+/* ---- 星球的大致渲染半径：必须和rgmDraw里的公式保持一致，否则重叠规避会算错 ---- */
+function _rgmVisualR(count, bodyType){
+  var baseR = count>20 ? 15 : count>12 ? 18 : 22;
+  var sizeMul = bodyType==='star'?1.5 : bodyType==='planet'?1.05 : bodyType==='dwarf'?0.72 : 0.66;
+  return baseR * sizeMul;
+}
+/* ---- 两个星球之间应保持的最小间距：按各自实际大小求和再留出标签+呼吸间距，而不是和角色总数强绑定的固定值 ---- */
+function _rgmMinGap(count, btA, btB){
+  return (_rgmVisualR(count,btA) + _rgmVisualR(count,btB)) * 1.35 + 14;
+}
+/* ---- 斥力迭代：整体重叠规避（仅用于"全新图谱"首次铺开时） ---- */
+function _rgmResolveOverlaps(names){
+  var count=names.length;
+  for(var iter=0; iter<4; iter++){
+    for(var a=0;a<count;a++){
+      var ma=_rgmNodeMeta[names[a].name];
+      if(!ma) continue;
+      for(var b=a+1;b<count;b++){
+        var mb=_rgmNodeMeta[names[b].name];
+        if(!mb) continue;
+        var minDist = _rgmMinGap(count, ma.bodyType, mb.bodyType);
+        var dx=mb.x-ma.x, dy=mb.y-ma.y;
+        var dist=Math.sqrt(dx*dx+dy*dy)||0.01;
+        if(dist<minDist){
+          var push=(minDist-dist)/2.2;
+          var nx=dx/dist, ny=dy/dist;
+          ma.x-=nx*push; ma.y-=ny*push;
+          mb.x+=nx*push; mb.y+=ny*push;
+        }
+      }
+    }
+  }
+}
+/* ---- 斥力迭代：只把"新加入"的星球推开，绝不挪动用户已经手动摆放好的旧星球 ---- */
+function _rgmResolveNewNodeOverlaps(newNames, allNames){
+  var count = allNames.length;
+  for(var iter=0; iter<4; iter++){
+    newNames.forEach(function(nInfo){
+      var mn=_rgmNodeMeta[nInfo.name];
+      if(!mn) return;
+      allNames.forEach(function(oInfo){
+        if(oInfo.name===nInfo.name) return;
+        var mo=_rgmNodeMeta[oInfo.name];
+        if(!mo) return;
+        var minDist = _rgmMinGap(count, mn.bodyType, mo.bodyType);
+        var dx=mn.x-mo.x, dy=mn.y-mo.y;
+        var dist=Math.sqrt(dx*dx+dy*dy)||0.01;
+        if(dist<minDist){
+          var push=(minDist-dist);
+          var nx=dx/dist, ny=dy/dist;
+          mn.x+=nx*push; mn.y+=ny*push;
+        }
+      });
+    });
+  }
+}
+
+/* ---- 收集角色数据 + 同步持久化元数据（新增/删除/类型变化） ---- */
+function _rgmSyncGraphData(){
+  var names=[];
+  var nameSet={};
+  (characters||[]).forEach(function(c){
+    if(c.name && !nameSet[c.name]){
+      names.push({name:c.name, type:'main', priority:c.priority||'普通', desc:(c.desc||'').substring(0,80), traits:c.traits||[]});
+      nameSet[c.name]=true;
+    }
+  });
+  (npcList||[]).forEach(function(n){
+    if(n.name && !nameSet[n.name]){
+      names.push({name:n.name, type:'npc', role:n.role||'NPC', desc:(n.desc||'').substring(0,80), traits:n.traits||[]});
+      nameSet[n.name]=true;
+    }
+  });
+
+  var changed=false;
+
+  // 清理已删除角色留下的孤立数据，避免存储无限膨胀
+  Object.keys(_rgmNodeMeta).forEach(function(nm){
+    if(!nameSet[nm]){ delete _rgmNodeMeta[nm]; changed=true; }
+  });
+
+  var brandNew = names.filter(function(info){ return !_rgmNodeMeta[info.name]; });
+
+  if(brandNew.length > 0){
+    if(brandNew.length === names.length){
+      // 全新图谱：整体按"恒星-行星-小行星带-矮行星环"轨道式分布
+      var layout=_rgmComputeOrbitalLayout(names);
+      names.forEach(function(info){
+        var bt=_rgmBodyType(info);
+        _rgmNodeMeta[info.name]={
+          x: layout[info.name].x, y: layout[info.name].y,
+          z: +(Math.random()*2-1).toFixed(2),
+          bodyType: bt,
+          color: RGM_COLORS[bt] || RGM_COLORS.planet
+        };
+      });
+      _rgmResolveOverlaps(names);
+    } else {
+      // 已有图谱基础上新增角色：安置在同类型星球旁边
+      brandNew.forEach(function(info){
+        var bt=_rgmBodyType(info);
+        var pos=_rgmPlaceNewNode(info, bt);
+        _rgmNodeMeta[info.name]={
+          x: pos.x, y: pos.y,
+          z: +(Math.random()*2-1).toFixed(2),
+          bodyType: bt,
+          color: RGM_COLORS[bt] || RGM_COLORS.planet
+        };
+      });
+      _rgmResolveNewNodeOverlaps(brandNew, names);
+    }
+    changed=true;
+  }
+
+  // 角色类型变化了（比如从"普通"升级为"核心"）：保留原位置，重新对齐所属类型的固定配色；
+  // 同时兜底修正历史数据里残留的随机色（旧版本同类型内7色随机分配，现已统一为每种天体固定1色）
+  names.forEach(function(info){
+    var meta=_rgmNodeMeta[info.name];
+    if(!meta) return;
+    var freshBT=_rgmBodyType(info);
+    if(meta.bodyType !== freshBT){
+      meta.bodyType=freshBT;
+      changed=true;
+    }
+    var fixedColor=RGM_COLORS[meta.bodyType] || RGM_COLORS.planet;
+    if(meta.color !== fixedColor){
+      meta.color=fixedColor;
+      changed=true;
+    }
+  });
+
+  if(changed) _rgmSaveMeta();
+  return names;
+}
 
 function openRelGraph(){
   var allNames = getAllCharNames();
@@ -41336,30 +42494,61 @@ function openRelGraph(){
   _rgmScale = 1;
   _rgmOffX = 0;
   _rgmOffY = 0;
+  _rgmViewAngle = 0;
   _rgmFilter = '';
-  _rgmNodePositions = {};
+  _rgmNodeMeta = _rgmLoadMeta();
+  _rgmEnsureStarfield();
   document.getElementById('relGraphModal').classList.add('show');
   navPush('relGraphModal');
   document.getElementById('bnav').classList.add('hide');
   requestAnimationFrame(function(){
     setTimeout(function(){
       rgmInitCanvas();
+      _rgmActiveNames = _rgmSyncGraphData();
       rgmDraw();
+      rgmRenderLegend(_rgmActiveNames);
       rgmBindGestures();
-      // 短暂提示可拖动
+      rgmStartAnim();
+      // 短暂提示：可拖动星球 + 左右滑动切换视角
       var hint = document.createElement('div');
       hint.className = 'rgm-drag-hint';
-      hint.textContent = '✦ 可拖动节点调整位置';
+      hint.textContent = '✦ 拖动星球调整位置 · 左右滑动切换观察角度';
       var body = document.getElementById('rgmBody');
-      if(body){ body.appendChild(hint); setTimeout(function(){ hint.remove(); }, 3200); }
+      if(body){ body.appendChild(hint); setTimeout(function(){ hint.remove(); }, 3600); }
     }, 150);
   });
 }
 
 function closeRelGraphModal(){
+  rgmStopAnim();
   navPop('relGraphModal');
   document.getElementById('relGraphModal').classList.remove('show');
   document.getElementById('bnav').classList.remove('hide');
+}
+
+/* ---- 动画循环：驱动星空闪烁、恒星脉动、关系光带流动，关闭时必须显式停止，避免留下后台循环 ---- */
+function rgmStartAnim(){
+  rgmStopAnim(); // 防御性清理，避免重复启动叠加出多个循环
+  _rgmLastFrameTime = 0;
+  var FRAME_INTERVAL = 42; // 约24fps，柔和的宇宙动效不需要60fps，省电更重要
+  function loop(ts){
+    if(!_rgmLastFrameTime) _rgmLastFrameTime = ts;
+    var dt = ts - _rgmLastFrameTime;
+    if(dt >= FRAME_INTERVAL){
+      _rgmAnimT += dt;
+      _rgmLastFrameTime = ts;
+      rgmDraw();
+    }
+    _rgmAnimHandle = requestAnimationFrame(loop);
+  }
+  _rgmAnimHandle = requestAnimationFrame(loop);
+}
+function rgmStopAnim(){
+  if(_rgmAnimHandle){
+    cancelAnimationFrame(_rgmAnimHandle);
+    _rgmAnimHandle = null;
+  }
+  _rgmLastFrameTime = 0;
 }
 
 function rgmInitCanvas(){
@@ -41378,77 +42567,9 @@ function rgmInitCanvas(){
   ctx.scale(dpr, dpr);
 }
 
-/* ---- 智能布局算法 ---- */
-function _rgmComputeLayout(names){
-  var count = names.length;
-  var cx = _rgmCanvasW / 2;
-  var cy = _rgmCanvasH / 2;
-  var positions = [];
-
-  if(count <= 6){
-    // 圆形
-    var r = Math.min(cx, cy) * 0.62;
-    for(var i = 0; i < count; i++){
-      var a = (Math.PI * 2 * i / count) - Math.PI / 2;
-      positions.push({ x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) });
-    }
-  } else if(count <= 14){
-    // 双环：内圈~3个，外圈其余
-    var innerN = Math.max(3, Math.floor(count * 0.3));
-    var outerN = count - innerN;
-    var innerR = Math.min(cx, cy) * 0.3;
-    var outerR = Math.min(cx, cy) * 0.68;
-    for(var i = 0; i < innerN; i++){
-      var a = (Math.PI * 2 * i / innerN) - Math.PI / 2;
-      positions.push({ x: cx + innerR * Math.cos(a), y: cy + innerR * Math.sin(a) });
-    }
-    for(var i = 0; i < outerN; i++){
-      var a = (Math.PI * 2 * i / outerN) - Math.PI / 2;
-      positions.push({ x: cx + outerR * Math.cos(a), y: cy + outerR * Math.sin(a) });
-    }
-  } else {
-    // 均匀网格散布，避免堆在圆上
-    var aspect = _rgmCanvasW / Math.max(_rgmCanvasH, 1);
-    var cols = Math.ceil(Math.sqrt(count * aspect));
-    var rows = Math.ceil(count / cols);
-    var usableW = _rgmCanvasW * 0.80;
-    var usableH = _rgmCanvasH * 0.74;
-    var cellW = Math.max(55, usableW / cols);
-    var cellH = Math.max(52, usableH / rows);
-    var startX = cx - (cols - 1) * cellW / 2;
-    var startY = cy - (rows - 1) * cellH / 2;
-    for(var i = 0; i < count; i++){
-      var col = i % cols;
-      var row = Math.floor(i / cols);
-      // 确定性抖动（按角色名哈希，每次布局结果一致）
-      var h = 0;
-      for(var ci = 0; ci < names[i].name.length; ci++) h = (h * 31 + names[i].name.charCodeAt(ci)) & 0xfffff;
-      var jx = ((h % 19) - 9) / 9 * cellW * 0.20;
-      var jy = (((h >> 4) % 17) - 8) / 8 * cellH * 0.20;
-      positions.push({ x: startX + col * cellW + jx, y: startY + row * cellH + jy });
-    }
-  }
-
-  // 简单斥力迭代：避免节点重叠
-  var minDist = (count > 20 ? 46 : count > 12 ? 54 : 62);
-  for(var iter = 0; iter < 4; iter++){
-    for(var a = 0; a < count; a++){
-      for(var b = a + 1; b < count; b++){
-        var dx = positions[b].x - positions[a].x;
-        var dy = positions[b].y - positions[a].y;
-        var dist = Math.sqrt(dx*dx + dy*dy) || 0.01;
-        if(dist < minDist){
-          var push = (minDist - dist) / 2.2;
-          var nx = dx / dist, ny = dy / dist;
-          positions[a].x -= nx * push;
-          positions[a].y -= ny * push;
-          positions[b].x += nx * push;
-          positions[b].y += ny * push;
-        }
-      }
-    }
-  }
-  return positions;
+/* ---- 节点当前"屏幕坐标"：叠加视差偏移（越靠近观察者的z，偏移越明显） ---- */
+function _rgmScreenPos(meta){
+  return { x: meta.x + _rgmViewAngle * (meta.z||0) * 46, y: meta.y };
 }
 
 function rgmDraw(){
@@ -41457,206 +42578,301 @@ function rgmDraw(){
   var dpr = window.devicePixelRatio || 1;
   var ctx = canvas.getContext('2d');
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  ctx.clearRect(0, 0, _rgmCanvasW, _rgmCanvasH);
 
-  // 收集角色
-  var names = [];
-  var nameSet = new Set();
-  (characters || []).forEach(function(c){
-    if(c.name && !nameSet.has(c.name)){
-      names.push({ name:c.name, type:'main', priority:c.priority||'普通', desc:(c.desc||'').substring(0,80), traits:c.traits||[] });
-      nameSet.add(c.name);
-    }
-  });
-  (npcList || []).forEach(function(n){
-    if(n.name && !nameSet.has(n.name)){
-      names.push({ name:n.name, type:'npc', role:n.role||'NPC', desc:(n.desc||'').substring(0,80), traits:n.traits||[] });
-      nameSet.add(n.name);
-    }
-  });
+  // 背景：固定深色宇宙渐变（宇宙关系网默认深色沉浸风格，不跟随站点浅色/深色主题切换）
+  var bgGrad = ctx.createRadialGradient(_rgmCanvasW/2, _rgmCanvasH*0.4, 0, _rgmCanvasW/2, _rgmCanvasH*0.5, Math.max(_rgmCanvasW,_rgmCanvasH)*0.75);
+  bgGrad.addColorStop(0, '#12101f');
+  bgGrad.addColorStop(1, '#050509');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, _rgmCanvasW, _rgmCanvasH);
+
+  _rgmDrawStarfield(ctx);
+
+  var names = _rgmActiveNames || [];
   if(names.length < 2){ return; }
 
-  // 初始化布局（只要有任何节点缺失位置就重算）
-  var needLayout = names.some(function(info){ return !_rgmNodePositions[info.name]; });
-  if(needLayout){
-    var layout = _rgmComputeLayout(names);
-    names.forEach(function(info, j){ _rgmNodePositions[info.name] = layout[j]; });
-  }
-
-  var positions = names.map(function(info){ return _rgmNodePositions[info.name]; });
-  var count = names.length;
   var filterName = _rgmFilter || '';
 
   ctx.save();
   ctx.translate(_rgmOffX, _rgmOffY);
   ctx.scale(_rgmScale, _rgmScale);
 
-  var relColors = {
-    '恋人':'#ff6b6b','暗恋':'#ff9ff3','朋友':'#51cf66','青梅竹马':'#2ecc71',
-    '敌对':'#e67e22','宿敌':'#d35400','亲属':'#a29bfe','师徒':'#f1c40f',
-    '主仆':'#f1c40f','同事':'#3498db'
-  };
-  var isLight = document.body.classList.contains('theme-light');
+  _rgmDrawRelations(ctx, names, filterName);
+  _rgmNodes = [];
+  _rgmDrawNodes(ctx, names, filterName);
 
-  // 画关系连线
+  ctx.restore();
+  var zoomEl = document.getElementById('rgmZoomInfo');
+  if(zoomEl) zoomEl.textContent = Math.round(_rgmScale*100) + '%';
+}
+
+/* ---- 背景星空：带视差 + 缓慢闪烁，不含极光；位置来自持久化数据，不每次重新随机 ---- */
+function _rgmDrawStarfield(ctx){
+  if(!_rgmStarfield || !_rgmStarfield.stars) return;
+  var stars = _rgmStarfield.stars;
+  ctx.save();
+  for(var i=0;i<stars.length;i++){
+    var s = stars[i];
+    var px = s.x * _rgmCanvasW + _rgmViewAngle * s.depth * 26;
+    var py = s.y * _rgmCanvasH;
+    if(px < -4 || px > _rgmCanvasW+4) continue;
+    var tw = 0.35 + 0.65 * (0.5 + 0.5*Math.sin(_rgmAnimT*0.0011*s.speed + s.phase));
+    ctx.globalAlpha = tw * (0.4 + s.depth*0.6);
+    ctx.beginPath();
+    ctx.arc(px, py, s.size, 0, Math.PI*2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+  }
+  ctx.restore();
+  ctx.globalAlpha = 1;
+}
+
+/* ---- 关系连线：柔和渐变弧线 + 清晰文字标签，替代僵直直线 ---- */
+function _rgmDrawRelations(ctx, names, filterName){
+  var count = names.length;
   var pairCount = {};
-  (charRelations || []).forEach(function(rel){
-    var idxA = -1, idxB = -1;
-    for(var j = 0; j < names.length; j++){
-      if(names[j].name === rel.charA) idxA = j;
-      if(names[j].name === rel.charB) idxB = j;
+  (charRelations||[]).forEach(function(rel){
+    var idxA=-1, idxB=-1;
+    for(var j=0;j<names.length;j++){
+      if(names[j].name===rel.charA) idxA=j;
+      if(names[j].name===rel.charB) idxB=j;
     }
-    if(idxA < 0 || idxB < 0) return;
-    if(filterName && rel.charA !== filterName && rel.charB !== filterName) return;
+    if(idxA<0||idxB<0) return;
+    if(filterName && rel.charA!==filterName && rel.charB!==filterName) return;
 
-    var posA = positions[idxA], posB = positions[idxB];
-    var color = relColors[rel.type] || '#9090a8';
-    var pairKey = [Math.min(idxA,idxB), Math.max(idxA,idxB)].join('_');
-    if(!pairCount[pairKey]) pairCount[pairKey] = 0;
+    // 弯曲方向统一按"索引小→索引大"的规范顺序计算，不受这条关系记录里charA/charB具体先后顺序影响——
+    // 否则同一对角色如果两条关系分别是"A→B"和"B→A"写法，法线会反号，导致本该错开的两条弧线反而挤在一起
+    var loIdx = Math.min(idxA,idxB), hiIdx = Math.max(idxA,idxB);
+    var mLo = _rgmNodeMeta[names[loIdx].name], mHi = _rgmNodeMeta[names[hiIdx].name];
+    if(!mLo||!mHi) return;
+    var posLo = _rgmScreenPos(mLo), posHi = _rgmScreenPos(mHi);
+    var posA = idxA===loIdx ? posLo : posHi;
+    var posB = idxA===loIdx ? posHi : posLo;
+
+    var color = RGM_REL_COLORS[rel.type] || '#9090a8';
+    var pairKey = loIdx+'_'+hiIdx;
+    if(!pairCount[pairKey]) pairCount[pairKey]=0;
     var offsetIdx = pairCount[pairKey]++;
     var pairTotal = ((charRelations||[]).filter(function(r){
       return (r.charA===rel.charA&&r.charB===rel.charB)||(r.charA===rel.charB&&r.charB===rel.charA);
     }).length);
 
-    var dx = posB.x - posA.x, dy = posB.y - posA.y;
-    var len = Math.sqrt(dx*dx + dy*dy) || 0.01;
-    var nx = -dy/len, ny = dx/len;
-    var offsetAmount = (offsetIdx - (pairTotal-1)/2) * 12;
-    var ax = posA.x + nx*offsetAmount, ay = posA.y + ny*offsetAmount;
-    var bx = posB.x + nx*offsetAmount, by = posB.y + ny*offsetAmount;
+    var dxCanon=posHi.x-posLo.x, dyCanon=posHi.y-posLo.y;
+    var len=Math.sqrt(dxCanon*dxCanon+dyCanon*dyCanon)||0.01;
+    var nx=-dyCanon/len, ny=dxCanon/len;
+    // 同一对角色如果有多条关系线：错开幅度设一个不随距离缩水的下限，避免两个节点靠得近时间距被压缩到几乎重叠
+    var fanStep = Math.max(26, len*0.12);
+    var pairOffset = (offsetIdx-(pairTotal-1)/2) * fanStep;
+    // 柔和弧线：控制点沿法线方向偏一点，弯曲幅度跟随连线长度做小比例浮动，营造"光带"而非死板直线
+    var bow = Math.min(len*0.16, 40) + pairOffset;
+    var midX=(posA.x+posB.x)/2 + nx*bow;
+    var midY=(posA.y+posB.y)/2 + ny*bow;
+    var ctrl={x:midX,y:midY};
 
     var isActive = !filterName || rel.charA===filterName || rel.charB===filterName;
-    ctx.globalAlpha = filterName ? (isActive ? 0.9 : 0.08) : 0.72;
+    ctx.globalAlpha = filterName ? (isActive?0.95:0.06) : 0.8;
 
-    // 渐变线条
-    var grad = ctx.createLinearGradient(ax, ay, bx, by);
-    grad.addColorStop(0, color + 'dd');
-    grad.addColorStop(1, color + '66');
+    var grad = ctx.createLinearGradient(posA.x, posA.y, posB.x, posB.y);
+    grad.addColorStop(0, color+'ee');
+    grad.addColorStop(0.5, color+'99');
+    grad.addColorStop(1, color+'ee');
+
     ctx.beginPath();
-    ctx.moveTo(ax, ay);
-    ctx.lineTo(bx, by);
+    ctx.moveTo(posA.x, posA.y);
+    ctx.quadraticCurveTo(ctrl.x, ctrl.y, posB.x, posB.y);
     ctx.strokeStyle = grad;
-    ctx.lineWidth = filterName ? (isActive ? 2.5 : 0.8) : 1.8;
+    ctx.lineWidth = filterName ? (isActive?2.6:0.8) : 2;
+    ctx.lineCap = 'round';
     ctx.stroke();
 
-    // 箭头
-    if(isActive && (rel.direction === 'A→B' || rel.direction === 'B→A')){
-      var adx = (rel.direction==='A→B'?bx:ax)-(rel.direction==='A→B'?ax:bx);
-      var ady = (rel.direction==='A→B'?by:ay)-(rel.direction==='A→B'?ay:by);
-      var alen = Math.sqrt(adx*adx+ady*ady)||0.01;
-      var anx = adx/alen, any = ady/alen;
-      var arrowX = (rel.direction==='A→B'?ax:bx)+adx*0.6;
-      var arrowY = (rel.direction==='A→B'?ay:by)+ady*0.6;
+    // 箭头（沿曲线末端切线方向，无论指向A还是B都用同一套逻辑，避免方向算错）
+    if(isActive && (rel.direction==='A→B'||rel.direction==='B→A')){
+      var arrowAtB = rel.direction==='A→B';
+      var tipPt = _rgmQuadPoint(posA, ctrl, posB, arrowAtB?1:0);
+      var nearPt = _rgmQuadPoint(posA, ctrl, posB, arrowAtB?0.9:0.1);
+      var adx=tipPt.x-nearPt.x, ady=tipPt.y-nearPt.y;
+      var alen=Math.sqrt(adx*adx+ady*ady)||0.01;
+      var anx=adx/alen, any=ady/alen;
       ctx.beginPath();
-      ctx.moveTo(arrowX+anx*8, arrowY+any*8);
-      ctx.lineTo(arrowX-any*5, arrowY+anx*5);
-      ctx.lineTo(arrowX+any*5, arrowY-anx*5);
+      ctx.moveTo(tipPt.x, tipPt.y);
+      ctx.lineTo(tipPt.x-anx*9-any*5, tipPt.y-any*9+anx*5);
+      ctx.lineTo(tipPt.x-anx*9+any*5, tipPt.y-any*9-anx*5);
       ctx.closePath();
       ctx.fillStyle = color;
       ctx.fill();
     }
 
-    // 关系标签
+    // 关系标签：贴着弧线中点，深底浅字，保证文字清晰
     if(isActive){
-      var midX = (ax+bx)/2, midY = (ay+by)/2;
       var labelText = rel.type || '';
-      var fontSize = count > 15 ? 9 : 10;
-      ctx.font = fontSize + 'px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      var tw = ctx.measureText(labelText).width;
-      ctx.fillStyle = isLight ? 'rgba(245,245,248,.92)' : 'rgba(18,18,28,.9)';
+      var fontSize = count>15?9:10;
+      ctx.font = fontSize+'px sans-serif';
+      ctx.textAlign='center'; ctx.textBaseline='middle';
+      var tw2 = ctx.measureText(labelText).width;
+      ctx.fillStyle = 'rgba(10,10,20,.82)';
       if(ctx.roundRect){
         ctx.beginPath();
-        ctx.roundRect(midX-tw/2-4, midY-7, tw+8, 14, 3);
+        ctx.roundRect(midX-tw2/2-5, midY-8, tw2+10, 16, 4);
         ctx.fill();
       } else {
-        ctx.fillRect(midX-tw/2-4, midY-7, tw+8, 14);
+        ctx.fillRect(midX-tw2/2-5, midY-8, tw2+10, 16);
       }
-      ctx.fillStyle = color;
+      ctx.fillStyle = '#fff';
       ctx.fillText(labelText, midX, midY);
     }
     ctx.globalAlpha = 1;
   });
+}
 
-  // 画角色节点
-  _rgmNodes = [];
-  var nodeR = count > 20 ? 18 : count > 12 ? 21 : 24;
-  var npcR = Math.round(nodeR * 0.8);
+/* ---- 星球节点：四种天体分别用不同形状+配色渲染，名字显示在星球下方 ---- */
+function _rgmDrawNodes(ctx, names, filterName){
+  var count = names.length;
+  var baseR = count>20 ? 15 : count>12 ? 18 : 22;
 
-  for(var k = 0; k < count; k++){
-    var pos = positions[k];
+  // 按z深度从远到近排序绘制，制造前后遮挡的立体层次感
+  var order = names.map(function(info,i){ return i; });
+  order.sort(function(a,b){
+    var za=(_rgmNodeMeta[names[a].name]||{}).z||0;
+    var zb=(_rgmNodeMeta[names[b].name]||{}).z||0;
+    return za-zb;
+  });
+
+  for(var oi=0; oi<order.length; oi++){
+    var k = order[oi];
     var info = names[k];
-    var r = info.type === 'main' ? nodeR : npcR;
+    var meta = _rgmNodeMeta[info.name];
+    if(!meta) continue;
+    var pos = _rgmScreenPos(meta);
+    var bt = meta.bodyType || _rgmBodyType(info);
+    var depthScale = 0.82 + (meta.z*0.5+0.5) * 0.36;
+    var sizeMul = bt==='star'?1.5 : bt==='planet'?1.05 : bt==='dwarf'?0.72 : 0.66;
+    var r = baseR * sizeMul * depthScale;
+
     var isFiltered = false;
-    if(filterName && info.name !== filterName){
+    if(filterName && info.name!==filterName){
       var hasRel = (charRelations||[]).some(function(rl){
         return (rl.charA===filterName&&rl.charB===info.name)||(rl.charB===filterName&&rl.charA===info.name);
       });
       isFiltered = !hasRel;
     }
-    ctx.globalAlpha = isFiltered ? 0.1 : 1;
-
-    // 节点颜色方案
-    var isCore = info.priority === '核心';
     var isSelected = info.name === filterName;
-    var colorPair = isSelected ? ['#e74c3c','#c0392b'] : isCore ? ['#9b8ff5','#6c5ce7'] : info.type==='npc' ? ['#2ecc71','#27ae60'] : ['#5dade2','#3498db'];
+    ctx.globalAlpha = isFiltered ? 0.12 : 1;
 
-    // 外发光
-    ctx.shadowColor = colorPair[1] + (isSelected?'bb':'77');
-    ctx.shadowBlur = isSelected ? 16 : 8;
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, r+2, 0, Math.PI*2);
-    ctx.fillStyle = 'rgba(255,255,255,.08)';
-    ctx.fill();
+    var color = meta.color || '#a29bfe';
+
+    if(bt==='star'){ _rgmDrawStar(ctx,pos,r,color,isSelected); }
+    else if(bt==='planet'){ _rgmDrawPlanet(ctx,pos,r,color,isSelected); }
+    else if(bt==='dwarf'){ _rgmDrawDwarf(ctx,pos,r,color,isSelected); }
+    else { _rgmDrawAsteroid(ctx,pos,r,color,isSelected,info.name); }
+
+    // 人物首字：显示在星球下方，不再叠在球体内部
+    var initialChar = info.name.substring(0,1);
+    var nfs = count>20?10:count>12?11:12;
+    ctx.font = (isSelected?'bold ':'')+nfs+'px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='top';
+    ctx.fillStyle = isSelected ? '#fff' : 'rgba(255,255,255,.9)';
+    ctx.shadowColor = 'rgba(0,0,0,.65)';
+    ctx.shadowBlur = 3;
+    ctx.fillText(initialChar, pos.x, pos.y + r + 5);
     ctx.shadowBlur = 0;
 
-    // 主圆（渐变）
-    var grad2 = ctx.createRadialGradient(pos.x-r*.3, pos.y-r*.35, 0, pos.x, pos.y, r);
-    grad2.addColorStop(0, colorPair[0]);
-    grad2.addColorStop(1, colorPair[1]);
-    ctx.beginPath();
-    ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
-    ctx.fillStyle = grad2;
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.75)';
-    ctx.lineWidth = 1.8;
-    ctx.stroke();
-
-    // 名字
-    var displayName = info.name.length > 4 ? info.name.substring(0,4)+'..' : info.name;
-    var nfs = count > 20 ? 9 : count > 12 ? 10 : 11;
-    ctx.font = 'bold ' + nfs + 'px sans-serif';
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(displayName, pos.x, pos.y);
     ctx.globalAlpha = 1;
-
-    _rgmNodes.push({ idx:k, name:info.name, x:pos.x, y:pos.y, r:r, info:info });
+    _rgmNodes.push({ idx:k, name:info.name, x:pos.x, y:pos.y, r:r+6, info:info });
   }
+}
 
+/* ---- 恒星：外层柔光晕 + 明暗渐变核心 + 轻微脉动 ---- */
+function _rgmDrawStar(ctx, pos, r, color, isSelected){
+  var pulse = 0.7; // 呼吸幅度过于夸张，固定在原振荡区间(0.7~1.0)的最小状态，不再随时间跳动
+  var glowR = r * (2.2 + 0.3*pulse);
+  var glow = ctx.createRadialGradient(pos.x,pos.y,r*0.3,pos.x,pos.y,glowR);
+  glow.addColorStop(0, color+'55');
+  glow.addColorStop(1, color+'00');
+  ctx.beginPath();
+  ctx.arc(pos.x,pos.y,glowR,0,Math.PI*2);
+  ctx.fillStyle = glow;
+  ctx.fill();
+
+  var core = ctx.createRadialGradient(pos.x-r*0.25,pos.y-r*0.3,0,pos.x,pos.y,r*pulse);
+  core.addColorStop(0,'#fff');
+  core.addColorStop(0.35,color);
+  core.addColorStop(1,_rgmShade(color,-25));
+  ctx.beginPath();
+  ctx.arc(pos.x,pos.y,r*pulse,0,Math.PI*2);
+  ctx.fillStyle = core;
+  ctx.fill();
+  if(isSelected){ ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=2; ctx.stroke(); }
+}
+
+/* ---- 行星：光源立体球体 + 一圈淡淡的行星环 ---- */
+function _rgmDrawPlanet(ctx, pos, r, color, isSelected){
+  ctx.save();
+  ctx.strokeStyle = color+'55';
+  ctx.lineWidth = Math.max(1.4, r*0.12);
+  ctx.beginPath();
+  ctx.ellipse(pos.x, pos.y, r*1.65, r*0.5, -0.35, 0, Math.PI*2);
+  ctx.stroke();
+
+  var grad = ctx.createRadialGradient(pos.x-r*0.32,pos.y-r*0.36,0,pos.x,pos.y,r);
+  grad.addColorStop(0,_rgmShade(color,28));
+  grad.addColorStop(0.6,color);
+  grad.addColorStop(1,_rgmShade(color,-32));
+  ctx.beginPath();
+  ctx.arc(pos.x,pos.y,r,0,Math.PI*2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.18)';
+  ctx.lineWidth = isSelected?2:1;
+  ctx.stroke();
   ctx.restore();
-  document.getElementById('rgmZoomInfo').textContent = Math.round(_rgmScale*100) + '%';
-  rgmRenderLegend(names);
+}
+
+/* ---- 矮行星：更小的平滑球体，不带环，配色偏苍白/冷淡 ---- */
+function _rgmDrawDwarf(ctx, pos, r, color, isSelected){
+  var grad = ctx.createRadialGradient(pos.x-r*0.3,pos.y-r*0.34,0,pos.x,pos.y,r);
+  grad.addColorStop(0,_rgmShade(color,22));
+  grad.addColorStop(0.65,color);
+  grad.addColorStop(1,_rgmShade(color,-28));
+  ctx.beginPath();
+  ctx.arc(pos.x,pos.y,r,0,Math.PI*2);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.22)';
+  ctx.lineWidth = isSelected?2:1;
+  ctx.stroke();
+}
+
+/* ---- 小行星：不规则凹凸多边形，同一角色每次形状保持一致 ---- */
+function _rgmDrawAsteroid(ctx, pos, r, color, isSelected, seedName){
+  var h = _rgmHash(seedName||'ast');
+  var pts = 8;
+  ctx.beginPath();
+  for(var i=0;i<pts;i++){
+    var a = (Math.PI*2*i/pts);
+    var bump = 0.72 + ((h >> (i*2)) % 10)/10 * 0.5;
+    var px = pos.x + Math.cos(a)*r*bump;
+    var py = pos.y + Math.sin(a)*r*bump;
+    if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.closePath();
+  var grad = ctx.createRadialGradient(pos.x-r*0.25,pos.y-r*0.3,0,pos.x,pos.y,r*1.1);
+  grad.addColorStop(0,_rgmShade(color,20));
+  grad.addColorStop(1,_rgmShade(color,-30));
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.25)';
+  ctx.lineWidth = isSelected?2:1;
+  ctx.stroke();
 }
 
 function rgmRenderLegend(names){
   var el = document.getElementById('rgmLegend');
   if(!el) return;
   var html = '<div class="rgm-legend-types">';
-  html += '<span><span class="rgm-dot" style="background:#9b8ff5"></span>核心</span>';
-  html += '<span><span class="rgm-dot" style="background:#5dade2"></span>普通</span>';
-  html += '<span><span class="rgm-dot" style="background:#2ecc71"></span>NPC</span>';
-  var usedTypes = {};
-  (charRelations||[]).forEach(function(r){
-    if(r.type && !usedTypes[r.type]){
-      usedTypes[r.type] = ({'恋人':'#ff6b6b','暗恋':'#ff9ff3','朋友':'#51cf66','青梅竹马':'#2ecc71','敌对':'#e67e22','宿敌':'#d35400','亲属':'#a29bfe','师徒':'#f1c40f','主仆':'#f1c40f','同事':'#3498db'})[r.type]||'#9090a8';
-    }
-  });
-  for(var t in usedTypes){
-    html += '<span style="color:'+usedTypes[t]+'"><span style="margin-right:2px">—</span>'+t+'</span>';
-  }
+  html += '<span><span class="rgm-dot" style="background:'+RGM_COLORS.star+'"></span>恒星·核心</span>';
+  html += '<span><span class="rgm-dot" style="background:'+RGM_COLORS.planet+'"></span>行星·普通</span>';
+  html += '<span><span class="rgm-dot" style="background:'+RGM_COLORS.asteroid+'"></span>小行星·参考</span>';
+  html += '<span><span class="rgm-dot" style="background:'+RGM_COLORS.dwarf+'"></span>矮行星·NPC</span>';
   html += '</div>';
   html += '<div class="rgm-filter-bar">';
   html += '<span class="rgm-filter-btn'+(!_rgmFilter?' act':'')+'" onclick="rgmSetFilter(\'\')">全部</span>';
@@ -41670,103 +42886,107 @@ function rgmRenderLegend(names){
 function rgmSetFilter(name){
   _rgmFilter = name;
   rgmDraw();
+  rgmRenderLegend(_rgmActiveNames);
 }
-
 function rgmZoomIn(){
-  _rgmScale = Math.min(5, _rgmScale * 1.3);
+  _rgmScale = Math.min(5, _rgmScale*1.3);
   rgmDraw();
 }
-
 function rgmZoomOut(){
-  _rgmScale = Math.max(0.2, _rgmScale / 1.3);
+  _rgmScale = Math.max(0.2, _rgmScale/1.3);
   rgmDraw();
 }
-
 function rgmResetView(){
+  // 只重置观察镜头（缩放/位移/视角），不再清空星球位置——那是用户手动摆好并已自动保存的布局
   _rgmScale = 1;
   _rgmOffX = 0;
   _rgmOffY = 0;
+  _rgmViewAngle = 0;
   _rgmFilter = '';
-  _rgmNodePositions = {};
   rgmDraw();
+  rgmRenderLegend(_rgmActiveNames);
   showToast('视图已重置');
 }
 
 function rgmBindGestures(){
+  if(_rgmGesturesBound) return; // 避免每次打开都重复绑定监听器，导致拖动手感变差、事件重复触发
+  _rgmGesturesBound = true;
+
   var wrap = document.getElementById('rgmCanvasWrap');
   var canvas = document.getElementById('rgmCanvas');
   if(!wrap || !canvas) return;
 
-  var isDrag = false, moved = false;
-  var startX = 0, startY = 0;
-  var startOffX = 0, startOffY = 0;
-  var pinching = false, pinchStartDist = 0, pinchStartScale = 1;
-  var dragNode = null; // 正在拖动的节点
+  var isDrag=false, moved=false;
+  var startX=0, startY=0;
+  var startOffY=0, startAngle=0;
+  var pinching=false, pinchStartDist=0, pinchStartScale=1;
+  var dragNode=null;
 
   function _toWorld(clientX, clientY){
     var rect = canvas.getBoundingClientRect();
-    return {
-      x: (clientX - rect.left - _rgmOffX) / _rgmScale,
-      y: (clientY - rect.top  - _rgmOffY) / _rgmScale
-    };
+    return { x: (clientX-rect.left-_rgmOffX)/_rgmScale, y: (clientY-rect.top-_rgmOffY)/_rgmScale };
   }
-
   function _hitNode(wx, wy){
-    var hit = null;
+    var hit=null;
     (_rgmNodes||[]).forEach(function(nd){
-      if(Math.sqrt((wx-nd.x)*(wx-nd.x)+(wy-nd.y)*(wy-nd.y)) <= nd.r+10) hit = nd;
+      if(Math.sqrt((wx-nd.x)*(wx-nd.x)+(wy-nd.y)*(wy-nd.y)) <= nd.r+8) hit=nd;
     });
     return hit;
   }
+  function _setNodeFromWorld(node, wx, wy){
+    var meta = _rgmNodeMeta[node.name];
+    if(!meta) return;
+    meta.x = wx - _rgmViewAngle*(meta.z||0)*46;
+    meta.y = wy;
+    node.x = wx; node.y = wy;
+  }
 
   wrap.addEventListener('touchstart', function(e){
-    if(e.touches.length === 2){
-      pinching = true; isDrag = false; dragNode = null;
-      var dx = e.touches[0].clientX-e.touches[1].clientX;
-      var dy = e.touches[0].clientY-e.touches[1].clientY;
-      pinchStartDist = Math.sqrt(dx*dx+dy*dy);
-      pinchStartScale = _rgmScale;
+    if(e.touches.length===2){
+      pinching=true; isDrag=false; dragNode=null;
+      var dx=e.touches[0].clientX-e.touches[1].clientX;
+      var dy=e.touches[0].clientY-e.touches[1].clientY;
+      pinchStartDist=Math.sqrt(dx*dx+dy*dy);
+      pinchStartScale=_rgmScale;
       return;
     }
-    if(e.touches.length === 1){
-      moved = false; dragNode = null;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      startOffX = _rgmOffX; startOffY = _rgmOffY;
-      var w = _toWorld(startX, startY);
-      dragNode = _hitNode(w.x, w.y); // 落在节点上就准备节点拖动
-      isDrag = true;
+    if(e.touches.length===1){
+      moved=false; dragNode=null;
+      startX=e.touches[0].clientX; startY=e.touches[0].clientY;
+      startOffY=_rgmOffY; startAngle=_rgmViewAngle;
+      var w=_toWorld(startX,startY);
+      dragNode=_hitNode(w.x,w.y);
+      isDrag=true;
     }
   }, {passive:true});
 
   wrap.addEventListener('touchmove', function(e){
     if(pinching && e.touches.length===2){
       e.preventDefault();
-      var dx = e.touches[0].clientX-e.touches[1].clientX;
-      var dy = e.touches[0].clientY-e.touches[1].clientY;
-      _rgmScale = Math.max(0.2, Math.min(5, pinchStartScale*(Math.sqrt(dx*dx+dy*dy)/pinchStartDist)));
-      rgmDraw(); return;
+      var dx=e.touches[0].clientX-e.touches[1].clientX;
+      var dy=e.touches[0].clientY-e.touches[1].clientY;
+      _rgmScale=Math.max(0.2,Math.min(5,pinchStartScale*(Math.sqrt(dx*dx+dy*dy)/pinchStartDist)));
+      return;
     }
     if(isDrag && e.touches.length===1){
-      var dx2 = e.touches[0].clientX-startX;
-      var dy2 = e.touches[0].clientY-startY;
-      if(Math.abs(dx2)>4||Math.abs(dy2)>4) moved = true;
+      var dx2=e.touches[0].clientX-startX;
+      var dy2=e.touches[0].clientY-startY;
+      if(Math.abs(dx2)>4||Math.abs(dy2)>4) moved=true;
       if(!moved) return;
+      e.preventDefault();
       if(dragNode){
-        e.preventDefault();
-        var w = _toWorld(e.touches[0].clientX, e.touches[0].clientY);
-        _rgmNodePositions[dragNode.name] = {x:w.x, y:w.y};
-        dragNode.x = w.x; dragNode.y = w.y;
-        rgmDraw();
+        var w=_toWorld(e.touches[0].clientX,e.touches[0].clientY);
+        _setNodeFromWorld(dragNode,w.x,w.y);
       } else {
-        _rgmOffX = startOffX+dx2; _rgmOffY = startOffY+dy2;
-        rgmDraw();
+        _rgmOffY = startOffY + dy2;
+        _rgmViewAngle = Math.max(-1, Math.min(1, startAngle + dx2/Math.max(_rgmCanvasW,240)*2.4));
       }
     }
   }, {passive:false});
 
   wrap.addEventListener('touchend', function(){
     if(pinching){ pinching=false; return; }
+    if(isDrag && dragNode && moved){ _rgmSaveMeta(); }
     if(isDrag && !moved && dragNode) showRelGraphCharCard(dragNode);
     isDrag=false; moved=false; dragNode=null;
   }, {passive:true});
@@ -41778,20 +42998,17 @@ function rgmBindGestures(){
   wrap.addEventListener('wheel', function(e){
     e.preventDefault();
     _rgmScale = e.deltaY<0 ? Math.min(5,_rgmScale*1.1) : Math.max(0.2,_rgmScale/1.1);
-    rgmDraw();
   }, {passive:false});
 
   var mDown=false, mMoved=false, mDragNode=null;
-  var mSX=0, mSY=0, mSOX=0, mSOY=0;
+  var mSX=0, mSY=0, mSOY=0, mSAngle=0;
 
   wrap.addEventListener('mousedown', function(e){
     mDown=true; mMoved=false;
     mSX=e.clientX; mSY=e.clientY;
-    mSOX=_rgmOffX; mSOY=_rgmOffY;
-    var rect=canvas.getBoundingClientRect();
-    var wx=(e.clientX-rect.left-_rgmOffX)/_rgmScale;
-    var wy=(e.clientY-rect.top -_rgmOffY)/_rgmScale;
-    mDragNode=_hitNode(wx,wy);
+    mSOY=_rgmOffY; mSAngle=_rgmViewAngle;
+    var w=_toWorld(e.clientX,e.clientY);
+    mDragNode=_hitNode(w.x,w.y);
     wrap.style.cursor = mDragNode?'grab':'grabbing';
   });
 
@@ -41801,27 +43018,22 @@ function rgmBindGestures(){
     if(Math.abs(dx)>3||Math.abs(dy)>3) mMoved=true;
     if(!mMoved) return;
     if(mDragNode){
-      var rect=canvas.getBoundingClientRect();
-      var wx=(e.clientX-rect.left-_rgmOffX)/_rgmScale;
-      var wy=(e.clientY-rect.top -_rgmOffY)/_rgmScale;
-      _rgmNodePositions[mDragNode.name]={x:wx,y:wy};
-      mDragNode.x=wx; mDragNode.y=wy;
+      var w=_toWorld(e.clientX,e.clientY);
+      _setNodeFromWorld(mDragNode,w.x,w.y);
       wrap.style.cursor='grabbing';
-      rgmDraw();
     } else {
-      _rgmOffX=mSOX+dx; _rgmOffY=mSOY+dy;
-      rgmDraw();
+      _rgmOffY = mSOY+dy;
+      _rgmViewAngle = Math.max(-1, Math.min(1, mSAngle + dx/Math.max(_rgmCanvasW,240)*2.4));
     }
   });
 
   wrap.addEventListener('mouseup', function(e){
     if(mDown && !mMoved){
-      var rect=canvas.getBoundingClientRect();
-      var wx=(e.clientX-rect.left-_rgmOffX)/_rgmScale;
-      var wy=(e.clientY-rect.top -_rgmOffY)/_rgmScale;
-      var hit=_hitNode(wx,wy);
+      var w=_toWorld(e.clientX,e.clientY);
+      var hit=_hitNode(w.x,w.y);
       if(hit) showRelGraphCharCard(hit);
     }
+    if(mDown && mMoved && mDragNode){ _rgmSaveMeta(); }
     mDown=false; mDragNode=null; wrap.style.cursor='';
   });
 
@@ -41832,18 +43044,26 @@ function rgmBindGestures(){
 
 function drawRelGraph(){
   if(document.getElementById('relGraphModal').classList.contains('show')){
+    rgmInitCanvas();
+    _rgmActiveNames = _rgmSyncGraphData();
     rgmDraw();
+    rgmRenderLegend(_rgmActiveNames);
   }
 }
 
 function showRelGraphCharCard(node){
   var info = node.info;
   var name = info.name;
+  var meta = _rgmNodeMeta[name] || {};
+  var bt = meta.bodyType || _rgmBodyType(info);
+  var color = meta.color || '#a29bfe';
+  var bodyLabel = ({star:'⭐ 恒星 · 核心角色', planet:'🪐 行星 · 普通角色', asteroid:'☄️ 小行星 · 参考角色', dwarf:'🌑 矮行星 · NPC'})[bt] || '行星';
+
   var html = '';
   html += '<div style="text-align:center;margin-bottom:12px">';
-  html += '<div style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:'+(info.priority==='核心'?'#6c5ce7':info.type==='npc'?'#27ae60':'#3498db')+';align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700">'+esc(name.substring(0,1))+'</div>';
+  html += '<div style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:'+color+';align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;box-shadow:0 0 18px '+color+'88">'+esc(name.substring(0,1))+'</div>';
   html += '<div style="font-size:16px;font-weight:700;margin-top:8px">'+esc(name)+'</div>';
-  var typeLabel = info.type==='npc' ? 'NPC · '+(info.role||'') : (info.priority||'普通')+'角色';
+  var typeLabel = bodyLabel + (info.type==='npc' && info.role ? (' · '+esc(info.role)) : '');
   html += '<div style="font-size:11px;color:var(--text2)">'+typeLabel+'</div>';
   html += '</div>';
 
@@ -41868,7 +43088,7 @@ function showRelGraphCharCard(node){
     rels.forEach(function(r){
       var other = r.charA===name ? r.charB : r.charA;
       var dir = r.direction==='A→B' ? (r.charA===name?'→':'←') : r.direction==='B→A' ? (r.charB===name?'→':'←') : '↔';
-      var relColor = ({'恋人':'#ff6b6b','暗恋':'#ff9ff3','朋友':'#51cf66','青梅竹马':'#2ecc71','敌对':'#e67e22','宿敌':'#d35400','亲属':'#a29bfe','师徒':'#f1c40f','主仆':'#f1c40f','同事':'#3498db'})[r.type]||'var(--text2)';
+      var relColor = RGM_REL_COLORS[r.type] || 'var(--text2)';
       html += '<div style="padding:6px 8px;background:var(--bg);border-radius:6px;margin-bottom:4px;font-size:11px;display:flex;align-items:center;gap:6px">';
       html += '<span style="color:'+relColor+';font-weight:600">'+esc(r.type||'')+'</span>';
       html += '<span>'+dir+'</span>';
@@ -45032,6 +46252,7 @@ setTimeout(function(){
         case 'fanwaiOv': closeFanwai(); break;
         case 'rewriteOv': closeRewriteOv(); break;
         case 'expandOv': closeExpandOv(); break;
+        case 'fmtRuleOv': closeFmtRuleOv(); break;
         case 'versionOv': closeVersionList(); break;
         case 'importTxtOv': closeImportTxt(); break;
         case 'wizardOv': closeWizard(); break;
@@ -45047,6 +46268,7 @@ setTimeout(function(){
         case 'chOv': closeChapterList(); break;
         case 'edChOv': closeEdChList(); break;
         case 'chOutlineOv': closeChOutline(); break;
+        case 'chOutlineSortPickerOv': closeChOutlineSortPicker(); break;
         case 'presetModalOv': closePresetModal(); break;
         case 'wheelEditOv': closeWheelEdit(); break;
         case 'presetOptOv': closePresetOpt(); break;
@@ -45768,40 +46990,11 @@ if('serviceWorker' in navigator){
 </script>
 <script>
 (function(){
-  function addDrag(ta,h){
-    var startY,startH,dragging=false,moved=false;
-    h.style.userSelect='none';
-    h.style.webkitUserSelect='none';
-    h.style.touchAction='none';
-    h.addEventListener('contextmenu',function(e){e.preventDefault();});
-    function onStart(e){
-      startY=(e.touches?e.touches[0]:e).clientY;
-      startH=ta.offsetHeight;
-      dragging=true;moved=false;
-      document.addEventListener('mousemove',onMove);
-      document.addEventListener('touchmove',onMove,{passive:false});
-      document.addEventListener('mouseup',onEnd);
-      document.addEventListener('touchend',onEnd);
-    }
-    function onMove(e){
-      if(!dragging)return;
-      var dy=(e.touches?e.touches[0]:e).clientY-startY;
-      if(!moved&&Math.abs(dy)<6)return;
-      moved=true;
-      e.preventDefault();
-      var nh=Math.max(60,startH+dy);
-      ta.style.height=nh+'px';
-    }
-    function onEnd(){
-      dragging=false;
-      document.removeEventListener('mousemove',onMove);
-      document.removeEventListener('touchmove',onMove);
-      document.removeEventListener('mouseup',onEnd);
-      document.removeEventListener('touchend',onEnd);
-    }
-    h.addEventListener('mousedown',onStart);
-    h.addEventListener('touchstart',onStart,{passive:true});
-  }
+  // 拖拽逻辑本身不再在这里重复实现——文件末尾的 _initTxResize() 是挂在 document 上的全局
+  // pointerdown 委托，会匹配页面里任意一个 .tx-resize-handle（不管是这里生成的，还是章节大纲
+  // 那种手写HTML里直接带出来的），这里再单独绑一套 mousedown/touchstart 拖拽会导致同一个手柄
+  // 被两套逻辑同时响应（此前是这样，属于重复实现，予以移除）。这个函数只负责把 .fta 输入框
+  // 包一层 .tx-wrap 并补上手柄元素，实际拖拽统一交给 _initTxResize。
   function wrapTextareas(){
     document.querySelectorAll('textarea.fta').forEach(function(ta){
       if(ta.parentNode.classList.contains('tx-wrap'))return;
@@ -45815,7 +47008,6 @@ if('serviceWorker' in navigator){
       h.style.pointerEvents='auto';
       h.style.cursor='ns-resize';
       w.appendChild(h);
-      addDrag(ta,h);
     });
   }
   if(document.readyState==='loading'){
@@ -47581,12 +48773,109 @@ function _initEdScrollBtns(){
     document.addEventListener('pointerup', onUp);
   }, {passive:false});
 })();
+// ==================== 编辑器自定义滚动条 ====================
+// 原生 #edTextarea::-webkit-scrollbar 已经在 CSS 里隐藏了（隐藏后不影响正常的手指滑动/
+// 滚轮滚动），这里用 #edCustomScrollbar（轨道）+ #edCustomScrollbarThumb（滑块）这两个
+// 绝对定位的 div 自己画一条滚动条——好处是轨道离右边缘的距离完全由 CSS 的 right 值决定
+// （见样式表里 .ed-custom-scrollbar 的注释），和 .ed-textarea 的宽度/padding 完全无关，
+// 不会影响文字排版。
+var _edCsbDragging = false;
+function _edSyncCustomScrollbar(){
+  var ta = document.getElementById('edTextarea');
+  var track = document.getElementById('edCustomScrollbar');
+  var thumb = document.getElementById('edCustomScrollbarThumb');
+  if(!ta || !track || !thumb) return;
+  var scrollH = ta.scrollHeight;
+  var clientH = ta.clientHeight;
+  if(scrollH <= clientH + 1){
+    // 内容没有溢出（一屏放得下），不需要显示滚动条，和原生滚动条的表现一致
+    track.classList.remove('show');
+    return;
+  }
+  track.classList.add('show');
+  var trackH = track.clientHeight;
+  if(trackH <= 0) return;
+  var minThumbH = 44;
+  var thumbH = Math.min(trackH, Math.max(minThumbH, trackH * (clientH / scrollH)));
+  var maxThumbTravel = trackH - thumbH;
+  var maxScrollTop = scrollH - clientH;
+  var scrollRatio = maxScrollTop > 0 ? (ta.scrollTop / maxScrollTop) : 0;
+  thumb.style.height = thumbH + 'px';
+  thumb.style.top = (maxThumbTravel * scrollRatio) + 'px';
+}
+function _initEdCustomScrollbar(){
+  var ta = document.getElementById('edTextarea');
+  var track = document.getElementById('edCustomScrollbar');
+  var thumb = document.getElementById('edCustomScrollbarThumb');
+  if(!ta || !track || !thumb) return;
+
+  ta.addEventListener('scroll', function(){
+    if(!_edCsbDragging) _edSyncCustomScrollbar();
+  }, {passive:true});
+
+  window.addEventListener('resize', function(){
+    _edSyncCustomScrollbar();
+  });
+
+  // 拖动滑块——pointer 事件统一处理鼠标和触摸两种输入
+  thumb.addEventListener('pointerdown', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    _edCsbDragging = true;
+    thumb.classList.add('dragging');
+    var startY = e.clientY;
+    var trackH = track.clientHeight;
+    var thumbH = thumb.offsetHeight;
+    var startScrollTop = ta.scrollTop;
+    var maxScrollTop = ta.scrollHeight - ta.clientHeight;
+    var maxThumbTravel = trackH - thumbH;
+    var pid = e.pointerId;
+    try{thumb.setPointerCapture(pid);}catch(err){}
+
+    function onMove(ev){
+      if(maxThumbTravel <= 0) return;
+      var dy = ev.clientY - startY;
+      var scrollDelta = (dy / maxThumbTravel) * maxScrollTop;
+      ta.scrollTop = Math.max(0, Math.min(maxScrollTop, startScrollTop + scrollDelta));
+      _edSyncCustomScrollbar();
+    }
+    function onUp(){
+      _edCsbDragging = false;
+      thumb.classList.remove('dragging');
+      try{thumb.releasePointerCapture(pid);}catch(err){}
+      thumb.removeEventListener('pointermove', onMove);
+      thumb.removeEventListener('pointerup', onUp);
+      thumb.removeEventListener('pointercancel', onUp);
+    }
+    thumb.addEventListener('pointermove', onMove);
+    thumb.addEventListener('pointerup', onUp);
+    thumb.addEventListener('pointercancel', onUp);
+  }, {passive:false});
+
+  // 点轨道空白处（不是滑块本身）直接跳到对应位置，和大多数原生滚动条点轨道翻页的直觉一致
+  track.addEventListener('pointerdown', function(e){
+    if(e.target === thumb) return;// 点在滑块上交给上面那段处理，这里不重复响应
+    e.preventDefault();
+    var rect = track.getBoundingClientRect();
+    var clickY = e.clientY - rect.top;
+    var thumbH = thumb.offsetHeight;
+    var trackH = track.clientHeight;
+    var maxScrollTop = ta.scrollHeight - ta.clientHeight;
+    var travel = trackH - thumbH;
+    var targetRatio = travel > 0 ? Math.max(0, Math.min(1, (clickY - thumbH / 2) / travel)) : 0;
+    ta.scrollTop = targetRatio * maxScrollTop;
+    _edSyncCustomScrollbar();
+  }, {passive:false});
+
+  _edSyncCustomScrollbar();
+}
 var _edScrollBtnsInited = false;
 (function _waitForEdTextarea(){
   var ta = document.getElementById('edTextarea');
   if(ta && !_edScrollBtnsInited){
     _edScrollBtnsInited = true;
     _initEdScrollBtns();
+    _initEdCustomScrollbar();
   } else if(!_edScrollBtnsInited){
     setTimeout(_waitForEdTextarea, 500);
   }
