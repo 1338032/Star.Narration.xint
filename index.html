@@ -7369,6 +7369,7 @@ body.theme-light .ed-scroll-btn{
 <p>✦ <strong>章节大纲输入框可拖拽扩大</strong>：右下角新增紫色三角手柄，长按下拉即可扩大输入区域</p>
 <p>✦ <strong>滚动条位置优化</strong>：写作页滚动条从贴边改为往里移了一点，手机操作不再压着文字</p>
 <p>✦ <strong>创作工具箱新增搜索</strong>：点击放大镜图标即可搜索草稿箱/我的小说，点击结果直接进入</p>
+<p>✦ <strong>续写上下文·章节大纲折叠优化</strong>：章节大纲默认整体折叠（点标题展开列表），每章也可单独折叠只看一行预览；新增按最新/最旧/最近修改排序，输入章节号可快速定位到某一章</p>
 <p style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(108,92,231,.2)"><strong>⚠️ 关于后续更新</strong></p>
 <p>由于个人精力和经济原因，星叙将进入不定期更新阶段。我不会放弃这个项目，但更新频率可能会降低。感谢每一位用户的支持和陪伴，你们的反馈是我继续做下去的最大动力。❤️</p>
 </div>
@@ -7583,6 +7584,7 @@ body.theme-light .ed-scroll-btn{
     <br>· 重要伏笔：从伏笔追踪器导入，提醒AI不要忘  
     <br>· 人物当前状态：输入或让AI根据最近章节分析  
     <br>· 本章方向 / 本章大纲 / 特殊要求：写得越清晰，续写越听话  
+    <br>· 章节大纲（一章一格）：默认整体折叠，点标题旁箭头展开列表；每章也能单独折叠，只显示一行预览，点击再展开编辑；支持按最新/最旧/最近修改排序，输入章节号可快速定位到某一章、其余自动隐藏；输入框右下角紫色三角手柄依然可以长按拖拽扩大  
     <br>· 上一章发送长度 / 是否带上第一章开头：控制上下文多少、风格是否统一  
     <br>· 最后「保存并续写」→ 用这套上下文进行续写
   </li>
@@ -9342,9 +9344,23 @@ body.theme-light .ed-scroll-btn{
 
 <!-- 章节大纲 -->
 <div class="fg">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-  <label class="fl" style="margin:0"><i class="fas fa-list-ol"></i> 章节大纲（一章一格）</label>
-  <button class="btn-s" onclick="addCtxChOutline()" style="margin:0;padding:5px 12px;font-size:11px"><i class="fas fa-plus"></i> 添加章节</button>
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px;">
+  <!-- 大折叠栏：点击展开/收起下方章节列表；默认收起，避免章节很多时一次性渲染出一长串卡片 -->
+  <div id="ctxChMasterBar" class="fl" onclick="toggleCtxChMasterBar()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCtxChMasterBar();}" role="button" tabindex="0" aria-expanded="false" aria-controls="ctxChOutlineList" style="margin:0;flex:1;min-width:0;display:flex;align-items:center;gap:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;">
+    <i class="fas fa-chevron-right" id="ctxChMasterChevron" style="font-size:10px;color:var(--text2);flex-shrink:0;transition:transform .2s;"></i>
+    <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"><i class="fas fa-list-ol"></i> 章节大纲<span id="ctxChMasterCount"></span></span>
+  </div>
+  <button class="btn-s" onclick="addCtxChOutline()" style="margin:0;padding:5px 12px;font-size:11px;width:auto;flex-shrink:0;white-space:nowrap;"><i class="fas fa-plus"></i> 添加章节</button>
+</div>
+<!-- 排序方式 + 章节定位 -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+  <button class="mat-sort-btn" id="ctxChSortBtn" onclick="openCtxChSortPicker()" style="margin:0;flex-shrink:0;">
+    <i class="fas fa-sort-amount-down"></i><span id="ctxChSortLabel">最旧</span><i class="fas fa-chevron-down" style="font-size:9px"></i>
+  </button>
+  <div style="position:relative;flex:1;min-width:0;">
+    <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="6" id="ctxChLocateInput" placeholder="输入章节号定位" oninput="ctxChLocate(this.value)" style="width:100%;box-sizing:border-box;padding:6px 30px 6px 12px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:11px;outline:none;">
+    <button type="button" id="ctxChLocateClear" onclick="ctxChLocateClear()" style="display:none;position:absolute;right:4px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:var(--card2);color:var(--text2);font-size:10px;cursor:pointer;line-height:1;padding:0;align-items:center;justify-content:center;">✕</button>
+  </div>
 </div>
 <div id="ctxChOutlineList"></div>
 </div>
@@ -9474,6 +9490,14 @@ body.theme-light .ed-scroll-btn{
 <div class="cd-footer">
   <button class="cd-secondary-btn" onclick="closeContextEditor()" style="flex:1">取消</button>
   <button class="cd-gen-btn" onclick="saveAndContinue()" style="flex:2"><i class="fas fa-floppy-disk"></i> 保存并续写</button>
+</div>
+</div>
+<!-- 续写上下文-章节大纲排序方式选择 -->
+<div class="res-exp-ov" id="ctxChSortPickerOv" style="z-index:820" onclick="if(event.target===this)closeCtxChSortPicker()">
+<div class="res-exp-box" style="max-width:320px">
+<h3 style="display:flex;align-items:center;gap:8px"><i class="fas fa-sort-amount-down" style="color:var(--accent2)"></i> 排序方式</h3>
+<div style="display:flex;flex-direction:column;gap:8px;margin-top:4px" id="ctxChSortPickerList"></div>
+<button onclick="closeCtxChSortPicker()" style="width:100%;margin-top:16px;padding:12px;border-radius:10px;border:none;background:var(--card2);color:var(--text2);font-size:13px;cursor:pointer;-webkit-tap-highlight-color:transparent">取消</button>
 </div>
 </div>
 <!-- FORESHADOW TRACKER 伏笔追踪器 -->
@@ -35463,53 +35487,249 @@ advCreateAbort=false;
 }
 // ==================== 上下文编辑器 ====================
 // ==================== 全局变量定义区 ====================
-// 渲染章节大纲列表
+// 章节大纲：排序方式 + 章节定位（只影响本面板的浏览/筛选顺序，不改变章节编号和 bookChOutlines 的实际存储顺序）
+var _ctxChSortValue='seq-asc';
+var _ctxChSortOptions=[
+{value:'seq-asc',label:'最旧'},
+{value:'seq-desc',label:'最新'},
+{value:'recent',label:'最近修改'}
+];
+var _ctxChLocateNum=''; // 定位输入框当前值（已做过滤，纯数字字符串，''表示不筛选）
+// 大折叠栏（点击"章节大纲"标题栏展开/收起整个列表）是否展开，默认收起。
+// 注意：这只控制"整个列表要不要渲染"，和每个章节自己的小折叠状态（_ctxChExpanded）是两回事，
+// 展开大折叠栏不会自动展开任何一个章节卡片。
+var _ctxChMasterExpanded=false;
+
+// 渲染章节大纲列表：大折叠栏收起且未在按章节号定位时，不渲染任何章节卡片（只更新标题栏的章节计数），
+// 避免章节很多时一次性生成大量文本框/事件监听器占用性能；展开后按当前排序方式排列每个章节自己的折叠状态不受影响；
+// 章节定位命中时，无论大折叠栏是否展开都会直接显示匹配的章节，方便快速查找
 function renderCtxChOutlines(){
   var list=document.getElementById('ctxChOutlineList');
   if(!list)return;
   var outlines=window._ctxChOutlines||[];
+  if(!window._ctxChOutlineUpdatedAt)window._ctxChOutlineUpdatedAt=[];
+  if(!window._ctxChExpanded)window._ctxChExpanded=[];
+  _updateCtxChMasterCount();
+  var locateActive=(_ctxChLocateNum!=='');
+  if(!_ctxChMasterExpanded&&!locateActive){
+    list.innerHTML='';
+    return;
+  }
   list.innerHTML='';
   if(outlines.length===0){
     list.innerHTML='<div style="font-size:12px;color:var(--text2);text-align:center;padding:16px 0;">暂无章节大纲，点击「添加章节」开始添加</div>';
     return;
   }
-  outlines.forEach(function(text,idx){
-    var item=document.createElement('div');
-    item.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;';
-    var hdr=document.createElement('div');
-    hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;';
-    hdr.innerHTML='<span style="font-size:11px;font-weight:700;color:var(--accent2);">第'+(idx+1)+'章</span>'+
-      '<button onclick="removeCtxChOutline('+idx+')" style="background:none;border:none;padding:2px 4px;cursor:pointer;border-radius:6px;"><i class="fas fa-trash-alt" style="font-size:12px;color:var(--danger);"></i></button>';
-    var ta=document.createElement('textarea');
-    ta.className='fta';
-    ta.setAttribute('data-outline-idx',String(idx));
-    ta.placeholder='第'+(idx+1)+'章大纲...';
-    ta.style.cssText='width:100%;min-height:60px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-size:12px;color:var(--text);line-height:1.7;box-sizing:border-box;font-family:inherit;';
-    ta.value=text||'';
-    ta.addEventListener('input',(function(i){return function(){
-      if(window._ctxChOutlines)window._ctxChOutlines[i]=this.value;
-      if(window.ctxAutoSave)saveContextSettings();
-    };})(idx));
-    item.appendChild(hdr);
-    item.appendChild(ta);
-    list.appendChild(item);
+  var indices=outlines.map(function(_,i){return i;});
+  // 章节定位：_ctxChLocateNum 在 ctxChLocate() 里已经过滤成纯数字字符串，这里只需处理"是否为0/超出范围"
+  // （locateActive 已在函数开头声明，此处直接复用，不重复声明）
+  if(locateActive){
+    var locateNum=parseInt(_ctxChLocateNum,10);
+    indices=(locateNum>0)?indices.filter(function(i){return i===(locateNum-1);}):[];
+  }
+  // 排序（仅决定浏览顺序，章节编号始终按原始索引显示，不会因排序而错位）
+  var sortFns={
+    'seq-asc':function(a,b){return a-b;},
+    'seq-desc':function(a,b){return b-a;},
+    'recent':function(a,b){
+      var ua=window._ctxChOutlineUpdatedAt[a]||0;
+      var ub=window._ctxChOutlineUpdatedAt[b]||0;
+      return ub!==ua?ub-ua:a-b;
+    }
+  };
+  indices.sort(sortFns[_ctxChSortValue]||sortFns['seq-asc']);
+  if(indices.length===0){
+    list.innerHTML='<div style="font-size:12px;color:var(--text2);text-align:center;padding:16px 0;">'+(locateActive?'未找到第'+esc(_ctxChLocateNum)+'章':'暂无章节大纲，点击「添加章节」开始添加')+'</div>';
+    return;
+  }
+  indices.forEach(function(idx){
+    list.appendChild(_buildCtxChOutlineItem(idx,outlines[idx]||'',locateActive));
   });
+  // 定位命中时自动滚动到该章节并展开，方便"快速找到"
+  if(locateActive&&indices.length===1){
+    var hit=list.querySelector('[data-ch-idx="'+indices[0]+'"]');
+    if(hit)setTimeout(function(){hit.scrollIntoView({block:'nearest',behavior:'smooth'});},50);
+  }
+}
+
+// 切换大折叠栏展开/收起状态（点击"章节大纲"标题栏触发）
+function toggleCtxChMasterBar(){
+  _ctxChMasterExpanded=!_ctxChMasterExpanded;
+  _syncCtxChMasterBarUI();
+  renderCtxChOutlines();
+}
+
+// 同步大折叠栏的箭头方向和无障碍状态，与实际展开/收起状态保持一致
+function _syncCtxChMasterBarUI(){
+  var chevron=document.getElementById('ctxChMasterChevron');
+  if(chevron)chevron.style.transform='rotate('+(_ctxChMasterExpanded?90:0)+'deg)';
+  var bar=document.getElementById('ctxChMasterBar');
+  if(bar)bar.setAttribute('aria-expanded',_ctxChMasterExpanded?'true':'false');
+}
+
+// 更新标题栏里的章节计数文案，让用户不展开列表也能知道已经有多少章
+function _updateCtxChMasterCount(){
+  var span=document.getElementById('ctxChMasterCount');
+  if(!span)return;
+  var n=(window._ctxChOutlines||[]).length;
+  span.textContent=n>0?('（共'+n+'章）'):'';
+}
+
+// 构建单个章节卡片：折叠时只显示"第N章 + 单行预览"，点击展开后才渲染可编辑大纲
+function _buildCtxChOutlineItem(idx,text,forceExpand){
+  var expanded=forceExpand||!!window._ctxChExpanded[idx];
+  var item=document.createElement('div');
+  item.setAttribute('data-ch-idx',String(idx));
+  item.style.cssText='background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px;';
+  var hdr=document.createElement('div');
+  hdr.style.cssText='display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;';
+  hdr.onclick=function(){toggleCtxChOutlineItem(idx);};
+  var preview=(text||'').replace(/\s+/g,' ').trim().substring(0,26);
+  hdr.innerHTML='<i class="fas fa-chevron-right" id="ctxChChevron'+idx+'" style="font-size:10px;color:var(--text2);flex-shrink:0;transition:transform .2s;transform:rotate('+(expanded?90:0)+'deg);"></i>'+
+    '<span style="font-size:11px;font-weight:700;color:var(--accent2);flex-shrink:0;">第'+(idx+1)+'章</span>'+
+    '<span id="ctxChPreview'+idx+'" style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--text2);'+(expanded?'display:none;':'')+'">'+(preview?esc(preview)+(text.length>26?'…':''):'未填写')+'</span>';
+  var delBtn=document.createElement('button');
+  delBtn.type='button';
+  delBtn.style.cssText='background:none;border:none;padding:2px 4px;cursor:pointer;border-radius:6px;flex-shrink:0;';
+  delBtn.innerHTML='<i class="fas fa-trash-alt" style="font-size:12px;color:var(--danger);"></i>';
+  delBtn.onclick=function(e){e.stopPropagation();removeCtxChOutline(idx);};
+  hdr.appendChild(delBtn);
+  var body=document.createElement('div');
+  body.id='ctxChBody'+idx;
+  body.style.cssText='margin-top:8px;'+(expanded?'':'display:none;');
+  var scrollWrap=document.createElement('div');
+  // 展开后最大高度约等于一屏手机高度，超出部分在卡片内部正常滚动，不会把整页无限撑长
+  scrollWrap.style.cssText='max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;';
+  var ta=document.createElement('textarea');
+  ta.className='fta';
+  ta.setAttribute('data-outline-idx',String(idx));
+  ta.placeholder='第'+(idx+1)+'章大纲...';
+  ta.style.cssText='width:100%;min-height:60px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-size:12px;color:var(--text);line-height:1.7;box-sizing:border-box;font-family:inherit;';
+  ta.value=text||'';
+  ta.addEventListener('input',(function(i){return function(){
+    if(!window._ctxChOutlines)return;
+    window._ctxChOutlines[i]=this.value;
+    if(!window._ctxChOutlineUpdatedAt)window._ctxChOutlineUpdatedAt=[];
+    window._ctxChOutlineUpdatedAt[i]=Date.now();
+    var pv=document.getElementById('ctxChPreview'+i);
+    if(pv){
+      var p=(this.value||'').replace(/\s+/g,' ').trim().substring(0,26);
+      pv.textContent=p?p+(this.value.length>26?'…':''):'未填写';
+    }
+    if(window.ctxAutoSave)saveContextSettings();
+  };})(idx));
+  scrollWrap.appendChild(ta);
+  body.appendChild(scrollWrap);
+  item.appendChild(hdr);
+  item.appendChild(body);
+  return item;
+}
+
+// 展开/折叠某一章节卡片
+function toggleCtxChOutlineItem(idx){
+  var body=document.getElementById('ctxChBody'+idx);
+  var chevron=document.getElementById('ctxChChevron'+idx);
+  var preview=document.getElementById('ctxChPreview'+idx);
+  if(!body)return;
+  if(!window._ctxChExpanded)window._ctxChExpanded=[];
+  var expanded=body.style.display!=='none';
+  if(expanded){
+    body.style.display='none';
+    if(chevron)chevron.style.transform='rotate(0deg)';
+    if(preview)preview.style.display='';
+    window._ctxChExpanded[idx]=false;
+  }else{
+    body.style.display='block';
+    if(chevron)chevron.style.transform='rotate(90deg)';
+    if(preview)preview.style.display='none';
+    window._ctxChExpanded[idx]=true;
+  }
 }
 
 function addCtxChOutline(){
   if(!window._ctxChOutlines)window._ctxChOutlines=[];
+  if(!window._ctxChOutlineUpdatedAt)window._ctxChOutlineUpdatedAt=[];
+  if(!window._ctxChExpanded)window._ctxChExpanded=[];
+  // 新增章节前先清除章节定位筛选：否则如果之前筛选的章节号和新章节编号不一致，
+  // 新章节会被"隐藏"，用户会误以为添加失败
+  if(_ctxChLocateNum!==''){
+    _ctxChLocateNum='';
+    var _locInp=document.getElementById('ctxChLocateInput');
+    if(_locInp)_locInp.value='';
+    var _locClr=document.getElementById('ctxChLocateClear');
+    if(_locClr)_locClr.style.display='none';
+  }
+  var newIdx=window._ctxChOutlines.length;
   window._ctxChOutlines.push('');
+  window._ctxChOutlineUpdatedAt.push(Date.now());
+  window._ctxChExpanded.push(true); // 新章节预先标记为展开：大折叠栏收起时不会立即渲染它，但之后一旦展开列表就能直接看到并编辑，不用再多点一次
   renderCtxChOutlines();
-  var list=document.getElementById('ctxChOutlineList');
-  if(list)setTimeout(function(){list.lastElementChild&&list.lastElementChild.scrollIntoView({block:'end',behavior:'smooth'});},100);
+  if(_ctxChMasterExpanded){
+    // 大折叠栏已展开：沿用原有体验，滚动定位到新章节方便立即填写
+    var target=document.querySelector('#ctxChOutlineList [data-ch-idx="'+newIdx+'"]');
+    if(target)setTimeout(function(){target.scrollIntoView({block:'nearest',behavior:'smooth'});},100);
+  }else{
+    // 大折叠栏收起：不强制展开、不渲染其他章节（避免章节多时的性能开销），用toast明确告知已添加成功
+    showToast('已添加第'+(newIdx+1)+'章，展开列表或定位章节编辑',2200);
+  }
   if(window.ctxAutoSave)saveContextSettings();
 }
 
 function removeCtxChOutline(idx){
   if(!window._ctxChOutlines)return;
   window._ctxChOutlines.splice(idx,1);
+  if(window._ctxChOutlineUpdatedAt)window._ctxChOutlineUpdatedAt.splice(idx,1);
+  if(window._ctxChExpanded)window._ctxChExpanded.splice(idx,1);
   renderCtxChOutlines();
   if(window.ctxAutoSave)saveContextSettings();
+}
+
+// ---- 排序方式选择弹窗 ----
+function openCtxChSortPicker(){
+  var listEl=document.getElementById('ctxChSortPickerList');
+  if(!listEl)return;
+  var html='';
+  _ctxChSortOptions.forEach(function(o){
+    var sel=o.value===_ctxChSortValue;
+    html+='<button class="col-fp-item'+(sel?' selected':'')+'" onclick="pickCtxChSort(\''+o.value+'\')">'+
+      '<span>'+o.label+'</span>'+(sel?'<i class="fas fa-check fp-check"></i>':'')+
+      '</button>';
+  });
+  listEl.innerHTML=html;
+  var ov=document.getElementById('ctxChSortPickerOv');
+  if(!ov)return;
+  ov.classList.add('show');
+  navPush('ctxChSortPickerOv');
+}
+function pickCtxChSort(value){
+  closeCtxChSortPicker();
+  _ctxChSortValue=value;
+  var opt=_ctxChSortOptions.find(function(o){return o.value===value;});
+  var lbl=document.getElementById('ctxChSortLabel');
+  if(lbl&&opt)lbl.textContent=opt.label;
+  renderCtxChOutlines();
+}
+function closeCtxChSortPicker(){
+  navPop('ctxChSortPickerOv');
+  var ov=document.getElementById('ctxChSortPickerOv');
+  if(ov)ov.classList.remove('show');
+}
+
+// ---- 章节定位：输入章节号，只显示该章节，其余隐藏 ----
+function ctxChLocate(val){
+  // 校验：只保留数字字符，过滤掉字母/符号等非法输入，并把清洗后的值同步回输入框
+  var clean=String(val==null?'':val).replace(/[^\d]/g,'');
+  var inp=document.getElementById('ctxChLocateInput');
+  if(inp&&inp.value!==clean)inp.value=clean;
+  _ctxChLocateNum=clean;
+  var clearBtn=document.getElementById('ctxChLocateClear');
+  if(clearBtn)clearBtn.style.display=clean?'flex':'none';
+  renderCtxChOutlines();
+}
+function ctxChLocateClear(){
+  var inp=document.getElementById('ctxChLocateInput');
+  if(inp)inp.value='';
+  ctxChLocate('');
 }
 function openContextEditor(){
 if(!curRd||curRd.type!=='long'){showToast('请先打开一篇长篇文章');return;}
@@ -35532,13 +35752,28 @@ if(!document.getElementById('ctxCoreTheme').value){
 }
 // 章节大纲（结构化）
 window._ctxChOutlines=(ctx.bookChOutlines&&ctx.bookChOutlines.length>0)?ctx.bookChOutlines.slice():[];
+window._ctxChOutlineUpdatedAt=(ctx.chOutlineUpdatedAt&&ctx.chOutlineUpdatedAt.length===window._ctxChOutlines.length)?ctx.chOutlineUpdatedAt.slice():window._ctxChOutlines.map(function(){return 0;});
 if(window._ctxChOutlines.length===0){
   var _autoFilled=false;
   if(curRd.chOutlines&&curRd.chOutlines.length>0){window._ctxChOutlines=curRd.chOutlines.slice();_autoFilled=true;}
   if(!_autoFilled){var _cb=cols.books.find(function(b){return b.id===curRd.id;});if(_cb&&_cb.chOutlines&&_cb.chOutlines.length>0){window._ctxChOutlines=_cb.chOutlines.slice();_autoFilled=true;}}
   if(!_autoFilled){var _cw=crWorks.find(function(w){return w.id===curRd.id;});if(_cw&&_cw.chOutlines&&_cw.chOutlines.length>0){window._ctxChOutlines=_cw.chOutlines.slice();_autoFilled=true;}}
-  if(_autoFilled)showToast('📋 已自动填入章节大纲',2500);
+  if(_autoFilled){showToast('📋 已自动填入章节大纲',2500);window._ctxChOutlineUpdatedAt=window._ctxChOutlines.map(function(){return 0;});}
 }
+// 折叠状态：每次打开面板默认全部折叠，节省空间
+window._ctxChExpanded=window._ctxChOutlines.map(function(){return false;});
+// 大折叠栏：每次打开面板默认收起整个章节列表，避免章节很多时一次性渲染出一长串卡片
+_ctxChMasterExpanded=false;
+_syncCtxChMasterBarUI();
+// 排序方式 & 章节定位：每次打开面板重置为默认（最旧在前、不筛选），避免带着上次的筛选状态造成"消失的章节"困惑
+_ctxChSortValue='seq-asc';
+_ctxChLocateNum='';
+var _ctxChSortLbl=document.getElementById('ctxChSortLabel');
+if(_ctxChSortLbl)_ctxChSortLbl.textContent='最旧';
+var _ctxChLocInp=document.getElementById('ctxChLocateInput');
+if(_ctxChLocInp)_ctxChLocInp.value='';
+var _ctxChLocClr=document.getElementById('ctxChLocateClear');
+if(_ctxChLocClr)_ctxChLocClr.style.display='none';
 renderCtxChOutlines();
 // 续写上下文字段
 document.getElementById('ctxPrevSummary').value=ctx.prevSummary||'';
@@ -35595,15 +35830,21 @@ document.getElementById(id).value='';
 
 function saveContextSettings(){
 if(!curRd)return;
-// 从DOM同步章节大纲（防止oninput未触发时漏存）
+// 从DOM同步章节大纲（防止oninput未触发时漏存）；值确实变化时才回写修改时间，避免"最近修改"排序被无意义地打乱
 document.querySelectorAll('#ctxChOutlineList textarea[data-outline-idx]').forEach(function(ta){
   var i=parseInt(ta.getAttribute('data-outline-idx'),10);
-  if(!isNaN(i)&&window._ctxChOutlines)window._ctxChOutlines[i]=ta.value;
+  if(isNaN(i)||!window._ctxChOutlines)return;
+  if(window._ctxChOutlines[i]!==ta.value){
+    window._ctxChOutlines[i]=ta.value;
+    if(!window._ctxChOutlineUpdatedAt)window._ctxChOutlineUpdatedAt=[];
+    window._ctxChOutlineUpdatedAt[i]=Date.now();
+  }
 });
 var ctx={
 storySynopsis:document.getElementById('ctxStorySynopsis').value.trim(),
 coreTheme:document.getElementById('ctxCoreTheme').value.trim(),
 bookChOutlines:(window._ctxChOutlines||[]).map(function(s){return(s||'').trim();}),
+chOutlineUpdatedAt:(window._ctxChOutlines||[]).map(function(_,i){return (window._ctxChOutlineUpdatedAt&&window._ctxChOutlineUpdatedAt[i])||0;}),
 prevSummary:document.getElementById('ctxPrevSummary').value.trim(),
 foreshadows:document.getElementById('ctxForeshadows').value.trim(),
 charStates:document.getElementById('ctxCharStates').value.trim(),
@@ -38048,6 +38289,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
   · 💎 精品续写（紫色按钮）：第1步AI生成本章创作规划（用户可查看/取消），第2步按规划正式创作，耗时约为智能续写2倍，适合关键章节
   · 🔍 一致性检测（需在设置→续写质量反馈中开启）：续写完成后自动比对人设/伏笔/已确立事实，发现冲突提示
   · 上下文设置新增「已确立事实」字段：锁定不可逆剧情节点，AI 绝对不违反
+  · 章节大纲支持折叠+排序+定位：默认整体折叠（点标题展开）、每章也单独折叠（点击展开编辑），支持按最新/最旧/最近修改排序，输入章节号可快速定位到对应章节、其余自动隐藏
   · 反重复：续写系统提示词内置段落级反重复铁律；API设置可开启 frequency_penalty / presence_penalty 从模型层面进一步抑制重复（默认关闭，推荐值一键应用）
   · ↩ 撤销上一章
 - 注意：长篇作品必须在收藏页标记为「已完结」状态后才能续写番外。短篇可以直接写番外。
@@ -38111,6 +38353,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 📐 章节大纲输入框可拖拽扩大：右下角新增紫色三角手柄，长按下拉扩大输入区
 📏 滚动条位置优化：写作页滚动条从贴边改为往里移了一点，不压文字
 🔍 创作工具箱搜索：点击放大镜图标可搜索草稿箱/我的小说，点结果直接进入
+📋 续写上下文·章节大纲折叠优化：默认整体折叠（点标题展开）+ 每章单独折叠（默认只显示一行预览），支持最新/最旧/最近修改排序，输入章节号可快速定位、其余章节自动隐藏
 
 （v1.4.5之前保留功能）页面加载动画，切换主页面或打开全屏功能时会短暂显示加载图标；氛围写作已修复多个稳定性问题，现在更可靠了
 注意：星笺皮肤解锁后永久保留，即使清空聊天记录也不会失去已获得的皮肤。只有「清除所有数据」才会重置。白雪天使的50次聊天是累计计数，清空对话不影响已累计的次数。
@@ -41068,6 +41311,7 @@ var updateMsg =
   '<b>✦ 作坊标签筛选</b>：标签按钮现在还能筛选下方已生成的长篇连载/短篇一发作品，选中标签即可只看同类<br>' +
   '<b>✦ 章节大纲输入框可拖拽扩大</b>：右下角新增紫色三角手柄，长按下拉即可扩大输入区域<br>' +
   '<b>✦ 滚动条位置优化</b>：写作页滚动条从贴边改为往里移了一点，手机操作不再压着文字<br>' +
+  '<b>✦ 续写上下文·章节大纲折叠优化</b>：章节大纲默认整体折叠，点标题展开列表，每章也可单独折叠只看一行预览；新增按最新/最旧/最近修改排序，输入章节号可快速定位到某一章<br>' +
   '<b>✦ 创作工具箱新增搜索</b>：点击放大镜图标即可搜索草稿箱/我的小说，按名称或创建时间筛选，点击结果直接进入<br>' +
   '</div>' +
   '</div>' +
@@ -46269,6 +46513,7 @@ setTimeout(function(){
         case 'edChOv': closeEdChList(); break;
         case 'chOutlineOv': closeChOutline(); break;
         case 'chOutlineSortPickerOv': closeChOutlineSortPicker(); break;
+        case 'ctxChSortPickerOv': closeCtxChSortPicker(); break;
         case 'presetModalOv': closePresetModal(); break;
         case 'wheelEditOv': closeWheelEdit(); break;
         case 'presetOptOv': closePresetOpt(); break;
