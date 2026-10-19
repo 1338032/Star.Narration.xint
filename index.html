@@ -27,10 +27,12 @@
 (function(){
   document.documentElement.style.background='#1a1625';
   document.documentElement.style.color='#e0d9f7';
+  var _glassOn=true; // 毛玻璃效果默认开启；只有用户显式关闭（glassUI===false）才不加 glass-ui
   try{
     var _ap=localStorage.getItem('bj_ap');
     if(_ap){
       var _p=JSON.parse(_ap);
+      if(_p&&_p.glassUI===false){ _glassOn=false; }
       var _t=_p&&_p.theme;
       var _isLight=false;
       if(_t==='light'){ _isLight=true; }
@@ -44,6 +46,7 @@
       }
     }
   }catch(e){}
+  if(_glassOn){ document.documentElement.classList.add('glass-ui'); }
 })();
 </script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="b7c19acc-3581-4360-bbd3-d7bd14eb0c42"></script>
@@ -158,18 +161,26 @@
 <!-- 更多菜单抽屉 -->
 <div id="moreMenuPanel" class="more-menu-panel">
   <div class="more-menu-hdr">功能入口</div>
+  <div class="menu-group" role="group" aria-label="工具与记录">
+  <div class="menu-group-label" aria-hidden="true"><span>工具与记录</span></div>
   <button class="menu-item" onclick="closeMoreMenu();openMatModal();"><i class="fas fa-box-open" style="color:var(--accent2)"></i> 素材工坊</button>
-  <button class="menu-item simple-hide" onclick="closeMoreMenu();openWheelPanel();"><i class="fas fa-dice"></i> 故事转盘</button>
-  <button class="menu-item simple-hide" onclick="closeMoreMenu();window.location.href='./html/chuanshu.html';"><i class="fas fa-book-open-reader" style="color:#00cec9"></i> 穿书系统</button>
-  <button class="menu-item simple-hide" onclick="closeMoreMenu();window.location.href='./html/juesemoni.html';"><i class="fas fa-masks-theater" style="color:#fd79a8"></i> 角色模拟</button>
-  <button class="menu-item simple-hide" onclick="closeMoreMenu();window.location.href='./html/xingj-pet.html';"><i class="fas fa-heart" style="color:#e17055"></i> 星笺养成</button>
   <button class="menu-item" onclick="closeMoreMenu();openPhraseModal();"><i class="fas fa-comment-dots"></i> 快捷短语</button>
   <button class="menu-item" onclick="closeMoreMenu();openGlobalSearch();"><i class="fas fa-search"></i> 全局搜索</button>
   <button class="menu-item" onclick="closeMoreMenu();openFavModal();"><i class="fas fa-star"></i> 收藏夹</button>
+  </div>
+  <div class="menu-group simple-hide" role="group" aria-label="灵感与游戏">
+  <div class="menu-group-label" aria-hidden="true"><span>灵感与游戏</span></div>
+  <button class="menu-item" onclick="closeMoreMenu();openWheelPanel();"><i class="fas fa-dice"></i> 故事转盘</button>
+  <button class="menu-item" onclick="closeMoreMenu();window.location.href='./html/chuanshu.html';"><i class="fas fa-book-open-reader" style="color:#00cec9"></i> 穿书系统</button>
+  <button class="menu-item" onclick="closeMoreMenu();window.location.href='./html/juesemoni.html';"><i class="fas fa-masks-theater" style="color:#fd79a8"></i> 角色模拟</button>
+  <button class="menu-item" onclick="closeMoreMenu();window.location.href='./html/xingj-pet.html';"><i class="fas fa-heart" style="color:#e17055"></i> 星笺养成</button>
+  </div>
+  <div class="menu-group" role="group" aria-label="教程与公告">
+  <div class="menu-group-label" aria-hidden="true"><span>教程与公告</span></div>
   <button class="menu-item" onclick="closeMoreMenu();openWizard();"><i class="fas fa-hat-wizard"></i> 快速向导</button>
   <button class="menu-item" onclick="closeMoreMenu();openHandbookUnified();"><i class="fas fa-book"></i> 手册与协议</button>
-  <div style="margin:12px 16px 0;height:1px;background:rgba(108,92,231,.1)"></div>
-<button class="menu-item" onclick="closeMoreMenu();openNoticeBoard();" style="color:var(--accent2)"><i class="fas fa-bullhorn"></i> 公告栏</button>
+  <button class="menu-item" onclick="closeMoreMenu();openNoticeBoard();" style="color:var(--accent2)"><i class="fas fa-bullhorn"></i> 公告栏</button>
+  </div>
 </div>
 
 <!-- 创作工具箱文件夹：第一层，文件夹列表（从左侧滑入的半屏抽屉，"手册目录"风格） -->
@@ -295,22 +306,23 @@
 <span class="col-cnt" id="colCnt">0 篇</span>
 </div>
 </div>
-<div id="batchBar" style="display:none;padding:8px 18px;background:var(--card);border-bottom:1px solid var(--border)">
+<div id="batchBar" class="fold-box" style="padding:8px 18px;background:var(--card);border-bottom:1px solid var(--border)">
 <div style="display:flex;gap:8px;align-items:center;justify-content:space-between">
 <div style="display:flex;gap:6px;align-items:center">
-<button onclick="batchSelectAll()" style="padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font-size:10px;cursor:pointer">全选</button>
-<button onclick="batchDeselectAll()" style="padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer">取消全选</button>
+<button type="button" class="char-icon-btn" aria-label="全选" title="全选" onclick="batchSelectAll()" style="color:var(--text)"><i class="fas fa-check-double"></i></button>
+<button type="button" class="char-icon-btn" aria-label="取消全选" title="取消全选" onclick="batchDeselectAll()"><i class="fas fa-xmark"></i></button>
 <span style="font-size:10px;color:var(--text2)" id="batchCount">已选 0 项</span>
 </div>
 <div style="display:flex;gap:6px">
-<button onclick="batchDelete()" style="padding:5px 12px;border-radius:8px;border:1px solid rgba(255,107,107,.3);background:transparent;color:var(--danger);font-size:10px;cursor:pointer"><i class="fas fa-trash"></i> 删除</button>
-<button onclick="batchExportMenu()" style="padding:5px 12px;border-radius:8px;border:1px solid var(--accent);background:transparent;color:var(--accent2);font-size:10px;cursor:pointer"><i class="fas fa-download"></i> 导出</button>
+<button type="button" class="char-icon-btn char-del-btn" aria-label="删除所选" title="删除" onclick="batchDelete()"><i class="fas fa-trash"></i></button>
+<button type="button" class="char-icon-btn" aria-label="导出所选" title="导出" onclick="batchExportMenu()" style="color:var(--accent2)"><i class="fas fa-file-export"></i></button>
 </div>
 </div>
 </div>
 <div class="col-search">
 <div style="position:relative">
-<i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text2);pointer-events:none"></i>
+<!-- 图标 z-index:1：毛玻璃模式下 input 带 backdrop-filter，会形成独立层叠层并盖住排在它前面的图标 -->
+<i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:1;font-size:12px;color:var(--text2);pointer-events:none"></i>
 <input type="text" id="colSearchInput" placeholder="搜索书名或文章名..." style="padding-left:34px" oninput="colBookPage=1;colShortPage=1;renderCollections()">
 </div>
 <div class="col-filter-btns">
@@ -454,13 +466,15 @@
 </div>
 </div>
 <input type="file" id="avatarUp" accept="image/*" style="display:none" onchange="handleAvatarUpload(event)">
+<input type="file" id="portraitUp" accept="image/*" style="display:none" onchange="handlePortraitFile(event)">
 <div style="padding:14px 18px 8px;display:flex;justify-content:space-between;align-items:center">
   <h2 style="font-size:16px;font-weight:700"><i class="fas fa-cog"></i> 设置中心</h2>
   <button onclick="toggleSettingsSearch()" style="padding:5px 12px;border-radius:10px;border:none;background:transparent;color:var(--text2);font-size:11px;cursor:pointer;display:flex;align-items:center;gap:4px"><i class="fas fa-search"></i></button>
 </div>
-<div id="settingsSearchBar" style="display:none;padding:0 18px 8px">
+<div id="settingsSearchBar" class="fold-box" style="padding:0 18px 8px">
 <div style="position:relative">
-<i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text2);pointer-events:none"></i>
+<!-- 图标 z-index:1：原因同收藏页搜索框（毛玻璃 input 的 backdrop-filter 会盖住图标） -->
+<i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:1;font-size:12px;color:var(--text2);pointer-events:none"></i>
 <input type="text" id="settingsSearchInput" placeholder="搜索设置项..." style="width:100%;padding:10px 14px 10px 34px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;outline:none;box-sizing:border-box" oninput="filterSettingsEntries(this.value)">
 </div>
 </div>
@@ -564,7 +578,8 @@
 <div style="display:none"><input type="file" id="resImpFile" accept=".json" style="display:none" onchange="importResPack(event)"></div>
 <div style="padding:4px 18px 6px">
 <div style="position:relative">
-<i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text2);pointer-events:none"></i>
+<!-- 图标 z-index:1：原因同收藏页搜索框（毛玻璃 input 的 backdrop-filter 会盖住图标） -->
+<i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);z-index:1;font-size:12px;color:var(--text2);pointer-events:none"></i>
 <input id="resInlineSearch" type="text" placeholder="搜索名称或来源资源包..." style="width:100%;padding:10px 14px 10px 34px;border-radius:12px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:13px;outline:none;box-sizing:border-box" oninput="doResInlineSearch(this.value)">
 </div>
 </div>
@@ -761,6 +776,38 @@
   <a href="md/Basic-Tutorial.md" download="星叙使用教程.md" style="flex-shrink:0;padding:8px 14px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;text-decoration:none;display:inline-flex;align-items:center;gap:5px"><i class="fas fa-download"></i> 下载教程</a>
 </div>
 
+
+<!-- v1.5.1 documentation update -->
+<h3>v1.5.1 使用导览</h3>
+<p>本节说明本轮新增与调整的操作。界面中的许多功能已改为无边框图标；请结合图标位置和提示识别，不必寻找旧版的文字按钮。完整备份、资源包、作品导出是三种不同用途，不能混用。</p>
+<h3>毛玻璃效果与界面</h3>
+<p>入口：设置 → 页面美化 → 毛玻璃效果，默认开启。小说与资源卡片、设置页用户卡片使用半透明磨砂，搜索框与创作工具箱使用渐变透明；关闭后恢复普通样式（用户卡片的水波纹与边框不受开关影响）。有封面的长篇卡片只处理封面下方信息区，封面图片保持原样。设置中心搜索、收藏批量管理与折叠栏加入平滑展开和收起过渡。全屏模式开关与其他开关一样在行右侧。</p>
+<h3>第一次使用：跟着星笺起步</h3>
+<p>第一次 API 测试连接成功后，星笺会询问是否一起配置上下文提示词。点「好的」进入快速向导；点「不需要」取消后续教学。只有明确同意才进入后续流程。完成向导后进入作坊，学习长按输入框放大编辑、双击标签清空选中状态、标签最多选择六个及同类作品筛选；确认当前生效设定后再生成。第一次进入小说控制页时，星笺继续说明爱心收藏、铅笔在线编辑、快速/智能续写和定期存档备份。引导完成后可自行探索其他功能。</p>
+<h3>API：获取模型与测试连接</h3>
+<p>模型列表应以当前填写的 API 地址和密钥重新请求，不把历史拉取结果视为实时可用列表。更换接口或密钥后重新拉取，并测试实际选中的模型。拉取成功不等于模型一定可调用；权限、余额和模型下架都可能导致生成失败。拉取失败时不要把旧列表误认为本次成功结果。</p>
+<h3>人物肖像、翻转卡片与搜索</h3>
+<p>入口：设置 → 人物设定。角色卡片默认展示设定面；红色垃圾桶用于删除，旁边翻转图标切换肖像面，再点可返回。肖像面中间空白区域可上传图片，图片覆盖卡面，姓名位于右下方。翻转后卡片恢复 3:4 比例，即使之前拉长了设定输入框。性格标签默认折叠，仅显示已选标签，展开可查看全部。角色、NPC、关系三个页面顶部支持按名称、定位、关系类型或性格标签查找，清空搜索恢复列表。NPC 在编辑弹窗上传肖像，列表左图右文，不需翻转；编辑、删除为图标。</p>
+<h3>宇宙关系网：肖像模式</h3>
+<p>入口：人物设定 → 星图/宇宙关系网。重置视图与肖像模式为无边框图标。肖像模式使用人物图片替换对应天体显示，居中裁切并保持节点原形与大小；未上传图片的角色仍需保留可识别的默认显示。点天体打开人物信息卡，有肖像时顶部显示肖像，不受肖像模式开关影响。关系设置页移除外围大框，编辑与删除使用简洁图标。</p>
+<h3>世界地图：上传与进入</h3>
+<p>入口：设置 → 世界观设定 → 局部世界观下方的「世界地图」。支持 JPG、PNG、WebP，界面标注文件不超过 15MB。上传图片按 16:9 裁剪后显示。替换或清空地图前会提醒原地图数据丢失，请先确认是否需要保留。点击地图进入横向编辑视图；手机横屏呈现或方向锁定能否生效取决于使用环境，不保证所有浏览器都能锁定屏幕方向。双指缩放、拖动平移查看地图。</p>
+<h3>世界地图：分区、地点与关联线</h3>
+<p>左侧为编辑/新建工具，右侧为启用、撤回、清空、退出与保存。编辑模式默认关闭，开启后可编辑元素名称和内容。分区：依次点击地图添加顶点形成多边形，选择红橙黄绿青蓝紫之一并确认，再填写地区名称；名称显示在地区中央。编辑时点地区范围内即可操作，不必精准点击名称。地点戳：新建后出现在当前视野中心，长按移动，确认颜色、名称和内容，名称显示在图钉上方；预览时点击显示内容，过长文字以省略号展示。关联线：选两个分区或地点作为端点，设置颜色、名称与内容；名称显示在线上方，点击查看内容。编辑模式下移动地点时，关联线应随端点更新。</p>
+<h3>世界地图：启用、撤回与保存</h3>
+<p>启用地图默认关闭；开启后地图的文字设定追加至世界观提示词，不等于把地图图片直接发给 AI。撤回保留本次最多最近 30 步，退出后撤回记录重置。清空所有设置只清空分区、地点戳和关联线，不删除底图。退出不保存本次编辑，有未保存改动先确认；保存写入当前编辑并退出。地图随局部世界观及其绑定预设保存，切换项目时请确认使用的预设正确，并用完整备份保留地图数据。编辑器还提供元素列表、按名称过滤和提示词预览入口；世界观页面有带标注地图图片导出入口，其是否可见以当前地图状态为准。</p>
+<h3>完整 ZIP 备份与七天回收站</h3>
+<p>设置 → 数据管理 → 导出全部数据，生成按类别分文件的 ZIP 完整备份；导入时直接选择 ZIP，兼容旧版 JSON 备份。压缩包能正常打开且只存在部分内部文件损坏时，可继续导入其他正常文件并提示损坏数量；整个压缩包无法读取时不能承诺部分恢复。导入前先备份当前数据。旧「导出创作数据」入口已移除，作品单独导出仍与完整备份不同；资源广场资源包仍为 JSON。回收站替换原入口，全屏列表支持搜索、类别筛选、选中恢复及清空；收录创作小说、草稿、收藏长篇和短篇，仅保留七天。到期或清空后不要期待还能从回收站恢复；它不是长期备份。</p>
+<h3>伏笔追踪：从记录到回收</h3>
+<p>在阅读工具中使用伏笔追踪器，记录线索、来源章节和计划回收章节；可手动标记或用 AI 识别。查看待回收/已回收状态，结合章节或侧边栏的可用提示跟踪遗漏。需要收线时把伏笔带入续写上下文。段落跳转、回收提示词、生成后自动提取等入口仅在当前界面提供时使用：没有对应按钮或提示时，不代表已经自动完成提取或定位。AI 判断仍应由作者复核。</p>
+<h3>分卷、大纲树与章节结构</h3>
+<p>目录「新建分卷」旁的大纲树按钮与其同一行；创作页章节大纲顶部也有大纲树图标，保存改为图标。大纲树用于查看卷与章节结构，支持平移、缩放、复位及详情查看。章节排序使用目录已有拖动手柄；不要把视图平移误当成章节排序。章节目标、涉及角色、伏笔和小节层级等按当前详情表单实际提供的字段填写，不存在的字段可先写入大纲正文。</p>
+<h3>历史版本、对比与恢复</h3>
+<p>长篇章节以及 AI 短篇可通过当前界面提供的保存版本/历史版本入口保留改稿记录；重要改写前建议手动保存。历史快照预览中的「对比当前」显示与现文的差异，确认后「恢复这个版本」会替换对应内容；不采用则返回或取消。自动保存旧版的触发范围以实际改写流程为准，不能把自动保存当作每次操作的保证。历史版本不等于同一次 API 请求一定同时生成 2–3 个候选，候选数量以当前生成入口为准。</p>
+<h3>转盘、预设覆盖与快捷短语</h3>
+<p>编辑转盘 → 预设模板，关闭图标旁可保存当前转盘，保留名称与选项，转动次数默认一次。自定义预设卡片右上角提供覆盖与删除图标；覆盖将用当前转盘设置替换目标预设，执行前确认选中的名称。设置中的预设管理同样支持以当前配置覆盖已有预设或删除。编辑创作描述弹窗中的快捷短语改为限高可滚动折叠栏，不挤占上方描述框和下方操作。</p>
+<h3>入口整理与常见问题</h3>
+<p>更多功能按工具与记录、灵感与游戏、官方教程与通告等分组。收藏批量管理的取消、全选、删除、导出，以及星笺聊天清空等改为图标。磨砂开启后搜索图标消失、浏览器开关无响应、快速滑动转盘缺图、文件夹多层弹窗模糊叠加，均属于异常而非正常效果；不要通过清空创作数据处理。报告问题时记录运行方式、浏览器、复现步骤及控制台报错，先保留完整备份。</p>
 <h3>一、星叙是什么？</h3>
 <p>星叙是一款本地运行的「AI辅助创作工坊」，一个创作者为自己打造的故事宇宙工作台。比起"一键出爽文"，它更强调 <strong>你始终是作者</strong>，AI只是随叫随到的写作搭子：帮你想点子、出大纲、写段落、润色文字、管理世界观和人物设定，让长篇也能一步步写完。</p>
 <p>所有数据都保存在你的浏览器本地（或APP内置浏览器），你可以 <strong>随时导出备份</strong>，不依赖云端账号，也不和任何平台绑定。</p>
@@ -915,7 +962,7 @@
 <ul>
   <li>页面顶部的「🛠 创作工具箱」按钮，点击展开所有工具。</li>
   <li>工具按功能分三组：「新建作品」「AI辅助创作」「管理与导出」。</li>
-  <li>每个按钮都标注了名称和灰色小字说明，不用猜。</li>
+  <li>工具按分组展示；部分按钮已简化为图标，可结合位置和提示识别。</li>
   <li>用完后点击按钮即可自动收起，界面保持清爽。</li>
 </ul>
 <p><strong>基础写作：</strong></p>
@@ -962,7 +1009,7 @@
     <br>· 上方章节条：上一章 / 下一章 / 目录 / 添加章节  
     <br>· 章节大纲管理：为每章写摘要，续写和重写时会参考 
     <br> · 作品更名：在编辑器「更多工具→作品更名」修改标题
-    <br>· 删除本章：慎用，删除后不可恢复
+    <br>· 删除本章：慎用；章节级删除不等于整本作品进入七天回收站，操作前先保存版本或备份
   </li>
   <li><strong>长篇分卷管理 ✨ v1.5.0 新增</strong>：
     <br>· 章节目录点「＋新建分卷」，填写卷名和剧情梗概
@@ -976,7 +1023,7 @@
 <p>在作坊或收藏中点击一篇文章，会进入翻页式阅读器。左右滑动或点击屏幕两侧翻页，点击中间弹出功能菜单。</p>
 <ul>
   <li><strong>顶部工具</strong>：
-    <br>改版后顶部只保留三个按钮：
+    <br>阅读顶部与工具面板的入口以当前界面为准，主要功能包括：
     <br>· 🛠 工具：点击展开折叠面板，包含全部功能（沉浸阅读、语音朗读、笔记、伏笔、复制导出、AI改写等）
     <br>· ⚙ 设置：字号和行距调整
     <br>· ♡ 收藏/取消收藏
@@ -1090,13 +1137,13 @@
 
 <p><strong>数据管理 & 安全</strong></p>
 <ul>
-  <li>导出全部数据：建议定期导出为 JSON 备份。</li>
+  <li>导出全部数据：建议定期导出为 ZIP 压缩包备份（内含按类别分好的多个文件；导入时某个文件损坏不影响其他文件，并会提示损坏的文件个数；旧版 JSON 备份仍可导入）。</li>
   <li>导入数据：会覆盖当前数据，导入前建议先备份一次。</li>
   <li>清空作坊 / 清理旧数据：删除一段时间前未收藏的作品，释放空间；清理时同步删除关联笔记和上下文，不留孤儿数据。</li>
   <li>数据压缩：数据管理页「数据压缩」按钮可压缩文章多余空行、缩小日志体积，不删除任何内容，可随时操作。</li>
   <li>生成日志：记录每次生成/续写用到的 system + user 提示，方便排查“为什么写偏了”。</li>
   <li>清理旧日志：防止日志体积过大。</li>
-  <li>导出全部创作数据：单独备份创作页（草稿/小说）的内容。</li>
+  <li>回收站：删除的小说、草稿（含收藏页的长篇、短篇）会先放进回收站，保留 7 天，到期自动清除；可在数据管理里搜索、按类别筛选、恢复选中内容或清空回收站。</li>
   <li>锁屏设置：可以设置 4 位数字密码 + 备用问答，用于保护隐私。</li>
   <li>开发者模式：显示调试信息和紧急刷新按钮，只建议熟悉的用户开启。</li>
   <li><strong>关于星叙</strong>：数据管理最下方的入口，含软件介绍、创作理念、开发者的话；「帮助星叙成长」板块可填反馈问卷或发邮件（<code>a13380324832@qq.com</code>），点击立即进入或复制，进入失败会自动复制链接/邮箱；「支持星叙」板块有 GitHub 开源仓库入口（欢迎 star 与个人非商用部署，禁止抄袭/仿制/套壳等复用）和赞赏码，点赞赏码可下载图片。</li>
@@ -1300,7 +1347,7 @@
   <li>核心角色=恒星、普通角色=行星、参考角色=小行星、NPC=矮行星，四种天体样式和配色各自固定，一眼就能区分角色类型</li>
   <li>人物首字显示在星球下方；关系线是带渐变的柔和光带，不再是僵直的直线</li>
   <li>拖拽星球可调整位置，自动保存；下次新增同类型角色会安置在附近</li>
-  <li>左右滑动可切换观察角度，星球和背景星空都会联动变化；双指或滚轮缩放看细节；放大/缩小/重置按钮为半透明磨砂样式</li>
+  <li>左右滑动可切换观察角度，星球和背景星空都会联动变化；双指或滚轮缩放看细节；放大/缩小与重置视图用于调整观察；重置及肖像模式使用简洁图标</li>
   <li>点击星球弹出角色信息卡片（性格标签/设定简介/关系列表）；底部筛选栏可按角色筛选，只看该角色的关系网</li>
   <li>至少需要2个有名字的角色才能显示</li>
 </ul>
@@ -1781,7 +1828,7 @@
 </div>
 <div style="text-align:center;margin-top:28px">
   <img src="./photos/Logo.png" style="max-width:220px;width:65%;height:auto;display:block;margin:0 auto 10px">
-  <p style="color:var(--text2);font-size:11px;margin:0">v1.5.0 · Created by 心田<br>让每一个灵感都有机会长成作品</p>
+  <p style="color:var(--text2);font-size:11px;margin:0">v1.5.1 · Created by 心田<br>让每一个灵感都有机会长成作品</p>
 </div>
 
 </div>
@@ -1804,6 +1851,25 @@
 </div>
 
 <div class="hb-body hb-page act" id="boardPageLog">
+
+<div class="board-title">v1.5.1（2026.10.20）</div>
+<div class="notice">
+<p>✦ <strong>全新毛玻璃视觉系统</strong>：新增页面美化开关，支持半透明磨砂与普通模式切换，收藏、资源、设置等页面全面优化视觉效果</p>
+<p>✦ <strong>界面动画优化</strong>：增加更多平滑展开、收起与弹窗过渡动画，优化整体操作体验</p>
+<p>✦ <strong>数据备份系统升级</strong>：完整数据备份改为ZIP压缩包，自动分类整理数据，支持直接导入，并可跳过损坏文件继续恢复</p>
+<p>✦ <strong>新增回收站功能</strong>：删除的小说和草稿可暂存7天，支持恢复、搜索、分类查看与清空</p>
+<p>✦ <strong>API模型拉取优化</strong>：优化模型列表获取逻辑，减少缓存导致的失效接口和下架模型显示问题</p>
+<p>✦ <strong>新用户引导优化</strong>：API首次连接成功后新增星笺引导，根据用户选择开启快速教学，帮助了解上下文设置、创作流程和小说管理功能</p>
+<p>✦ <strong>人物设定系统重构</strong>：角色卡支持上传人物肖像、正反面翻转展示设定，优化NPC展示方式，编辑和删除操作统一图标化</p>
+<p>✦ <strong>人物搜索与标签优化</strong>：角色、NPC、关系图页面新增搜索功能，标签选择改为折叠模式，提升人物管理效率</p>
+<p>✦ <strong>宇宙关系图优化</strong>：支持人物肖像模式，简化编辑界面，优化角色关系查看和操作体验</p>
+<p>✦ <strong>世界观系统重大更新</strong>：新增世界地图功能，支持上传地图、区域划分、地点标记、关系连线、缩放移动和保存预设</p>
+<p>✦ <strong>伏笔与设定追踪增强</strong>：优化长篇创作辅助能力，帮助作者记录重要设定与剧情线索</p>
+<p>✦ <strong>章节大纲系统优化</strong>：新增可视化大纲管理，支持卷、章节、小节结构整理，并可关联角色、目标和伏笔</p>
+<p>✦ <strong>版本管理增强</strong>：AI改写、重新生成和手动保存均支持历史版本记录，方便查看和恢复旧内容</p>
+<p>✦ <strong>创作工具箱与收藏管理优化</strong>：入口分类调整，批量管理、预设管理等操作改为更简洁的图标交互</p>
+<p>✦ <strong>多项细节修复</strong>：修复故事转盘快速滑动异常、多层弹窗模糊叠加、部分按钮布局等问题，优化整体稳定性</p>
+</div>
 
 <div class="board-title">v1.5.0（2026.9.20）</div>
 <div class="notice">
@@ -2226,7 +2292,7 @@
 <button class="ed-md-btn" onclick="edMdInsertLine('---')" title="分割线">—</button>
 <button class="ed-md-btn" id="edPreviewToggle" onclick="toggleEdPreview()"><i class="fas fa-book-reader"></i> 预览</button>
 </div>
-  <div id="edSearchBar" style="display:none;padding:8px 14px;background:var(--card);border-bottom:1px solid var(--border);flex-direction:column;gap:6px">
+  <div id="edSearchBar" class="fold-box fold-flex" style="padding:8px 14px;background:var(--card);border-bottom:1px solid var(--border);flex-direction:column;gap:6px">
 <div style="display:flex;gap:6px;align-items:center">
 <input type="text" id="edSearchInput" placeholder="搜索关键词..." style="flex:1;min-width:0;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none" oninput="doEdSearchCount()" onkeydown="if(event.key==='Enter'){event.preventDefault();edSearchNext();}">
 <button onclick="closeEdSearch()" style="padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:14px;cursor:pointer;flex-shrink:0"><i class="fas fa-times"></i></button>
@@ -2435,7 +2501,7 @@
 <button class="note-close" onclick="closeNotePanel()" aria-label="关闭笔记面板"><i class="fas fa-times"></i></button>
 </div>
 </div>
-<div id="noteSearchWrap" style="display:none;padding:8px 16px 0">
+<div id="noteSearchWrap" class="fold-box" style="padding:8px 16px 0">
 <div style="position:relative">
 <i class="fas fa-search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text2);pointer-events:none"></i>
 <input type="text" id="noteSearchInput" placeholder="搜索笔记内容..." style="width:100%;padding:8px 12px 8px 32px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:12px;outline:none" oninput="searchNotes(this.value)">
@@ -2477,7 +2543,7 @@
 <div><h3 id="chPanelTitle">章节目录</h3><span id="chPanelInfo"></span></div>
 <button class="ch-panel-close" onclick="closeChapterList()" aria-label="关闭章节目录"><i class="fas fa-times"></i></button>
 </div>
-<div class="vol-add-bar"><button onclick="openVolEdit(curRd,null,function(){openChapterList(true);})"><i class="fas fa-plus"></i> 新建分卷</button></div>
+<div class="vol-add-bar ot-bar"><button onclick="openVolEdit(curRd,null,function(){openChapterList(true);})"><i class="fas fa-plus"></i> 新建分卷</button><button type="button" onclick="openOutlineTree('rd')" aria-label="大纲树" title="大纲树"><i class="fas fa-sitemap"></i> 大纲树</button></div>
 <div class="ch-panel-list" id="chPanelList"></div>
 </div>
 </div>
@@ -2570,8 +2636,8 @@
 </button>
 <h2><i class="fas fa-dice"></i> 故事转盘</h2>
 <div class="wheel-hdr-acts">
-<button onclick="addWheel()"> <i class="fas fa-plus"></i> 添加</button>
-<button onclick="resetAllWheels()"><i class="fas fa-rotate-right"></i> 重置</button>
+<button onclick="addWheel()"> <i class="fas fa-plus"></i></button>
+<button onclick="resetAllWheels()"><i class="fas fa-rotate-right"></i></button>
 </div>
 </div>
 
@@ -2660,6 +2726,7 @@
 <div id="presetOptList" style="max-height:50vh;overflow-y:auto"></div>
 <div class="res-exp-btns" style="margin-top:12px">
 <button class="dlg-cancel" onclick="closePresetOpt()">关闭</button>
+<button class="dlg-ok" onclick="saveCurrentWheelAsPreset()"><i class="fas fa-floppy-disk"></i> 保存当前转盘</button>
 </div>
 </div>
 </div>
@@ -3003,8 +3070,8 @@
     <button onclick="toggleCtxTokenInfo()" id="ctxTokenToggleBtn" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:10px;cursor:pointer">收起</button>
   </div>
 </div>
-<div id="ctxTokenDetail" style="font-size:11px;color:var(--text2);line-height:1.8;margin-top:6px">点击「刷新」计算当前上下文的Token消耗</div>
-<div style="margin-top:6px;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
+<div id="ctxTokenDetail" class="fold-box show" style="font-size:11px;color:var(--text2);line-height:1.8;margin-top:6px">点击「刷新」计算当前上下文的Token消耗</div>
+<div class="fold-box show" style="margin-top:6px;height:6px;background:var(--border);border-radius:3px;overflow:hidden">
   <div id="ctxTokenBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s;border-radius:3px"></div>
 </div>
 <div id="ctxTokenWarn" style="display:none;font-size:10px;color:var(--danger);margin-top:4px"><i class="fas fa-exclamation-triangle"></i> 接近上下文上限！建议精简提示词或使用精华压缩器</div>
@@ -3109,6 +3176,16 @@
 <div class="inp-ov" id="addNpcOv" onclick="if(event.target===this)closeAddNpc()">
 <div class="inp-box" style="max-width:380px;max-height:85vh;overflow-y:auto">
 <h3 id="addNpcTitle">添加NPC</h3>
+<div class="fg">
+<label class="fl">肖像（可选）</label>
+<div class="npc-pt-row">
+<button type="button" class="npc-pt-box" onclick="uploadNpcPortrait()" aria-label="上传NPC肖像">
+<img id="npcPortraitPreview" alt="NPC肖像预览" hidden>
+<span id="npcPortraitHint" class="npc-pt-hint"><i class="fas fa-image"></i><span>点击上传</span></span>
+</button>
+<button type="button" class="char-icon-btn" id="npcPortraitClear" onclick="clearNpcPortrait()" aria-label="移除肖像" title="移除肖像" hidden><i class="fas fa-xmark"></i></button>
+</div>
+</div>
 <div class="fg">
 <label class="fl">NPC名称</label>
 <input class="fi" id="npcName" placeholder="NPC角色名">
@@ -3253,7 +3330,7 @@
 <div><h3 id="edChPanelTitle">章节管理</h3><span id="edChPanelInfo"></span></div>
 <button class="ch-panel-close" onclick="closeEdChList()"><i class="fas fa-times"></i></button>
 </div>
-<div class="vol-add-bar"><button onclick="openVolEdit(curEd,null,function(){openEdChList(true);})"><i class="fas fa-plus"></i> 新建分卷</button></div>
+<div class="vol-add-bar ot-bar"><button onclick="openVolEdit(curEd,null,function(){openEdChList(true);})"><i class="fas fa-plus"></i> 新建分卷</button><button type="button" onclick="openOutlineTree('ed')" aria-label="大纲树" title="大纲树"><i class="fas fa-sitemap"></i> 大纲树</button></div>
 <div class="ch-panel-list" id="edChPanelList"></div>
 <div style="padding:12px 18px;border-top:1px solid var(--border)">
 <button style="width:100%;padding:10px;border-radius:10px;border:1px dashed var(--accent);background:transparent;color:var(--accent2);font-size:12px;cursor:pointer" onclick="addEdChapter()">+ 添加新章节</button>
@@ -3351,7 +3428,8 @@
 <div class="set-modal-hdr">
 <button onclick="closeChOutline()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button>
 <h2><i class="fas fa-list-ol"></i> 章节大纲</h2>
-<button onclick="saveChOutlines()" style="flex-shrink:0;display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:rgba(108,92,231,.1);color:var(--accent2);font-size:12px;"><i class="fas fa-floppy-disk"></i> 保存</button>
+<button type="button" onclick="openOutlineTree('ed')" aria-label="大纲树" title="大纲树" style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:none;background:none;color:var(--accent2);font-size:18px;cursor:pointer;"><i class="fas fa-sitemap"></i></button>
+<button type="button" onclick="saveChOutlines()" aria-label="保存章节大纲" title="保存" style="flex-shrink:0;display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:none;background:none;color:var(--accent2);font-size:18px;cursor:pointer;"><i class="fas fa-floppy-disk"></i></button>
 </div>
 <div class="set-modal-body">
 <p style="font-size:11px;color:var(--text2);margin-bottom:12px">为每章设置大纲，AI续写时会参考；可以按分卷分组，方便长篇里快速查看</p>
@@ -3453,9 +3531,9 @@
 </div>
 <div class="xj-info">
 <div class="xj-name">星笺 <span><i class="fas fa-star" style="font-size:12px"></i></span></div>
-<div class="xj-status">在线 · 随时为你提供灵感</div>
+<div class="xj-status">在线 · 随时提供帮助</div>
 </div>
- <button class="xj-clear" onclick="clearXjChat()"><i class="fas fa-trash"></i> 清空</button> 
+ <button type="button" class="xj-clear" aria-label="清空对话" title="清空对话" onclick="clearXjChat()"><i class="fas fa-trash"></i></button> 
 </div>
 <div class="xj-body" id="xjBody">
 <div class="xj-welcome">
@@ -3532,10 +3610,15 @@
 
 <div class="set-modal" id="setModalChar" role="dialog" aria-label="人物设定">
 <div class="set-modal-hdr"><button onclick="closeSetModal('char')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button><h2><i class="fas fa-user"></i> 人物设定</h2></div>
-<div class="cr-tabs" style="margin:0 -18px;padding:8px 18px 0;position:sticky;top:51px;z-index:9;background:var(--bg)" id="charTabsNav">
+<div class="cr-tabs" style="margin:0 -18px;padding:8px 18px 0;position:sticky;top:51px;z-index:9;background:var(--bg);flex-wrap:wrap" id="charTabsNav">
 <button class="cr-tab act" onclick="switchCharTab('role',this)">角色</button>
 <button class="cr-tab" onclick="switchCharTab('npc',this)">NPC</button>
 <button class="cr-tab" onclick="switchCharTab('rel',this)">人物关系图</button>
+<div class="char-search">
+<i class="fas fa-search" aria-hidden="true"></i>
+<input type="text" id="charSearchInput" maxlength="30" autocomplete="off" enterkeyhint="search" placeholder="搜索人物 / 定位 / 关系 / 标签" aria-label="搜索人物" oninput="onCharSearchInput(event)">
+<button type="button" class="char-icon-btn" id="charSearchClear" onclick="clearCharSearch(true)" aria-label="清除搜索" title="清除" hidden><i class="fas fa-xmark"></i></button>
+</div>
 </div>
 <div class="set-modal-body">
 
@@ -3567,6 +3650,7 @@
 </div>
 
 <div class="char-cards" id="charCards"></div>
+<div class="char-search-empty" id="charSearchEmptyRole" hidden>没有找到匹配的人物</div>
 <button class="btn-s" onclick="addCharacter()" style="margin-top:10px">＋ 添加角色</button>
 </div>
 
@@ -3580,6 +3664,7 @@
 <div id="npcCards">
 <div class="rel-empty">还没有NPC<br>点击上方按钮添加配角和路人</div>
 </div>
+<div class="char-search-empty" id="charSearchEmptyNpc" hidden>没有找到匹配的人物</div>
 </div>
 </div>
 
@@ -3597,6 +3682,7 @@
 <div class="rel-list" id="relList">
 <div class="rel-empty">还没有人物关系<br>添加角色后点击「添加关系」建立联系</div>
 </div>
+<div class="char-search-empty" id="charSearchEmptyRel" hidden>没有找到匹配的关系</div>
 </div>
 </div>
 
@@ -3607,7 +3693,7 @@
 <i class="fas fa-chevron-right" id="customTraitChevron" style="font-size:10px;color:var(--text2);flex-shrink:0;transition:transform .2s"></i>
 <span>自定义性格标签管理<span id="customTraitCount"></span></span>
 </div>
-<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px" id="customTraitList"></div>
+<div class="fold-box fold-flex" style="flex-wrap:wrap;gap:4px;margin-top:6px" id="customTraitList"></div>
 </div>
 <button class="btn-s" onclick="clearAllChars()" style="margin-top:8px;border-color:rgba(255,107,107,.3);color:var(--danger)"><i class="fas fa-trash-alt"></i> 清空所有角色/关系/NPC（不删预设）</button>
 <button class="preset-manage-btn" onclick="openPresetModal('char')"><i class="fas fa-box-open"></i> 人物预设管理 <span style="font-size:11px;font-weight:400;color:var(--text2)">· 保存 / 切换 / 删除</span></button>
@@ -3632,6 +3718,28 @@
 <div style="font-size:10px;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:8px">绑定到：<div class="binding-display" id="worldBindingDisplay" onclick="openBindingPicker('world')" role="button" aria-label="选择世界观绑定预设"><span id="worldBindingLabel">— 不绑定 —</span><i class="fas fa-chevron-down"></i></div></div>
 <textarea class="fta" id="worldDesc" maxlength="3000" placeholder="局部世界观设定，仅在使用绑定的角色预设时生效..." style="min-height:100px" oninput="limitTextarea(this,3000,'lwCount');saveLocalWorld()"></textarea> <div style="font-size:10px;color:var(--text2);text-align:right;margin-top:6px" id="lwCount">0/3000</div>
 <button class="btn-s" onclick="showTemplateChooser('选择局部世界观模板',['现代都市','古代宫廷','仙侠修真','西方奇幻','末日废土','校园青春','民国乱世','星际科幻','克苏鲁诡异','赛博朋克','东方玄幻','都市异能'],applyWorldTemplate)" style="margin-top:8px"><i class="fas fa-box-open"></i> 选择模板</button>
+</div>
+
+<div id="wmCard" style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px">
+<div style="font-size:13px;font-weight:600;color:var(--text)"><i class="fas fa-map"></i> 世界地图</div>
+<button type="button" class="wm-export-btn" id="wmExportBtn" aria-label="导出带标注的地图图片" title="导出带标注的地图图片" style="display:none" onclick="wmExportImage()"><i class="fas fa-download"></i></button>
+</div>
+<div style="font-size:10px;color:var(--text2);margin-bottom:10px">上传一张地图，在上面标出分区、地点和它们之间的关系。图片会按 16:9 裁剪；地图跟随上面的局部世界观，一起保存到预设和备份里。</div>
+<input type="file" id="wmFileInput" accept="image/jpeg,image/png,image/webp" style="display:none" aria-label="选择世界地图图片" onchange="wmOnFileChosen(this)">
+<div id="wmEmpty">
+<button class="wm-upload" id="wmUploadBtn" onclick="wmPickFile()" aria-label="上传世界地图"><i class="fas fa-cloud-arrow-up"></i><span>上传世界地图</span><small>支持 JPG / PNG / WebP，不超过 15MB</small></button>
+</div>
+<div id="wmFilled" style="display:none">
+<div class="wm-inline" id="wmInline" role="button" tabindex="0" aria-label="打开地图编辑器" onclick="wmOpenEditor()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();wmOpenEditor();}">
+<div class="wm-inline-box"><img id="wmInlineImg" alt="世界地图预览" draggable="false"><div class="wm-inline-stage wm-readonly" id="wmInlineStage"></div></div>
+</div>
+<div class="wm-inline-info" id="wmInlineInfo"></div>
+<div style="display:flex;gap:8px">
+<button class="btn-s" id="wmReplaceBtn" onclick="wmReplaceClick()" aria-label="替换地图"><i class="fas fa-rotate"></i> 替换地图</button>
+<button class="btn-s" id="wmClearBtn" onclick="wmClearClick()" aria-label="清空地图" style="border-color:rgba(255,107,107,.3);color:var(--danger)"><i class="fas fa-trash-alt"></i> 清空地图</button>
+</div>
+</div>
 </div>
 
 <div class="fg"> <label class="fl">每章最少字数</label> <div class="wc-set"><input class="fi" id="minWords" type="number" value="1200" min="500" max="5000" step="100"><span style="color:var(--text2);font-size:11px">字</span></div> <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"> <button class="tag" onclick="document.getElementById('minWords').value=800">800字</button> <button class="tag" onclick="document.getElementById('minWords').value=1200">1200字</button> <button class="tag" onclick="document.getElementById('minWords').value=1500">1500字</button> <button class="tag" onclick="document.getElementById('minWords').value=2000">2000字</button> <button class="tag" onclick="document.getElementById('minWords').value=3000">3000字</button> </div> <div style="font-size:10px;color:var(--text2);margin-top:6px">建议：短篇 800-1000字，长篇 1200-2000字；字数越多消耗 Token 越多</div> <div style="font-size:10px;color:#e67e22;margin-top:4px"><i class="fas fa-exclamation-triangle"></i> 超过 2000 字容易出现段落重复、情节原地踏步；超过 3000 字模型大概率开始「水字数」，质量明显下滑。建议搭配「反重复参数」一起用。</div> </div>
@@ -3812,10 +3920,10 @@
 <div class="set-modal" id="setModalTheme" role="dialog" aria-label="页面美化">
 <div class="set-modal-hdr"><button onclick="closeSetModal('theme')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button><h2><i class="fas fa-palette"></i> 页面美化</h2></div>
 <div class="set-modal-body">
-<div class="fg"><label class="fl">主题风格</label><div class="theme-opts"><div class="t-opt t0 act" onclick="setTheme('default',this)"></div><div class="t-opt t1" onclick="setTheme('warm',this)"></div><div class="t-opt t2" onclick="setTheme('green',this)"></div><div class="t-opt t3" onclick="setTheme('blue',this)"></div><div class="t-opt t4" onclick="setTheme('light',this)"></div></div></div>
+<div class="fg"><label class="fl"><i class="fa-solid fa-wand-magic-sparkles"></i> 主题风格</label><div class="theme-opts"><div class="t-opt t0 act" onclick="setTheme('default',this)"></div><div class="t-opt t1" onclick="setTheme('warm',this)"></div><div class="t-opt t2" onclick="setTheme('green',this)"></div><div class="t-opt t3" onclick="setTheme('blue',this)"></div><div class="t-opt t4" onclick="setTheme('light',this)"></div></div></div>
 <div class="t-opt t5" onclick="setTheme('auto',this)" title="跟随系统"></div>
 <div class="fg" style="display:flex;align-items:center;justify-content:space-between">
-  <label class="fl" style="margin:0">简洁模式</label>
+  <label class="fl" style="margin:0"><i class="fa-solid fa-feather"></i> 简洁模式</label>
   <div style="position:relative;width:44px;height:24px;cursor:pointer" onclick="toggleSimpleUiSwitch()">
     <input type="checkbox" id="simpleUiOn" style="display:none">
     <div style="width:44px;height:24px;border-radius:12px;background:var(--border);transition:background .3s" id="simpleUiTrack">
@@ -3823,9 +3931,21 @@
     </div>
   </div>
 </div>
-<div class="fg">
-  <label class="fl"><i class="fas fa-expand-arrows-alt"></i> 全屏模式</label>
-  <div style="position:relative;width:44px;height:24px;cursor:pointer" onclick="toggleFullscreenSwitch()">
+<div class="fg" style="display:flex;align-items:center;justify-content:space-between">
+  <div style="min-width:0;padding-right:12px">
+    <label class="fl" style="margin:0"><i class="fa-solid fa-gem"></i> 毛玻璃效果</label>
+    <div style="font-size:10px;color:var(--text2);margin-top:3px;line-height:1.5">卡片（含用户卡片）、搜索框半透明磨砂；设置主页背景图后效果更明显</div>
+  </div>
+  <div id="glassUiSwitch" role="switch" tabindex="0" aria-label="毛玻璃效果" aria-checked="true" style="position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0" onclick="toggleGlassUiSwitch()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleGlassUiSwitch();}">
+    <input type="checkbox" id="glassUiOn" style="display:none">
+    <div style="width:44px;height:24px;border-radius:12px;background:var(--border);transition:background .3s" id="glassUiTrack">
+      <div style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)" id="glassUiThumb"></div>
+    </div>
+  </div>
+</div>
+<div class="fg" style="display:flex;align-items:center;justify-content:space-between">
+  <label class="fl" style="margin:0"><i class="fas fa-expand-arrows-alt"></i> 全屏模式</label>
+  <div style="position:relative;width:44px;height:24px;cursor:pointer;flex-shrink:0" onclick="toggleFullscreenSwitch()">
     <input type="checkbox" id="fullscreenOn" style="display:none">
     <div style="width:44px;height:24px;border-radius:12px;background:var(--border);transition:background .3s" id="fullscreenTrack">
       <div style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)" id="fullscreenThumb"></div>
@@ -3958,7 +4078,7 @@
 <div class="datagrid-icon"><i class="fas fa-cloud-arrow-down"></i></div>
 <div class="datagrid-info">
 <div class="datagrid-title">加载最新版本</div>
-<div class="datagrid-desc">当前版本 <span id="dataMgrVerText">v1.5.0</span>，手动更新并清理页面缓存，不影响创作数据</div>
+<div class="datagrid-desc">当前版本 <span id="dataMgrVerText">v1.5.1</span>，手动更新并清理页面缓存，不影响创作数据</div>
 </div>
 <div class="datagrid-action">更新</div>
 </div>
@@ -3998,7 +4118,7 @@
 <div class="datagrid-icon"><i class="fas fa-upload"></i></div>
 <div class="datagrid-info">
 <div class="datagrid-title">导出全部数据</div>
-<div class="datagrid-desc">JSON格式完整备份</div>
+<div class="datagrid-desc">ZIP压缩包完整备份，按类别分文件</div>
 </div>
 <div class="datagrid-action">导出</div>
 </div>
@@ -4006,21 +4126,21 @@
 <div class="datagrid-icon"><i class="fas fa-download"></i></div>
 <div class="datagrid-info">
 <div class="datagrid-title">导入数据</div>
-<div class="datagrid-desc">恢复备份文件</div>
+<div class="datagrid-desc">恢复备份压缩包（兼容旧版JSON）</div>
 </div>
 <div class="datagrid-action">导入</div>
 </div>
-<div class="datagrid-card" onclick="exportAllCrWorks()">
-<div class="datagrid-icon"><i class="fas fa-book"></i></div>
+<div class="datagrid-card" onclick="openTrash()">
+<div class="datagrid-icon"><i class="fas fa-trash-restore"></i></div>
 <div class="datagrid-info">
-<div class="datagrid-title">导出创作数据</div>
-<div class="datagrid-desc">仅导出创作页面数据</div>
+<div class="datagrid-title">回收站</div>
+<div class="datagrid-desc">删除的小说和草稿保留7天，可恢复</div>
 </div>
-<div class="datagrid-action success">导出</div>
+<div class="datagrid-action success">查看</div>
 </div>
 </div>
 </div>
-<input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+<input type="file" id="importFile" accept=".zip,.json,application/zip,application/json" style="display:none" onchange="importData(event)">
 
 <!-- 清理工具 -->
 <div class="data-section">
@@ -4291,7 +4411,7 @@
           <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text2)"></i>
         </div>
         <input type="hidden" id="genLogFilter" value="all">
-        <div id="genLogFilterDrop" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:99;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);margin-top:4px">
+        <div id="genLogFilterDrop" class="fold-box" style="position:absolute;top:100%;left:0;right:0;z-index:99;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);margin-top:4px">
           <div onclick="setGenLogFilter('all','全部')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text)">全部</div>
           <div onclick="setGenLogFilter('short','短篇')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);border-top:1px solid var(--border)">短篇</div>
           <div onclick="setGenLogFilter('long','长篇')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);border-top:1px solid var(--border)">长篇</div>
@@ -4301,6 +4421,48 @@
     </div>
 
     <div id="genLogList" style="flex:1;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- TRASH VIEWER 回收站 -->
+<div class="set-modal" id="trashOv" style="z-index:850" role="dialog" aria-modal="true" aria-label="回收站">
+  <div class="set-modal-hdr" style="position:sticky;top:0;z-index:10;background:var(--bg);padding:14px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)">
+    <button onclick="closeTrash()" aria-label="返回" style="background:none;border:none;color:var(--accent2);font-size:13px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:5px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M15 18l-6-6 6-6"/></svg>返回
+    </button>
+    <h2 style="font-size:16px;font-weight:700;flex:1"><i class="fas fa-trash-restore"></i> 回收站</h2>
+    <span style="font-size:11px;color:var(--text2);padding:5px 10px;background:var(--card);border-radius:8px" id="trashCount">0项</span>
+  </div>
+  <div class="set-modal-body" style="padding:18px">
+    <p style="font-size:11px;color:var(--text2);margin-bottom:10px;line-height:1.7">
+      删除的小说和草稿（含收藏页的长篇、短篇）会在这里保留 7 天，到期自动清除。点击卡片选中，再点“恢复选中”放回原处。
+    </p>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button class="btn-s" id="trashRestoreBtn" onclick="restoreSelectedTrash()" style="flex:1.4;margin:0"><i class="fas fa-rotate-left"></i> 恢复选中</button>
+      <button class="btn-s" id="trashSelectAllBtn" onclick="toggleTrashSelectAll()" style="flex:1;margin:0">全选</button>
+      <button class="btn-s" id="trashClearBtn" onclick="clearTrashAll()" style="flex:1.2;margin:0;border-color:rgba(255,107,107,.3);color:var(--danger)"><i class="fas fa-trash-alt"></i> 清空回收站</button>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <input class="fi" id="trashSearch" placeholder="搜索标题/内容..." aria-label="搜索回收站" oninput="_trashSearchChanged()" style="flex:1">
+      <div style="position:relative;width:128px">
+        <div class="fi" id="trashFilterDisplay" role="button" tabindex="0" aria-label="选择类别" onclick="toggleTrashFilter()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleTrashFilter();}" style="padding:7px 13px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px">
+          <span id="trashFilterText">全部</span>
+          <i class="fas fa-chevron-down" style="font-size:10px;color:var(--text2)"></i>
+        </div>
+        <input type="hidden" id="trashFilter" value="all">
+        <div id="trashFilterDrop" class="fold-box" style="position:absolute;top:100%;left:0;right:0;z-index:99;background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.3);margin-top:4px">
+          <div onclick="setTrashFilter('all','全部')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text)">全部</div>
+          <div onclick="setTrashFilter('crNovel','创作·小说')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);border-top:1px solid var(--border)">创作·小说</div>
+          <div onclick="setTrashFilter('crDraft','创作·草稿')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);border-top:1px solid var(--border)">创作·草稿</div>
+          <div onclick="setTrashFilter('colBook','收藏·长篇')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);border-top:1px solid var(--border)">收藏·长篇</div>
+          <div onclick="setTrashFilter('colShort','收藏·短篇')" style="padding:9px 14px;cursor:pointer;font-size:13px;color:var(--text);border-top:1px solid var(--border)">收藏·短篇</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="trashList" style="flex:1;overflow-y:auto"></div>
   </div>
 </div>
 
@@ -4539,7 +4701,7 @@
   <img src="./photos/Software%20icon.png" style="width:88px;height:88px;border-radius:22px;object-fit:contain;box-shadow:0 6px 20px rgba(108,92,231,.25)">
   <div style="font-size:19px;font-weight:700;color:var(--text);margin-top:12px;letter-spacing:1px">星叙</div>
   <div style="font-size:12px;color:var(--accent2);margin-top:4px">AI辅助创作工坊 · 构筑你的故事宇宙</div>
-  <div style="font-size:10px;color:var(--text2);margin-top:6px">当前版本 <span id="aboutVerText">v1.5.0</span> · Created by 心田</div>
+  <div style="font-size:10px;color:var(--text2);margin-top:6px">当前版本 <span id="aboutVerText">v1.5.1</span> · Created by 心田</div>
 </div>
 
 <div class="data-section">
@@ -4613,6 +4775,33 @@
 <img src="./photos/Reward-Code.png"onclick="downloadSupportRC()"title="点击保存二维码"style="width:220px;max-width:70%;margin-top:12px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.12);cursor:pointer;">
 <div style="font-size:12px;color:var(--text2);margin-top:10px;">点击保存二维码 · 感谢每一份喜欢</div>
 </div>
+</div>
+
+
+<div class="data-section">
+<div class="data-section-title"><i class="fas fa-compass"></i> 更多体验</div>
+<a class="about-repo-card" href="https://old-version-of-notes-ai.netlify.app/" target="_blank" rel="noopener noreferrer">
+<div class="about-repo-hd">
+<div class="about-repo-icon about-link-old"><i class="fas fa-clock-rotate-left" aria-hidden="true"></i></div>
+<div class="about-repo-hd-text">
+<div class="about-repo-title">初版星叙体验</div>
+<div class="about-repo-sub about-link-sub">第一个版本 · 看看星叙的起点</div>
+</div>
+</div>
+<p class="about-repo-desc">回到星叙的起点，体验最初版本的 AI 创作工坊。</p>
+<div class="about-repo-btn"><span>进入初版体验</span><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></div>
+</a>
+<a class="about-repo-card" href="https://1338032.github.io/Vintage-pager/" target="_blank" rel="noopener noreferrer">
+<div class="about-repo-hd">
+<div class="about-repo-icon about-link-works"><i class="fas fa-compass" aria-hidden="true"></i></div>
+<div class="about-repo-hd-text">
+<div class="about-repo-title">作者的其他作品</div>
+<div class="about-repo-sub about-link-sub">复古寻呼机 · Retro Pager</div>
+</div>
+</div>
+<p class="about-repo-desc">复古 CRT 寻呼机风格的对话创作工具，可编写多人物对话、旁白和对话式小说，并导出多种格式。</p>
+<div class="about-repo-btn"><span>进入体验</span><i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i></div>
+</a>
 </div>
 
 </div>
@@ -4693,7 +4882,7 @@
       <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:8px">字数统计</div>
       <div id="cmpStats" style="font-size:11px;color:var(--text2);line-height:1.9;white-space:pre-wrap">点击“刷新字数”查看</div>
     </div>
-<div id="cmpExtraWrap" style="display:none;background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px">
+<div id="cmpExtraWrap" class="fold-box" style="background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:10px">
   <div style="font-size:12px;font-weight:700;color:var(--accent2);margin-bottom:8px"><i class="fas fa-puzzle-piece"></i> 额外设定（非设置项）</div>
   <div style="font-size:11px;color:var(--text2);line-height:1.7;margin-bottom:10px">
     这里用于压缩“设置以外”的内容（例如：续写上下文、章节大纲、伏笔清单等）。<br>
@@ -5110,7 +5299,7 @@
     <div style="font-size:15px;font-weight:700;color:var(--text)"><i class="fas fa-magic" style="color:var(--accent2);margin-right:6px"></i>万能输入框</div>
     <div style="font-size:10px;color:var(--text2);margin-top:1px">随便写，AI自动分配到对应设定</div>
   </div>
-  <button onclick="clearSmartInput()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer"><i class="fas fa-eraser"></i> 清空</button>
+  <button onclick="clearSmartInput()" style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:11px;cursor:pointer">清空</button>
 </div>
 
 <!-- 示例提示条（浮空覆盖，不推动内容） -->
@@ -5123,7 +5312,7 @@
     </button>
   </div>
   <!-- 浮空下拉面板（absolute定位，覆盖输入区，不撑开flex布局） -->
-  <div id="siExamples" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--card);border-bottom:2px solid var(--border);box-shadow:0 8px 28px rgba(0,0,0,.28);padding:10px 16px 14px;z-index:100">
+  <div id="siExamples" class="fold-box" style="position:absolute;top:100%;left:0;right:0;background:var(--card);border-bottom:2px solid var(--border);box-shadow:0 8px 28px rgba(0,0,0,.28);padding:10px 16px 14px;z-index:100">
     <div style="display:flex;flex-wrap:wrap;gap:6px" id="siExampleTags">
       <span onclick="insertSiExample(this)" style="font-size:10px;padding:4px 9px;border-radius:6px;background:var(--card2);border:1px solid var(--border);cursor:pointer;color:var(--text2)">赫敏，聪明好学，性格谨慎，总担心犯规，对朋友极为忠诚</span>
       <span onclick="insertSiExample(this)" style="font-size:10px;padding:4px 9px;border-radius:6px;background:var(--card2);border:1px solid var(--border);cursor:pointer;color:var(--text2)">马尔福：银白色头发，苍白皮肤，永远穿着合身黑袍，眼神轻蔑，走路带着贵族气势</span>
@@ -5223,7 +5412,10 @@
 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M15 18l-6-6 6-6"/></svg>返回
 </button>
 <h2><i class="fas fa-meteor"></i> 宇宙关系网</h2>
-<button onclick="rgmResetView()" style="padding:6px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.08);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#fff;font-size:11px;cursor:pointer">重置视图</button>
+<div class="rgm-hdr-acts">
+<button type="button" class="rgm-hdr-icon" onclick="rgmResetView()" aria-label="重置视图" title="重置视图"><i class="fas fa-rotate-left"></i></button>
+<button type="button" class="rgm-hdr-icon" id="rgmPortraitBtn" onclick="rgmTogglePortraitMode()" aria-label="肖像模式" aria-pressed="false" title="肖像模式"><i class="fas fa-image-portrait"></i></button>
+</div>
 </div>
 <div class="rgm-body" id="rgmBody">
 <div class="rgm-canvas-wrap" id="rgmCanvasWrap">
@@ -5854,6 +6046,16 @@
 </div>
 
 <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
+<div><span style="font-size:13px;font-weight:600">每章自动识别伏笔</span><div style="font-size:10px;color:var(--text2)">长篇每生成一章就自动调用AI识别新伏笔；关闭时只在生成后提醒你，不调用API</div></div>
+<div style="position:relative;width:44px;height:24px;cursor:pointer" role="switch" aria-checked="false" aria-label="每章自动识别伏笔" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSwitch7('fsAutoDetect')}" onclick="toggleSwitch7('fsAutoDetect')">
+<input type="checkbox" id="fsAutoDetectOn" style="display:none">
+<div style="width:44px;height:24px;border-radius:12px;background:var(--border);transition:background .3s" id="fsAutoDetectTrack">
+<div style="width:20px;height:20px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .3s;box-shadow:0 1px 3px rgba(0,0,0,.3)" id="fsAutoDetectThumb"></div>
+</div>
+</div>
+</div>
+
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0">
 <div><span style="font-size:13px;font-weight:600">梗概生成节选字数</span><div style="font-size:10px;color:var(--text2)">"根据章节大纲生成梗概"关闭时，每章节选开头/结尾各多少字发给AI（500-2000）</div></div>
 <input type="number" id="volSynExcerptLenInput" min="500" max="2000" step="100" value="1000" style="width:65px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;text-align:center;outline:none" onchange="setVolSynExcerptLen(this.value)">
 </div>
@@ -6112,7 +6314,7 @@
 <!-- AVATAR CROP 头像裁剪弹窗 -->
 <div class="res-exp-ov" id="avatarCropOv" onclick="if(event.target===this)cancelAvatarCrop()" style="z-index:9000">
 <div class="res-exp-box" style="max-width:340px">
-<h3><i class="fas fa-crop"></i> 裁剪头像</h3>
+<h3 id="cropTitle"><i class="fas fa-crop"></i> 裁剪头像</h3>
 <p style="font-size:11px;color:var(--text2);margin-bottom:10px">拖动图片调整位置，捏合缩放大小</p>
 <div id="cropContainer" style="width:240px;height:240px;border-radius:50%;overflow:hidden;border:3px solid var(--accent);margin:0 auto 14px;position:relative;touch-action:none;background:#111">
 <img id="cropImg" src="" style="position:absolute;cursor:move;-webkit-user-drag:none;user-select:none;pointer-events:none">
@@ -6125,7 +6327,92 @@
 </div>
 <div class="res-exp-btns">
 <button class="dlg-cancel" onclick="cancelAvatarCrop()">取消</button>
-<button class="dlg-ok" onclick="confirmAvatarCrop()"><i class="fas fa-check-circle"></i> 确认裁剪</button>
+<button class="dlg-ok" id="cropOkBtn" onclick="confirmAvatarCrop()"><i class="fas fa-check-circle"></i> 确认裁剪</button>
+</div>
+</div>
+</div>
+<!-- WORLD MAP 世界地图：16:9 裁剪弹窗 -->
+<div class="res-exp-ov" id="wmCropOv" role="dialog" aria-modal="true" aria-label="裁剪世界地图" style="z-index:9300">
+<div class="res-exp-box wm-crop-box">
+<h3><i class="fas fa-crop"></i> 裁剪地图（16:9）</h3>
+<p style="font-size:11px;color:var(--text2);margin-bottom:10px">拖动图片调整位置，双指或滚轮缩放。框内就是最终保存的地图。</p>
+<div class="wm-crop-frame" id="wmCropFrame"><img id="wmCropImg" alt="待裁剪的地图图片" draggable="false"></div>
+<div class="wm-crop-zoom">
+<button type="button" aria-label="缩小" onclick="wmCropZoomBy(-0.2)">－</button>
+<input type="range" id="wmCropRange" min="100" max="600" step="1" value="100" aria-label="缩放比例" oninput="wmCropZoomTo(this.value/100)">
+<button type="button" aria-label="放大" onclick="wmCropZoomBy(0.2)">＋</button>
+<button type="button" class="wm-crop-reset" onclick="wmCropReset()">重置</button>
+</div>
+<div class="res-exp-btns">
+<button class="dlg-cancel" onclick="wmCancelCrop()">取消</button>
+<button class="dlg-ok" id="wmCropOkBtn" onclick="wmConfirmCrop()"><i class="fas fa-check-circle"></i> 确认裁剪</button>
+</div>
+</div>
+</div>
+<!-- WORLD MAP 世界地图编辑器：横屏全屏。wmRoot 是整体容器，竖屏手机不支持系统横屏锁定时由脚本旋转 90° -->
+<div class="wm-ov" id="wmEditorOv" role="dialog" aria-modal="true" aria-label="世界地图编辑器">
+<div class="wm-root" id="wmRoot">
+<div class="wm-side wm-left" id="wmLeft" role="toolbar" aria-label="编辑与新建">
+<button type="button" class="wm-tool" id="wmBtnEdit" aria-pressed="false" aria-label="编辑模式" title="编辑模式" onclick="wmToggleEditMode()"><i class="fas fa-pen-to-square"></i></button>
+<button type="button" class="wm-tool" id="wmBtnZone" aria-pressed="false" aria-label="新建分区" title="新建分区" onclick="wmSetMode('zone')"><i class="fas fa-draw-polygon"></i></button>
+<button type="button" class="wm-tool" id="wmBtnPin" aria-pressed="false" aria-label="新建地点戳" title="新建地点戳" onclick="wmSetMode('pin')"><i class="fas fa-location-dot"></i></button>
+<button type="button" class="wm-tool" id="wmBtnLink" aria-pressed="false" aria-label="新建关联线" title="新建关联线" onclick="wmSetMode('link')"><i class="fas fa-link"></i></button>
+<button type="button" class="wm-tool" id="wmBtnList" aria-pressed="false" aria-label="元素列表" title="元素列表" aria-controls="wmListPanel" onclick="wmToggleListPanel()"><i class="fas fa-list"></i></button>
+</div>
+<div class="wm-center" id="wmCenter">
+<div class="wm-stage" id="wmStage"></div>
+<button type="button" class="wm-ok" id="wmDraftOk" aria-label="确定" title="确定" aria-disabled="true" onclick="wmDraftConfirm()"><i class="fas fa-check"></i></button>
+<button type="button" class="wm-pcount" id="wmPromptCount" aria-label="提示词预览" title="提示词预览" onclick="wmOpenPromptPanel()">提示词预览</button>
+<div class="wm-list" id="wmListPanel" role="region" aria-label="元素列表">
+<div class="wm-list-head"><input class="fi" id="wmListFilter" type="search" placeholder="按名称过滤" aria-label="按名称过滤元素" autocomplete="off" oninput="wmRenderListPanel()"><button type="button" class="wm-list-close" aria-label="收起元素列表" title="收起" onclick="wmToggleListPanel()"><i class="fas fa-xmark"></i></button></div>
+<div class="wm-list-body" id="wmListBody"></div>
+</div>
+<div class="wm-vbar" id="wmVtxBar" role="toolbar" aria-label="边界点编辑">
+<button type="button" class="wm-vbtn wm-vbtn-danger" id="wmVtxDel" aria-label="删除选中的边界点" disabled onclick="wmVtxDeleteSelected()">删除点</button>
+<button type="button" class="wm-vbtn" id="wmVtxLink" aria-label="相邻分区共用顶点联动" aria-pressed="true" onclick="wmVtxToggleLink()">联动</button>
+</div>
+<div class="wm-hint" id="wmHint" role="status" aria-live="polite"></div>
+<div class="wm-popup" id="wmPopup" role="status"></div>
+<div class="wm-toast" id="wmToast" role="status" aria-live="polite"></div>
+</div>
+<div class="wm-side wm-right" id="wmRight" role="toolbar" aria-label="操作与控制">
+<button type="button" class="wm-tool" id="wmBtnEnable" aria-pressed="false" aria-label="启用地图" title="启用地图" onclick="wmToggleEnabled()"><i class="fas fa-toggle-off"></i></button>
+<button type="button" class="wm-tool" id="wmBtnUndo" aria-label="撤回" title="撤回" onclick="wmUndo()"><i class="fas fa-rotate-left"></i></button>
+<button type="button" class="wm-tool" id="wmBtnClearAll" aria-label="清空所有设置" title="清空所有设置" onclick="wmClearAllClick()"><i class="fas fa-eraser"></i></button>
+<button type="button" class="wm-tool" id="wmBtnExit" aria-label="退出" title="退出" onclick="wmRequestExit(false)"><i class="fas fa-right-from-bracket"></i></button>
+<button type="button" class="wm-tool wm-tool-save" id="wmBtnSave" aria-label="保存" title="保存" onclick="wmSave()"><i class="fas fa-floppy-disk"></i></button>
+</div>
+<div class="wm-modal" id="wmModal" role="dialog" aria-modal="true" aria-labelledby="wmModalTitle">
+<div class="wm-modal-card">
+<h3 id="wmModalTitle"></h3>
+<p id="wmModalMsg" class="wm-modal-msg"></p>
+<div id="wmModalForm">
+<label class="fl" for="wmFieldName">名称</label>
+<input class="fi" id="wmFieldName" type="text" maxlength="20" autocomplete="off" placeholder="最多 20 字">
+<div class="wm-color-row"><span class="wm-color-label" id="wmColorLabel">颜色</span><div class="wm-colors" id="wmFieldColors" role="radiogroup" aria-labelledby="wmColorLabel"></div></div>
+<div class="wm-type-row" id="wmPinTypeRow" style="display:none"><span class="wm-color-label" id="wmPinTypeLabel">类型</span><div class="wm-ptypes" id="wmFieldPinTypes" role="radiogroup" aria-labelledby="wmPinTypeLabel"></div></div>
+<label class="fl" for="wmFieldContent" style="margin-top:10px">内容（可不填）</label>
+<textarea class="fta" id="wmFieldContent" maxlength="500" placeholder="最多 500 字" oninput="wmUpdateContentCount()"></textarea>
+<div class="wm-count" id="wmContentCount">0/500</div>
+<label class="wm-switch-row" for="wmFieldPrompt"><input type="checkbox" id="wmFieldPrompt" checked> 写入提示词（取消后，这一项不会追加到提示词）</label>
+<label class="wm-switch-row" for="wmFieldShow"><input type="checkbox" id="wmFieldShow" checked> 显示这一项（取消后隐藏，且不写入提示词）</label>
+<label class="wm-switch-row" for="wmFieldShowName"><input type="checkbox" id="wmFieldShowName" checked> 显示名称</label>
+</div>
+<div class="wm-modal-btns" id="wmModalBtns"></div>
+</div>
+</div>
+<div class="wm-modal" id="wmPromptModal" role="dialog" aria-modal="true" aria-labelledby="wmPromptTitle">
+<div class="wm-modal-card wm-prompt-card">
+<h3 id="wmPromptTitle">提示词预览</h3>
+<p class="wm-modal-msg" id="wmPromptSum" role="status" aria-live="polite"></p>
+<label class="wm-switch-row" for="wmPromptAuto"><input type="checkbox" id="wmPromptAuto" onchange="wmPromptAutoChange(this.checked)"> 自动写入空间关系（位置、相邻、方位）</label>
+<div class="wm-prompt-list" id="wmPromptList"></div>
+<div class="wm-modal-btns">
+<button type="button" class="dlg-cancel" onclick="wmPromptSetAll(false)">全不写入</button>
+<button type="button" class="dlg-cancel" onclick="wmPromptSetAll(true)">全部写入</button>
+<button type="button" class="dlg-ok" id="wmPromptDone" onclick="wmClosePromptPanel()">完成</button>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -6169,6 +6456,27 @@
     <span class="ldots"><span></span><span></span><span></span></span>
   </div>
 </div>
+<!-- 大纲树（思维导图：作品 → 卷 → 章 → 要点/伏笔） -->
+<div class="ot-ov" id="outlineTreeOv" role="dialog" aria-label="大纲树">
+<div class="set-modal-hdr">
+<button type="button" onclick="closeOutlineTree()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>返回</button>
+<h2><i class="fas fa-sitemap"></i> 大纲树 <span id="outlineTreeInfo" style="font-size:11px;font-weight:400;color:var(--text2)"></span></h2>
+</div>
+<p id="outlineTreeHint" class="ot-hint"></p>
+<div class="ot-viewport" id="otViewport" tabindex="0" aria-label="大纲思维导图：拖动平移，双指或按钮缩放">
+<div class="ot-canvas" id="otCanvas"></div>
+<div class="ot-empty-all">还没有章节</div>
+<div class="ot-ctl" role="group" aria-label="缩放控制">
+<button type="button" onclick="otZoomBy(1.25)" aria-label="放大" title="放大"><i class="fas fa-plus"></i></button>
+<button type="button" onclick="otZoomBy(0.8)" aria-label="缩小" title="缩小"><i class="fas fa-minus"></i></button>
+<button type="button" onclick="otResetView()" aria-label="复位视图" title="复位视图"><i class="fas fa-crosshairs"></i></button>
+</div>
+</div>
+<div class="ot-sheet" id="otSheet" role="dialog" aria-label="详情" aria-hidden="true">
+<div class="ot-sheet-hdr"><span id="otSheetTitle"></span><button type="button" onclick="_otCloseSheet()" aria-label="关闭详情" title="关闭"><i class="fas fa-times"></i></button></div>
+<div class="ot-sheet-body" id="otSheetBody"></div>
+</div>
+</div>
 <!-- 快照抽屉 -->
 <div id="snapshotDrawerOv" onclick="if(event.target===this)closeSnapshotDrawer()">
   <div id="snapshotDrawer">
@@ -6186,7 +6494,7 @@
   <div class="sn-preview-hdr">
     <button onclick="closeSnapshotPreview()" style="padding:6px 14px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--text);font-size:12px;cursor:pointer;flex-shrink:0"><i class="fas fa-chevron-left"></i> 返回</button>
     <div style="flex:1;text-align:center;font-size:14px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px" id="snPreviewTitle">版本预览</div>
-    <div style="width:60px;flex-shrink:0"></div>
+    <button type="button" id="snDiffBtn" onclick="toggleSnapshotDiff()" aria-pressed="false" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card2);color:var(--accent2);font-size:12px;cursor:pointer;flex-shrink:0">对比当前</button>
   </div>
   <div class="sn-preview-body" id="snPreviewBody"></div>
   <div class="sn-preview-footer">
@@ -6299,5 +6607,6 @@
 <script src="js/script-3-settings.js"></script>
 <script src="js/script-4-aitools.js"></script>
 <script src="js/script-5-system.js"></script>
+<script src="js/script-6-worldmap.js"></script>
 </body>
 </html>

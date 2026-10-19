@@ -1,5 +1,18 @@
 // ⚠️ 每次更新 index.html 后必须手动修改这里的版本号，否则用户看不到更新！
-const CACHE_NAME = 'syn-v13';
+const CACHE_NAME = 'syn-v15';
+
+// [FIX] 判断是不是需要实时直连的API请求（模型列表等）。
+// 这类请求绝不能走下面的"缓存优先"：第一次成功拉取的/models结果一旦被缓存，之后换密钥、
+// API失效、模型下架，页面拿到的仍然是旧列表（缓存是按URL匹配的，不看Authorization头）。
+function _isLiveApiRequest(req) {
+  try {
+    if (req.headers && req.headers.has('Authorization')) return true;
+    if (req.cache === 'no-store' || req.cache === 'reload') return true;
+    return /\/models\/?$/i.test(new URL(req.url).pathname);
+  } catch (err) {
+    return false;
+  }
+}
 
 self.addEventListener('install', function(e) {
   // [FIX] skipWaiting 必须放在 e.waitUntil() 中，否则安装未完成时 SW 可能提前激活
@@ -27,6 +40,8 @@ self.addEventListener('fetch', function(e) {
   if(e.request.method !== 'GET') return;
   // [FIX] 只处理http(s)协议，避免拦截chrome-extension等内部请求
   if(!e.request.url.startsWith('http')) return;
+  // [FIX] API请求直接交给浏览器走网络，不经过SW缓存
+  if(_isLiveApiRequest(e.request)) return;
 
   // HTML页面 & 核心代码文件(script-*.js/styles.css)：永远先联网取最新，失败了才用缓存。
   // [FIX] JS/CSS 每次发版都会变，如果走下面"缓存优先"的策略，

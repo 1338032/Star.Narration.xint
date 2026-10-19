@@ -7,7 +7,7 @@
 
 *让每一个灵感都有机会长成作品*
 
-[![Version](https://img.shields.io/badge/版本-v1.5.0-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
+[![Version](https://img.shields.io/badge/版本-v1.5.1-6c5ce7?style=for-the-badge&logo=sparkles&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![License](https://img.shields.io/badge/免费使用-Free-51cf66?style=for-the-badge&logo=heart&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![PWA](https://img.shields.io/badge/PWA-可安装-a29bfe?style=for-the-badge&logo=googlechrome&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
 [![Platform](https://img.shields.io/badge/平台-Web_+_Android-ff6b6b?style=for-the-badge&logo=android&logoColor=white)](https://1338032.github.io/Star.Narration.xint/)
@@ -49,6 +49,35 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 
 ---
 
+## 🆕 更新记录
+
+### v1.5.1（2026.10.20）
+
+本轮重点是世界地图、人物肖像、数据安全和长篇创作工作流。
+
+- **世界地图**：在局部世界观下方上传图片并按 16:9 裁剪；进入横向地图编辑视图，双指缩放、拖动平移。可绘制彩色多边形分区、添加地点戳、连接地区/地点并编辑名称与内容；编辑模式下可长按移动地点，关系线跟随端点变化，点击地区内部即可编辑。支持文字设定启用、最多 30 步撤回、保留底图的标注清空、未保存退出确认和保存退出，地图编辑随对应预设保存。
+- **人物肖像与角色卡片**：角色卡片可翻转查看肖像，默认展示设定面，翻转恢复 3:4 比例；NPC 在编辑弹窗上传照片，列表左图右文。角色、NPC、关系页面新增搜索，性格标签默认折叠显示已选项。
+- **关系网肖像模式**：可将天体节点切换为居中裁切的人物肖像，保持原形和大小；人物信息卡有肖像即显示，不受模式开关影响。重置、编辑与删除等操作简化为图标。
+- **毛玻璃与动效**：小说/资源卡片采用透明磨砂，搜索框/创作工具箱采用渐变透明；页面美化新增默认开启的总开关，关闭恢复普通样式。有封面的长篇只处理下方信息区，不处理封面。设置搜索、批量管理及折叠栏增加平滑过渡，全屏开关与其他开关右对齐。
+- **ZIP 完整备份与回收站**：完整备份按类别分文件打包 ZIP，支持直接导入及旧 JSON 备份兼容；可读取压缩包内的单个损坏文件不阻断其他正常文件导入，并提示损坏数量。原「导出创作数据」入口替换为七天作品回收站，提供全屏搜索、类别筛选、选中恢复与清空；资源包分享仍使用 JSON。
+- **API 与新手教学**：模型拉取改为基于当前配置重新请求，不以历史列表替代实时结果。首次测试连接成功后，仅点「好的」才进入上下文快速向导，再衔接作坊和小说控制页教学；点「不需要」取消后续教学。
+- **长篇结构与版本**：目录「新建分卷」旁和创作页章节大纲顶部增加大纲树入口；历史版本可与当前文本对比并恢复，AI 短篇也可保留历史版本。伏笔记录、待回收状态与续写上下文协同使用；自动提取、段落跳转、小节层级及多候选生成的范围以实际界面入口为准。
+- **预设与操作整理**：转盘模板新增保存当前转盘，自定义预设可覆盖/删除；设置预设同步增加覆盖/删除。快捷短语改为限高可滚动折叠栏；功能入口按工具与记录、灵感与游戏、官方教程与通告分组，收藏批量操作与星笺聊天清空等按钮简化为图标。
+- **本轮界面修复项**：磨砂模式搜索图标、浏览器开关交互、快速滑动转盘缺图、文件夹多层弹窗模糊叠加等问题。
+
+### v1.5.0 · 前一版（2026.9.20）
+
+- 长篇新增分卷管理，支持卷名、梗概以及目录、章节大纲、上下文、高级创作四处按卷组织，续写可引用当前分卷信息。
+- 创作与收藏新增文件夹整理，支持本地文件夹导入及按作品格式打包 ZIP 导出。
+- 自定义系统提示词改为条目列表，可调整顺序、编辑指令、添加多条自定义内容，并查看 Token 占用。
+- 新增长图导出、创作小说封面，以及长篇「复制本章／复制全书」细分。
+- 梗概生成改为按卷操作，可选根据章节大纲生成以减少上下文消耗。
+- 新增公告栏，快捷浮窗增加系统提示词预设折叠栏；人物设定分为角色、NPC、关系三个标签页，进一步统一功能图标。
+
+> 历史更新仅保留前一版 v1.5.0；更早记录不在本 README 中展开。
+
+---
+
 ## ✨ 核心功能
 
 <table>
@@ -79,13 +108,13 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
     </td>
     <td>
       <h3>📝 星笺</h3>
-      <p>独创灵感便签系统，随手记录碎片想法，自动按标签整理，灵感不再溜走。</p>
+      <p>常驻创作精灵与使用向导，提供功能讲解、创作建议和新手引导，并有独立养成与换装玩法。</p>
     </td>
   </tr>
   <tr>
     <td>
       <h3>⏱️ 时间线管理</h3>
-      <p>可视化管理作品内的时间轴，自动检测"同一天从下午跳到上午"等时间逻辑矛盾。</p>
+      <p>可视化管理作品内的时间轴，记录关键事件与故事内时间，辅助检查时间顺序和前后衔接。</p>
     </td>
     <td>
       <h3>🔬 精华压缩器</h3>
@@ -110,8 +139,11 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 
 | 功能 | 说明 |
 |------|------|
+| 🗺️ **世界地图** | 16:9 底图、分区、地点戳、关联线与世界观文字注入，随预设保存 |
+| 🖼️ **人物肖像** | 角色翻转卡片、NPC 肖像与关系网肖像模式 |
+| 🌳 **大纲树** | 可视化查看分卷与章节结构，支持视图缩放与详情查看 |
 | 🔍 **全局搜索** | 跨所有作品、笔记、伏笔、时间线、收藏夹搜索，一键跳转 |
-| 📚 **章节版本管理** | 每章最多保存 20 个历史版本，随时对比或回滚 |
+| 📚 **章节版本管理** | 保存章节及 AI 短篇的历史版本，预览差异后恢复，保留上限以当前界面为准 |
 | 🎙️ **TTS 语音朗读** | 沉浸式朗读模式，边听边检查作品节奏 |
 | ✍️ **AI 查错别字** | 一键检测全文错别字，点击直接跳转定位 |
 | 🌏 **番外篇生成** | 基于已完结作品，一键续写番外故事 |
@@ -119,7 +151,7 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 | 🖋️ **文风分析** | 分析你的写作风格特征，统一多部作品的文风 |
 | 📱 **沉浸式阅读** | 无干扰全屏阅读模式，专注享受自己的作品 |
 | 🔤 **自定义字体** | 内置多款中文字体可选，打造专属阅读体验 |
-| 💾 **数据备份还原** | 一键导出全部数据（作品、笔记、设定），安全无忧 |
+| 💾 **数据备份还原** | 按类别导出 ZIP 完整备份，兼容旧版 JSON 导入；七天回收站辅助找回误删作品 |
 | 🗄️ **数据管理全屏化** | 穿书系统、角色模拟均新增存储概览、清理与压缩、独立清空数据入口，互不影响星叙主数据库 |
 | 🌌 **沉浸式启动页** | 穿书系统"正在穿越…"、角色模拟旋转星标，进入即入戏，同时保证数据加载完整不卡顿 |
 
@@ -139,6 +171,10 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 
 ---
 
+设置 → 页面美化中可切换毛玻璃效果，默认开启；关闭后相关卡片、搜索框和工具按钮恢复普通样式。
+
+---
+
 ## 📲 安装与使用
 
 ### 方式一：直接访问（推荐）
@@ -152,7 +188,7 @@ AI 应该是创作者的**“灵感伙伴”**和**“高效助手”**，而不
 - **手机**：点击「分享」→「添加到主屏幕」
 - **电脑**：点击地址栏右侧的安装图标
 
-即可像原生 App 一样使用，支持离线访问。
+即可像原生 App 一样使用，已缓存的页面与本地内容可离线访问；AI 生成及首次加载网络资源仍需联网。
 
 ### 方式三：Android APK
 
@@ -166,8 +202,8 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 ## 🔒 隐私与安全
 
-- **数据本地存储**：所有创作内容、设定、笔记均保存在你的设备本地，不上传任何服务器
-- **API 密钥安全**：你填写的 AI 接口密钥仅存储在本地，不经过任何第三方
+- **数据本地存储**：创作内容、设定、笔记保存在浏览器本地；调用 AI 时，相关提示词与文本会发送到你配置的服务商。
+- **API 密钥**：配置保存在本地；请求 AI 接口时，会发送给你配置的 API 服务端，请谨慎选择服务商并妥善保管备份。
 - **无需注册账号**：打开即用，没有任何账号绑定
 
 ---
@@ -175,10 +211,10 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 ## 💡 快速上手
 
 ```
-1. 打开星叙网页
-2. 在「设定」中填入你的 AI API 密钥（支持各类兼容 OpenAI 格式的接口）
-3. 在「作坊」中新建一部作品，填写人物、世界观设定
-4. 在编辑器中写下第一段，点击「AI 续写」——开始你的故事！
+1. 打开星叙，进入「设置 → API设置」，填写地址、密钥和模型并测试连接。
+2. 首次成功后，点「好的」跟随向导配置上下文，或点「不需要」自行设置。
+3. 完善人物、世界观和文风；到「作坊」输入故事描述，选择长篇/短篇后生成。
+4. 满意的长篇先点爱心收藏，再进入阅读与续写；重要改稿保存版本，定期导出 ZIP 备份。
 ```
 
 > 💬 **新手提示**：首次使用建议先阅读内置的「使用指南」（右上角菜单可进入），15 分钟即可上手全部核心功能。
@@ -187,8 +223,8 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 ## 🛠️ 技术特性
 
-- **纯前端单文件应用**，零后端依赖，部署极简
-- 支持 **PWA**（Progressive Web App），可离线使用
+- **纯前端模块化应用**，零后端依赖，部署极简
+- 支持 **PWA**（Progressive Web App），已缓存界面可离线访问，AI 功能需要联网
 - **IndexedDB / localStorage** 本地持久化存储
 - 兼容 **OpenAI 格式** API，可对接 GPT、Claude、DeepSeek 等多种模型
 - 响应式设计，完美适配手机、平板、桌面
@@ -225,177 +261,6 @@ https://1338032.github.io/Star.Narration.xint/syn.apk
 
 **⭐ 如果星叙对你有帮助，欢迎点个 Star！**
 
-*v1.5.0 · Created with ❤️ by 心田*
-
-</div>
-
-
----
-
-# English Version
-
-
-<div align="center">
-
-<img src="./photos/icon-192.png" alt="Star Narration icon" width="120" style="border-radius: 24px;" />
-
-# ✦ Star Narration ✦
-### Star Narration · xint
-
-*Every spark of inspiration deserves a chance to become a real work*
-
-[Version](https://1338032.github.io/Star.Narration.xint/) | [Free to use](https://1338032.github.io/Star.Narration.xint/) | [PWA Installable](https://1338032.github.io/Star.Narration.xint/) | [Web + Android Platform](https://1338032.github.io/Star.Narration.xint/)
-
-</div>
-
----
-
-## 📢 Statement of Creative Positioning
-
-From its inception, Star Narration has clearly opposed the use of AI for mass-producing low-quality content, platform manipulation, or ghostwriting.
-
-The intention behind this tool is not to replace human writers with AI, but to provide a powerful, private, and practical creative assistant for people who genuinely love storytelling.
-
-I firmly believe:
-
-> Good stories always come from the author’s real emotions, life experiences, and unique thinking. AI cannot replace that.
-
-AI should serve as an “inspiration partner” and “efficiency assistant”, not the主体 of writing.
-
-Every finished work presented to readers should still be led, refined, and finalized by the author, who takes full responsibility for the content.
-
-All features of Star Narration (foreshadowing tracker, essence compressor, star notes, world-building manager, version history, etc.) are designed to help authors think better, plan better, and improve their stories—not to generate finished works with one click.
-
-If you agree with the concept of “human creation + AI assistance”, you are welcome to use Star Narration.
-
-If you expect a tool that automatically generates complete novels for direct publication, then Star Narration is not for you.
-
-I will continue developing it into a tool that respects creators and originality, and I welcome everyone to help maintain a healthy creative ecosystem under reasonable use.
-
-⭐ Thank you to every creator who puts real effort into their work.
-
----
-
-## ✨ Core Features
-
-### 🤖 AI Assisted Writing
-Connect custom AI APIs to continue writing based on your style, character settings, and world-building. Supports streaming output, quality scoring, and retry generation.
-
-### 🧵 Foreshadowing Tracker
-Track every foreshadowing element with structured records, ensuring no plot thread is forgotten.
-
-### 🗂️ Full Setting Management
-Manage characters, world-building, writing rules, outlines, and more. Automatically referenced during AI generation.
-
-### 📦 Resource Hub
-Package characters, worlds, and writing styles into reusable resource packs for sharing or reuse.
-
-### 🎭 Character Roleplay
-Chat with your own characters, explore side stories, and deepen your connection to them. As of v1.5.0 this has become an independent companion branch app with its own database and settings page, while still reading your books and API config from the main app.
-
-### 📝 Star Notes
-A unique idea note system that organizes fragmented inspiration automatically.
-
-### ⏱️ Timeline Management
-Visually manage story timelines and detect logical inconsistencies.
-
-### 🔬 Essence Compressor
-Summarize long content into optimized AI context input for better continuity.
-
-### 📖 Story Portal (Chuanshu System)
-Step into your own original or bookmarked novel as a custom character and interact with the story in real time. Also an independent companion branch with its own data management.
-
-### ℹ️ About Star Narration
-A dedicated page with the app's story, the developer's notes, a feedback survey, email contact, a GitHub star link, and an optional support QR code.
-
----
-
-## 🚀 More Highlights
-
-- Global search across all works and notes
-- Chapter version history (up to 20 versions per chapter)
-- TTS narration mode
-- AI proofreading for typos
-- Spin-off story generation
-- Writing statistics dashboard
-- Writing style analysis
-- Immersive reading mode
-- Custom fonts
-- Data backup & restore
-- Full-screen data management for Story Portal and Character Roleplay (storage overview, cleanup & compression, independent data clearing)
-- Immersive splash screens for the companion apps, with guaranteed data loading before entry
-
----
-
-## 🎨 Themes
-
-5 color themes × 2 modes (light/dark)
-
-- Purple (default)
-- Deep Blue
-- Forest Green
-- Warm Orange
-- Light Mode
-
----
-
-## 📲 Installation
-
-### Direct Access (Recommended)
-https://1338032.github.io/Star.Narration.xint/
-
-### Install as PWA
-Use browser “Add to Home Screen” or install icon in Chrome/Safari.
-
-### Android APK
-https://1338032.github.io/Star.Narration.xint/syn.apk
-
----
-
-## 🔒 Privacy
-
-- All data is stored locally on your device
-- API keys are stored locally only
-- No account required
-
----
-
-## 🛠️ Technical Features
-
-- Pure frontend single-page app
-- PWA support for offline usage
-- IndexedDB/localStorage persistence
-- Compatible with OpenAI-style APIs (GPT, Claude, DeepSeek, etc.)
-- Responsive design for all devices
-
----
-
-## 📬 Contact
-
-Author: xint
-
-Email: a13380324832@qq.com  
-QQ: 962005530  
-Xiaohongshu: 27418565861  
-
----
-
-## ⚖️ License
-
-Original creative modules such as Star Notes, Essence Compressor, Foreshadowing Tracker, Resource Hub, and advanced writing systems are protected by copyright.
-
-Unauthorized copying, cloning, or reproduction is prohibited.
-
-Content created by users belongs to the users themselves.
-
----
-
-<div align="center">
-
-❗️ At present, Star Narration only supports Chinese-language display. Foreign users are advised to switch to other, more suitable products.
-
-If this project helps you, please give it a ⭐ Star!
-
-v1.5.0 · Created with ❤️ by xint
+*v1.5.1 · Created with ❤️ by 心田*
 
 </div>
