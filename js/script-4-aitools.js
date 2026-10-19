@@ -24,30 +24,30 @@
 ║   收藏批量管理                          2258
 ║   导入TXT文件                         2460
 ║   快速设置向导                          2628
-║   精华压缩器执行                         2971
-║   AI REWRITE                      3653
-║   文件夹打包导出为zip                     4478
-║   本地文件夹导入                         4584
-║   旧版二进制Word(.doc)解析（OLE复合文档格式）    4746
-║   长图 (.png) 导出                    5537
-║   文章重写功能                          6069
-║   修订模式差异对比                        6384
-║   故事转盘                            6629
-║   NAME GENERATOR                  7140
-║   写作基因提取器                         7315
-║   丰富设定                            7714
-║   角色设计器                           7948
-║   情节分支器                           8628
-║   高级创作模式                          8765
-║   上下文编辑器                          9947
-║   全局变量定义区                         9948
-║   智能续写                            10547
-║   伏笔追踪器                           10989
-║   续写质量反馈                          11230
-║   GEN LOG 生成日志                    11355
-║   清除所有数据                          11529
-║   AUTO BACKUP                     11833
-║   TTS 语音朗读                        11881
+║   精华压缩器执行                         2974
+║   AI REWRITE                      3656
+║   文件夹打包导出为zip                     4481
+║   本地文件夹导入                         4587
+║   旧版二进制Word(.doc)解析（OLE复合文档格式）    4749
+║   长图 (.png) 导出                    5540
+║   文章重写功能                          6072
+║   修订模式差异对比                        6387
+║   故事转盘                            6632
+║   NAME GENERATOR                  7143
+║   写作基因提取器                         7318
+║   丰富设定                            7717
+║   角色设计器                           7951
+║   情节分支器                           8631
+║   高级创作模式                          8768
+║   上下文编辑器                          9950
+║   全局变量定义区                         9951
+║   智能续写                            10550
+║   伏笔追踪器                           10992
+║   续写质量反馈                          11233
+║   GEN LOG 生成日志                    11358
+║   清除所有数据                          11532
+║   AUTO BACKUP                     11836
+║   TTS 语音朗读                        11884
 ╚══════════════════════════════════════════════════════════════════
 */
 
@@ -1581,12 +1581,12 @@ var STORAGE_CAT_DEFS = [
   {name:'外观与其他', icon:'fa-palette', color:'#fd79a8', desc:'背景图、主题、账号信息及其余设置'}
 ];
 function _classifyStorageKey(key){
-  var p0 = ['bj_cols','bj_crWorks','bj_crFolders','bj_works','bj_advProjects','bj_advGenres','bj_articleContexts'];
+  var p0 = ['bj_cols','bj_crWorks','bj_crFolders','bj_works','bj_advProjects','bj_advGenres','bj_articleContexts','bj_trash'];
   for(var i=0;i<p0.length;i++){ if(key.indexOf(p0[i])===0) return 0; }
   var p1 = ['bj_curChars','bj_curWorld','bj_styleP','bj_ruleP','bj_banWordsP','bj_charP','bj_worldP',
     'bj_sysPromptP','bj_sysPromptEntries','bj_genTemplates','bj_globalWorld','bj_globalRule','bj_globalBanWords','bj_curRule',
     'bj_customSysPrompt','bj_customTraits','bj_curApi','bj_toolApi','bj_apiP',
-    'bj_localBanWordsBindings','bj_localRuleBindings','bj_localStyleBindings','bj_localWorldBindings',
+    'bj_localBanWordsBindings','bj_localRuleBindings','bj_localStyleBindings','bj_localWorldBindings','bj_worldMap','bj_localWorldMapBindings',
     'bj_currentBanBinding','bj_currentCharPresetName','bj_currentRuleBinding','bj_currentRulePresetName',
     'bj_currentStyleBinding','bj_currentStylePresetName','bj_currentWorldBinding','bj_currentWorldPresetName',
     'bj_currentBanPresetName'];
@@ -1867,7 +1867,200 @@ let _cropDragging=false;
 let _cropStartX=0,_cropStartY=0,_cropStartOX=0,_cropStartOY=0;
 let _cropPinchDist=0,_cropPinchScale=1;
 
+// ==================== 人物/NPC肖像上传（复用头像裁剪弹窗，3:4矩形裁剪） ====================
+let _portraitTarget=null; // 正在上传肖像的对象：{kind:'char',ref:角色对象} 或 {kind:'npc',ref:null}（NPC先暂存在编辑弹窗里，点保存才落盘）
+let _portraitObjUrl='';
+let _portraitCropBusy=false;
+const PORTRAIT_MAX_FILE_BYTES=20*1024*1024;
+const PORTRAIT_OUT_W=600;
+const PORTRAIT_OUT_H=800;
+
+function uploadCharPortrait(idx){
+  var ch=characters[idx];
+  if(!ch)return;
+  _portraitTarget={kind:'char',ref:ch};
+  _openPortraitPicker();
+}
+function uploadNpcPortrait(){
+  _portraitTarget={kind:'npc',ref:null};
+  _openPortraitPicker();
+}
+function _openPortraitPicker(){
+  var input=document.getElementById('portraitUp');
+  if(!input){
+    _portraitTarget=null;
+    showToast('无法打开图片选择');
+    return;
+  }
+  input.click();
+}
+function _releasePortraitUrl(){
+  if(_portraitObjUrl){
+    try{URL.revokeObjectURL(_portraitObjUrl);}catch(e){}
+    _portraitObjUrl='';
+  }
+}
+function handlePortraitFile(e){
+  var file=e.target.files&&e.target.files[0];
+  e.target.value='';
+  if(!file||!_portraitTarget){_portraitTarget=null;return;}
+  if(!file.type||file.type.indexOf('image/')!==0){
+    _portraitTarget=null;
+    showToast('请选择图片文件');
+    return;
+  }
+  if(file.size>PORTRAIT_MAX_FILE_BYTES){
+    _portraitTarget=null;
+    showToast('图片过大，请选择20MB以内的图片');
+    return;
+  }
+  if(typeof URL==='undefined'||typeof URL.createObjectURL!=='function'){
+    _portraitTarget=null;
+    showToast('当前浏览器不支持读取图片');
+    return;
+  }
+  _releasePortraitUrl();
+  var url=URL.createObjectURL(file);
+  _portraitObjUrl=url;
+  var target=_portraitTarget;
+  var img=new Image();
+  img.onload=function(){
+    // 图片解码期间用户可能已经换了别的图或取消，旧回调直接丢弃
+    if(_portraitObjUrl!==url||_portraitTarget!==target)return;
+    if(!img.naturalWidth||!img.naturalHeight){
+      _portraitTarget=null;
+      _releasePortraitUrl();
+      showToast('图片读取失败，请换一张');
+      return;
+    }
+    _cropState={imgW:img.naturalWidth,imgH:img.naturalHeight,scale:1,x:0,y:0,src:url,target:target.kind==='char'?'charPortrait':'npcPortrait'};
+    openAvatarCropModal(url);
+  };
+  img.onerror=function(){
+    if(_portraitObjUrl!==url)return;
+    _portraitTarget=null;
+    _releasePortraitUrl();
+    showToast('图片读取失败，请换一张');
+  };
+  img.src=url;
+}
+// 把裁剪好的肖像写入目标；返回是否真正保存成功
+function _applyPortraitResult(target,dataUrl){
+  if(target.kind==='char'){
+    if(characters.indexOf(target.ref)===-1){
+      showToast('该角色已不存在，肖像未保存');
+      return false;
+    }
+    target.ref.portrait=dataUrl;
+    sv(K.curChars,characters);
+    renderCharCards();
+    return true;
+  }
+  var ov=document.getElementById('addNpcOv');
+  if(!ov||!ov.classList.contains('show')){
+    showToast('NPC编辑窗口已关闭，肖像未保存');
+    return false;
+  }
+  _npcPendingPortrait=dataUrl;
+  refreshNpcPortraitPreview();
+  return true;
+}
+function _confirmPortraitCrop(){
+  if(_portraitCropBusy)return;
+  var target=_portraitTarget;
+  if(!target){
+    document.getElementById('avatarCropOv').classList.remove('show');
+    showToast('肖像上传已取消，请重新选择图片');
+    return;
+  }
+  _portraitCropBusy=true;
+  var okBtn=document.getElementById('cropOkBtn');
+  if(okBtn)okBtn.disabled=true;
+  // 无论成功、失败还是中途取消，都必须还原按钮和忙碌标志
+  var done=function(){
+    _portraitCropBusy=false;
+    var b=document.getElementById('cropOkBtn');
+    if(b)b.disabled=false;
+  };
+  var img=new Image();
+  img.onload=function(){
+    try{
+      if(_portraitTarget!==target){done();return;}
+      var box=_cropBox();
+      var ratio=PORTRAIT_OUT_W/box.w;
+      var canvas=document.createElement('canvas');
+      canvas.width=PORTRAIT_OUT_W;
+      canvas.height=PORTRAIT_OUT_H;
+      var ctx=canvas.getContext('2d');
+      if(!ctx)throw new Error('canvas unavailable');
+      ctx.fillStyle='#111';
+      ctx.fillRect(0,0,PORTRAIT_OUT_W,PORTRAIT_OUT_H);
+      ctx.drawImage(img,_cropState.x*ratio,_cropState.y*ratio,_cropState.imgW*_cropState.scale*ratio,_cropState.imgH*_cropState.scale*ratio);
+      var dataUrl=canvas.toDataURL('image/jpeg',0.82);
+      // 噪点很多的大图在默认质量下可能偏大，降一档质量重新编码，控制存储体积
+      if(dataUrl.length>300000)dataUrl=canvas.toDataURL('image/jpeg',0.6);
+      if(!isValidPortraitSrc(dataUrl))throw new Error('encode failed');
+      var applied=_applyPortraitResult(target,dataUrl);
+      document.getElementById('avatarCropOv').classList.remove('show');
+      _portraitTarget=null;
+      _releasePortraitUrl();
+      if(applied)showToast('肖像已保存');
+    }catch(err){
+      logError('portraitCrop',err);
+      showToast('肖像处理失败，请换一张图片重试');
+    }
+    done();
+  };
+  img.onerror=function(){
+    showToast('图片读取失败，请重新选择');
+    done();
+  };
+  img.src=_cropState.src;
+}
+
+// 裁剪框：头像为240×240圆形；人物/NPC肖像为240×320（3:4）圆角矩形
+function _cropIsPortrait(){
+  return _cropState.target==='charPortrait'||_cropState.target==='npcPortrait';
+}
+function _cropBox(){
+  return _cropIsPortrait()?{w:240,h:320}:{w:240,h:240};
+}
+function _cropApplyShape(){
+  var box=_cropBox();
+  var portrait=_cropIsPortrait();
+  var c=document.getElementById('cropContainer');
+  if(c){
+    c.style.width=box.w+'px';
+    c.style.height=box.h+'px';
+    c.style.borderRadius=portrait?'14px':'50%';
+    // 肖像用 content-box，让可视区域恰好是240×320，与确认裁剪时的取景换算一致
+    c.style.boxSizing=portrait?'content-box':'';
+  }
+  // NPC编辑弹窗(.inp-ov, z-index 9500)里上传肖像时，裁剪弹窗必须盖在它上面；头像流程保持原来的 9000
+  var ov=document.getElementById('avatarCropOv');
+  if(ov)ov.style.zIndex=portrait?'9600':'9000';
+  var t=document.getElementById('cropTitle');
+  if(t)t.innerHTML='<i class="fas fa-crop"></i> '+(portrait?'裁剪肖像':'裁剪头像');
+}
+function _cropUpdateZoomText(){
+  var el=document.getElementById('cropZoomVal');
+  if(!el)return;
+  var base=(_cropIsPortrait()&&_cropState.coverScale)?_cropState.coverScale:1;
+  el.textContent=Math.round(_cropState.scale/base*100)+'%';
+}
+// 肖像取景：缩放不小于"铺满裁剪框"，位置不允许露出空白，保证成品图没有黑边
+function _cropClampPortrait(){
+  var box=_cropBox();
+  var cover=_cropState.coverScale||_cropState.scale;
+  _cropState.scale=Math.max(cover,Math.min(cover*5,_cropState.scale));
+  var w=_cropState.imgW*_cropState.scale;
+  var h=_cropState.imgH*_cropState.scale;
+  _cropState.x=Math.min(0,Math.max(box.w-w,_cropState.x));
+  _cropState.y=Math.min(0,Math.max(box.h-h,_cropState.y));
+}
+
 function openAvatarCropModal(src){
+  _cropApplyShape();
   var cropImg=document.getElementById('cropImg');
   cropImg.src=src;
   // 等图片加载后初始化位置
@@ -1880,21 +2073,32 @@ function openAvatarCropModal(src){
 }
 
 function _cropFitImage(){
-  var containerSize=240;
+  var box=_cropBox();
   var imgW=_cropState.imgW;
   var imgH=_cropState.imgH;
-  // 让短边填满容器
-  var minDim=Math.min(imgW,imgH);
-  _cropState.scale=containerSize/minDim;
+  if(!imgW||!imgH)return;
+  if(_cropIsPortrait()){
+    // 肖像：以"铺满3:4裁剪框"为初始和最小缩放
+    _cropState.coverScale=Math.max(box.w/imgW,box.h/imgH);
+    _cropState.scale=_cropState.coverScale;
+  }else{
+    // 让短边填满容器
+    var minDim=Math.min(imgW,imgH);
+    _cropState.scale=box.w/minDim;
+  }
   // 居中
-  _cropState.x=(containerSize-imgW*_cropState.scale)/2;
-  _cropState.y=(containerSize-imgH*_cropState.scale)/2;
-  document.getElementById('cropZoomVal').textContent=Math.round(_cropState.scale*100)+'%';
+  _cropState.x=(box.w-imgW*_cropState.scale)/2;
+  _cropState.y=(box.h-imgH*_cropState.scale)/2;
+  _cropUpdateZoomText();
 }
 
 function _cropApplyTransform(){
   var img=document.getElementById('cropImg');
   if(!img)return;
+  if(_cropIsPortrait()){
+    _cropClampPortrait();
+    _cropUpdateZoomText();
+  }
   img.style.width=(_cropState.imgW*_cropState.scale)+'px';
   img.style.height=(_cropState.imgH*_cropState.scale)+'px';
   img.style.left=_cropState.x+'px';
@@ -1902,6 +2106,19 @@ function _cropApplyTransform(){
 }
 
 function _cropZoom(delta){
+  if(_cropIsPortrait()){
+    var box=_cropBox();
+    var old=_cropState.scale;
+    var cover=_cropState.coverScale||old;
+    var next=Math.max(cover,Math.min(cover*5,old*(1+delta*2)));
+    var k=next/old;
+    // 以裁剪框中心为缩放中心，保留用户已经调好的取景位置
+    _cropState.x=box.w/2-(box.w/2-_cropState.x)*k;
+    _cropState.y=box.h/2-(box.h/2-_cropState.y)*k;
+    _cropState.scale=next;
+    _cropApplyTransform();
+    return;
+  }
   _cropState.scale=Math.max(0.3,Math.min(5,_cropState.scale+delta));
   // 保持中心点
   var containerSize=240;
@@ -2003,9 +2220,14 @@ function _cropBindGestures(){
 
 function cancelAvatarCrop(){
   document.getElementById('avatarCropOv').classList.remove('show');
+  if(_cropIsPortrait()){
+    _portraitTarget=null;
+    _releasePortraitUrl();
+  }
 }
 
 function confirmAvatarCrop(){
+  if(_cropIsPortrait()){_confirmPortraitCrop();return;}
   var containerSize=240;
   var outputSize=200; // 输出200px的正方形
   var canvas=document.createElement('canvas');
@@ -2268,12 +2490,12 @@ if(batchMode){
 btn.textContent='退出管理';
 btn.style.borderColor='var(--accent)';
 btn.style.color='var(--accent2)';
-bar.style.display='';
+foldSlide(bar,true);
 }else{
 btn.textContent='批量管理';
 btn.style.borderColor='var(--border)';
 btn.style.color='var(--text2)';
-bar.style.display='none';
+foldSlide(bar,false);
 }
 updateBatchCount();
 renderCollections();
@@ -2335,17 +2557,25 @@ if(chk){chk.style.borderColor='rgba(255,255,255,.5)';chk.style.background='rgba(
 
 function batchDelete(){
 if(batchSelected.size===0){showToast('请先选择要删除的项目');return;}
-showDlg('批量删除','确定要删除选中的 '+batchSelected.size+' 个项目吗？\n\n此操作不可恢复！',function(){
+showDlg('批量删除','确定要删除选中的 '+batchSelected.size+' 个项目吗？\n\n会放进回收站，保留7天，期间可以恢复。',function(){
 var delBooks=0;
 var delShorts=0;
+var failedCount=0;
 batchSelected.forEach(function(key){
 var parts=key.split('_');
 var type=parts[0];
 var id=parts.slice(1).join('_');
+// 每个项目都是先放进回收站成功、再从书架移除；放入失败的项目保持原样
 if(type==='book'){
+var bk=cols.books.find(function(b){return b.id===id;});
+if(!bk)return;
+if(!_moveToTrash('colBook',bk)){failedCount++;return;}
 cols.books=cols.books.filter(function(b){return b.id!==id;});
 delBooks++;
 }else if(type==='short'){
+var st=cols.shorts.find(function(s){return s.id===id;});
+if(!st)return;
+if(!_moveToTrash('colShort',st)){failedCount++;return;}
 cols.shorts=cols.shorts.filter(function(s){return s.id!==id;});
 delShorts++;
 }
@@ -2354,7 +2584,7 @@ sv(K.cols,cols);
 batchSelected.clear();
 updateBatchCount();
 renderCollections();
-showToast('已删除 '+(delBooks+delShorts)+' 个项目'+(delBooks?' ('+delBooks+'本长篇)':'')+(delShorts?' ('+delShorts+'篇短篇)':''));
+showToast('已移入回收站 '+(delBooks+delShorts)+' 个项目'+(delBooks?' ('+delBooks+'本长篇)':'')+(delShorts?' ('+delShorts+'篇短篇)':'')+(failedCount?'，另有 '+failedCount+' 个放入回收站失败，未删除':''),failedCount?5000:2000);
 },true);
 }
 function batchExportMenu(){
@@ -2638,6 +2868,7 @@ navPush('wizardOv');
 }
 
 function closeWizard(){
+navPop('wizardOv');
 document.getElementById('wizardOv').classList.remove('show');
 }
 
@@ -2836,6 +3067,8 @@ sv(K.curChars,characters);
 }
 }
 closeWizard();
+// 跟着新手教程走到这里时，带用户去作坊并由星笺继续引导；否则保持原来的提示
+if(tutAfterWizardApplied())return;
 showToast('设置完成！现在可以去作坊开始创作啦',3000);
 }
 function openOutlineGen(){
@@ -5765,7 +5998,7 @@ function _liExportAndDownload(filePrefix,bookTitle,chapterLabel,bodyText,isAI){
 // 最可靠的导出方式——这类壳子通常没有实现下载管理器，a[download]点击可能悄悄没有任何反应，
 // 但系统分享面板是WebView之外、由Android系统接管的界面，能直接调起"保存到相册/文件/发送到其它APP"。
 // 不支持分享（不满足特性检测）或分享失败时，退化到传统的 a[download] 下载方式。
-function _liDeliverImage(blob,filename){
+function _liDeliverImage(blob,filename,doneTitle){ // doneTitle：完成弹窗标题，不传就是「长图导出完成」（小说长图）；世界地图导出会传自己的标题
   var isApk=_isApkWebView();
   var canShareFile=false;
   var shareFile=null;
@@ -5783,18 +6016,18 @@ function _liDeliverImage(blob,filename){
       // 用户在系统分享面板里主动取消，不算失败，不用再弹后备下载的提示打扰用户；
       // 其它原因导致分享失败（比如目标APP不支持接收图片）才继续走后备下载方案
       if(err&&err.name==='AbortError')return;
-      _liFallbackDownload(blob,filename,isApk);
+      _liFallbackDownload(blob,filename,isApk,doneTitle);
     });
     return; // 分享面板本身已经是最直接的操作反馈，不再叠加下载+完成弹窗，避免同时弹两层
   }
-  _liFallbackDownload(blob,filename,isApk);
+  _liFallbackDownload(blob,filename,isApk,doneTitle);
 }
 
 // 传统下载方式：创建 a[download] 触发浏览器下载，同时始终展示一张可长按保存的图片预览兜底。
 // isApk为true时，即使a.click()没有抛错，也不代表WebView壳子真的处理了这次下载（很多简单的
 // "网页打包APK"壳子并未实现下载逻辑，点击下载会静默无反应），所以文案不再声称"已导出到下载目录"，
 // 而是直接引导长按图片保存——这个方式不依赖下载管理器，是WebView原生支持的图片保存入口。
-function _liFallbackDownload(blob,filename,isApk){
+function _liFallbackDownload(blob,filename,isApk,doneTitle){
   var downloaded=false;
   try{
     var url=URL.createObjectURL(blob);
@@ -5817,7 +6050,7 @@ function _liFallbackDownload(blob,filename,isApk){
   var html='<div style="text-align:center">'+
     (previewUrl?'<img src="'+previewUrl+'" style="max-width:100%;max-height:50vh;border-radius:10px;box-shadow:var(--shadow);margin-bottom:12px">':'')+
     '<div style="font-size:12px;color:var(--text2);line-height:1.8">'+tip+'</div></div>';
-  showDlg('长图导出完成',html,function(){if(previewUrl){try{URL.revokeObjectURL(previewUrl);}catch(e){}}},false,true);
+  showDlg(doneTitle||'长图导出完成',html,function(){if(previewUrl){try{URL.revokeObjectURL(previewUrl);}catch(e){}}},false,true);
   setTimeout(function(){
     var okBtn=document.getElementById('dlgOkBtn');
     if(okBtn)okBtn.textContent='✓ 已收到，关闭';
@@ -6270,6 +6503,7 @@ document.getElementById('rewriteProgressText').textContent='已重写 '+countWor
 },
 (fullText)=>{
 if(fullText){
+try{saveChapterSnapshot(rewriteArticle.id,0,'AI改写前·自动存档');}catch(e){}
 rewriteArticle.content=fullText;
 syncArticle(rewriteArticle);
 document.getElementById('rewriteProgressBar').style.width='100%';
@@ -6291,6 +6525,7 @@ showToast('重写遇到了点问题，请检查API设置后再试',3000);
 }else{
 const result=await callAPINonStream(messages);
 if(result){
+try{saveChapterSnapshot(rewriteArticle.id,0,'AI改写前·自动存档');}catch(e){}
 rewriteArticle.content=result;
 syncArticle(rewriteArticle);
 closeRewriteOv();
@@ -7087,36 +7322,198 @@ const presetOptionsData={
 '时代背景':['现代都市','民国乱世','古代宫廷','架空王朝','末日废土','近未来','平行世界','仙侠世界','西方中世纪','战争年代','八九十年代','千禧年代']
 };
 
-function loadPresetOptions(){
-const container=document.getElementById('presetOptList');
-container.innerHTML='';
-Object.keys(presetOptionsData).forEach(name=>{
-const opts=presetOptionsData[name];
-const div=document.createElement('div');
-div.style.cssText='padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .2s';
-div.onmouseenter=()=>{div.style.borderColor='var(--accent)';div.style.transform='translateX(4px)';};
-div.onmouseleave=()=>{div.style.borderColor='var(--border)';div.style.transform='';};
-div.innerHTML=`
-<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px">
-<span style="font-size:16px">${getPresetIcon(name)}</span>
-${esc(name)}
-</div>
-<div style="font-size:11px;color:var(--text2);line-height:1.6">${opts.length}个选项：${opts.slice(0,6).join('、')}${opts.length>6?'...':''}</div>
-`;
-div.onclick=()=>{
-const current=document.getElementById('wheelOptions').value;
-const newOpts=opts.join('\n');
-document.getElementById('wheelOptions').value=current?(current+'\n'+newOpts):newOpts;
-if(!document.getElementById('wheelName').value){
-document.getElementById('wheelName').value=name;
+// ==================== 转盘自定义预设 ====================
+// 自定义预设单独存储（bj_wheelUserPresets），内置模板（presetOptionsData）保持不变。
+// 每次读写都直接取存储，不在内存里长期缓存，避免和数据恢复/导入后的数据不一致。
+var WHEEL_USER_PRESET_MAX=50;
+var WHEEL_PRESET_NAME_MAX=30;
+
+function getWheelUserPresets(){
+  var list=ld('bj_wheelUserPresets',[]);
+  return Array.isArray(list)?list.filter(function(p){return p&&typeof p.id==='string'&&typeof p.name==='string'&&Array.isArray(p.options);}):[];
 }
-closePresetOpt();
-showToast('已加载「'+name+'」模板');
-};
-container.appendChild(div);
-});
-document.getElementById('presetOptOv').classList.add('show');
-navPush('presetOptOv');
+function saveWheelUserPresets(list){
+  if(!Array.isArray(list))return;
+  sv('bj_wheelUserPresets',list);
+}
+
+// 读取"编辑转盘"弹窗里当前的名称/转动次数/选项；转动次数缺省或非法时按默认1次
+function _readWheelForm(){
+  var nameEl=document.getElementById('wheelName');
+  var spinEl=document.getElementById('wheelSpinCount');
+  var optEl=document.getElementById('wheelOptions');
+  var spin=spinEl?parseInt(spinEl.value,10):1;
+  if(isNaN(spin)||spin<1)spin=1;
+  if(spin>5)spin=5;
+  return{
+    name:nameEl?(nameEl.value||'').trim():'',
+    spinCount:spin,
+    options:optEl?(optEl.value||'').split('\n').map(function(o){return o.trim();}).filter(function(o){return o;}):[]
+  };
+}
+
+function _wheelPresetFormError(f,needName){
+  if(f.options.length<2)return'至少需要2个选项';
+  if(needName&&!f.name)return'请先给转盘起个名字';
+  if(f.name.length>WHEEL_PRESET_NAME_MAX)return'名称不能超过'+WHEEL_PRESET_NAME_MAX+'个字';
+  return'';
+}
+
+// 把当前转盘（名称+转动次数+选项）存为新的自定义预设
+function saveCurrentWheelAsPreset(){
+  var f=_readWheelForm();
+  var err=_wheelPresetFormError(f,true);
+  if(err){showToast(err);return;}
+  var list=getWheelUserPresets();
+  if(list.length>=WHEEL_USER_PRESET_MAX){showToast('自定义预设最多'+WHEEL_USER_PRESET_MAX+'个，请先删除不用的');return;}
+  if(list.some(function(p){return p.name===f.name;})){showToast('已有同名预设，请点该预设右上角的覆盖图标');return;}
+  list.push({id:uid(),name:f.name,spinCount:f.spinCount,options:f.options});
+  saveWheelUserPresets(list);
+  renderPresetOptList();
+  showToast('已保存转盘预设「'+f.name+'」');
+}
+
+// 用当前转盘设置覆盖某个自定义预设（名称为空时保留原名称）
+function overwriteWheelUserPreset(id){
+  var f=_readWheelForm();
+  var err=_wheelPresetFormError(f,false);
+  if(err){showToast(err);return;}
+  var list=getWheelUserPresets();
+  var target=list.find(function(p){return p.id===id;});
+  if(!target){showToast('找不到这个预设');return;}
+  var newName=f.name||target.name;
+  if(list.some(function(p){return p.id!==id&&p.name===newName;})){showToast('已有同名预设，请先改名');return;}
+  showDlg('覆盖预设','确定用当前转盘设置覆盖「'+target.name+'」吗？\n名称、转动次数和选项都会被替换，不可恢复。',function(){
+    var latest=getWheelUserPresets();
+    var pos=latest.findIndex(function(p){return p.id===id;});
+    if(pos<0){showToast('这个预设已不存在');return;}
+    latest[pos]={id:id,name:newName,spinCount:f.spinCount,options:f.options};
+    saveWheelUserPresets(latest);
+    renderPresetOptList();
+    showToast('已覆盖预设「'+newName+'」');
+  },true);
+}
+
+function deleteWheelUserPreset(id){
+  var target=getWheelUserPresets().find(function(p){return p.id===id;});
+  if(!target){showToast('找不到这个预设');return;}
+  showDlg('删除预设','确定要删除「'+target.name+'」吗？',function(){
+    saveWheelUserPresets(getWheelUserPresets().filter(function(p){return p.id!==id;}));
+    renderPresetOptList();
+    showToast('预设已删除');
+  },true);
+}
+
+// 点击自定义预设：把名称、转动次数、选项整套载入当前转盘（当前已有不同内容时先确认，避免静默丢失）
+function applyWheelUserPreset(id){
+  var p=getWheelUserPresets().find(function(x){return x.id===id;});
+  if(!p)return;
+  var nameEl=document.getElementById('wheelName');
+  var spinEl=document.getElementById('wheelSpinCount');
+  var spinValEl=document.getElementById('wheelSpinVal');
+  var optEl=document.getElementById('wheelOptions');
+  if(!nameEl||!spinEl||!optEl)return;
+  var presetText=p.options.join('\n');
+  var apply=function(){
+    var spin=(typeof p.spinCount==='number'&&p.spinCount>=1&&p.spinCount<=5)?p.spinCount:1;
+    nameEl.value=p.name;
+    spinEl.value=spin;
+    if(spinValEl)spinValEl.textContent=spin;
+    optEl.value=presetText;
+    closePresetOpt();
+    showToast('已加载预设「'+p.name+'」');
+  };
+  var current=(optEl.value||'').trim();
+  if(current&&current!==presetText){
+    showDlg('替换当前转盘设置','加载预设会替换当前的名称、转动次数和选项。\n\n确定继续吗？',apply,true);
+  }else{
+    apply();
+  }
+}
+
+function _wheelIconButton(cls,label,iconCls,handler){
+  var b=document.createElement('button');
+  b.type='button';
+  b.className=cls;
+  b.title=label;
+  b.setAttribute('aria-label',label);
+  b.innerHTML='<i class="fas '+iconCls+'"></i>';
+  b.addEventListener('click',function(e){e.stopPropagation();handler();});
+  return b;
+}
+
+// 重绘预设模板列表：内置模板在前，自定义预设在后
+function renderPresetOptList(){
+  var container=document.getElementById('presetOptList');
+  if(!container)return;
+  container.innerHTML='';
+  Object.keys(presetOptionsData).forEach(function(name){
+    var opts=presetOptionsData[name];
+    var div=document.createElement('div');
+    div.style.cssText='padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;transition:all .2s';
+    div.onmouseenter=function(){div.style.borderColor='var(--accent)';div.style.transform='translateX(4px)';};
+    div.onmouseleave=function(){div.style.borderColor='var(--border)';div.style.transform='';};
+    div.innerHTML=
+      '<div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px">'+
+      '<span style="font-size:16px">'+getPresetIcon(name)+'</span>'+esc(name)+'</div>'+
+      '<div style="font-size:11px;color:var(--text2);line-height:1.6">'+opts.length+'个选项：'+esc(opts.slice(0,6).join('、'))+(opts.length>6?'...':'')+'</div>';
+    div.onclick=function(){
+      var current=document.getElementById('wheelOptions').value;
+      var newOpts=opts.join('\n');
+      document.getElementById('wheelOptions').value=current?(current+'\n'+newOpts):newOpts;
+      if(!document.getElementById('wheelName').value){
+        document.getElementById('wheelName').value=name;
+      }
+      closePresetOpt();
+      showToast('已加载「'+name+'」模板');
+    };
+    container.appendChild(div);
+  });
+  var title=document.createElement('div');
+  title.className='wp-sec';
+  title.textContent='我的预设';
+  container.appendChild(title);
+  var mine=getWheelUserPresets();
+  if(mine.length===0){
+    var hint=document.createElement('div');
+    hint.className='wp-hint';
+    hint.textContent='还没有自定义预设。设置好转盘名称和选项后，点下方「保存当前转盘」就能存成预设。';
+    container.appendChild(hint);
+    return;
+  }
+  mine.forEach(function(p){
+    var card=document.createElement('div');
+    card.className='wp-card';
+    card.setAttribute('role','button');
+    card.tabIndex=0;
+    var spin=(typeof p.spinCount==='number'&&p.spinCount>=1)?p.spinCount:1;
+    card.setAttribute('aria-label','加载预设「'+p.name+'」');
+    var nameDiv=document.createElement('div');
+    nameDiv.className='wp-name';
+    nameDiv.textContent=p.name;
+    var descDiv=document.createElement('div');
+    descDiv.className='wp-desc';
+    descDiv.textContent='转动'+spin+'次 · '+p.options.length+'个选项：'+p.options.slice(0,6).join('、')+(p.options.length>6?'...':'');
+    var acts=document.createElement('div');
+    acts.className='wp-acts';
+    acts.appendChild(_wheelIconButton('wp-ow','用当前转盘设置覆盖此预设','fa-arrows-rotate',function(){overwriteWheelUserPreset(p.id);}));
+    acts.appendChild(_wheelIconButton('wp-del','删除此预设','fa-trash-alt',function(){deleteWheelUserPreset(p.id);}));
+    card.appendChild(nameDiv);
+    card.appendChild(descDiv);
+    card.appendChild(acts);
+    card.addEventListener('click',function(){applyWheelUserPreset(p.id);});
+    card.addEventListener('keydown',function(e){
+      if(e.target!==card)return;
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();applyWheelUserPreset(p.id);}
+    });
+    container.appendChild(card);
+  });
+}
+
+function loadPresetOptions(){
+  renderPresetOptList();
+  document.getElementById('presetOptOv').classList.add('show');
+  navPush('presetOptOv');
 }
 
 function getPresetIcon(name){
@@ -10872,6 +11269,7 @@ document.getElementById('rdMeta').innerHTML =
 document.getElementById('btnUndo').style.display='inline-block';
 try{if(genVibrate&&navigator.vibrate)navigator.vibrate([50,30,50]);}catch(e){}
 showToast('第'+chNum+'章写好啦！星笺期待你的评价');
+fsAfterChapterGenerated(curRd,chNum,result);
 try{if(ld('bj_contQualityOn',true))renderContQualityCard(result,document.getElementById('rdContent').parentElement);}catch(e){logError('op',e)}
 if(ld('bj_consistencyCheckOn',false)&&result&&result.length>=50&&!(_batchContRemain>0)){(function(){var _ccCont=document.getElementById('rdContent')&&document.getElementById('rdContent').parentElement;if(_ccCont){setTimeout(function(){showToast('正在进行一致性检测...',3000);doConsistencyCheck(result,curRd.id).then(function(r){if(r)renderConsistencyCard(r,_ccCont);}).catch(function(){});},800);}})();}
 if(_batchContRemain>0&&_batchArticleId&&curRd&&curRd.id===_batchArticleId){
@@ -10940,6 +11338,7 @@ document.getElementById('btnUndo').style.display='inline-block';
 if(contDirMemory&&_snapRd&&_snapRd.id){localStorage.setItem('bj_lastDir_'+_snapRd.id,document.getElementById('dirInput').value);}
 document.getElementById('dirInput').value='';
 showToast('第'+chNum+'章创作完成！'+countWords(finalText)+'字');
+fsAfterChapterGenerated(_snapRd,chNum,finalText);
 try{if(ld('bj_contQualityOn',true))renderContQualityCard(finalText,document.getElementById('rdContent').parentElement);}catch(e){logError('op',e)}
 if(ld('bj_consistencyCheckOn',false)&&finalText&&finalText.length>=50&&!(_batchContRemain>0)){(function(){var _ccCont=document.getElementById('rdContent')&&document.getElementById('rdContent').parentElement;var _snapId=_snapRd?_snapRd.id:'';if(_ccCont&&_snapId){setTimeout(function(){showToast('正在进行一致性检测...',3000);doConsistencyCheck(finalText,_snapId).then(function(r){if(r)renderConsistencyCard(r,_ccCont);}).catch(function(){});},800);}})();}
 if(_batchContRemain>0&&_batchArticleId&&curRd&&curRd.id===_batchArticleId){
@@ -10966,6 +11365,7 @@ document.getElementById('btnUndo').style.display='inline-block';
 if(contDirMemory&&curRd&&curRd.id){localStorage.setItem('bj_lastDir_'+curRd.id,document.getElementById('dirInput').value);}
 document.getElementById('dirInput').value='';
 showToast('第'+chNum+'章创作完成！'+countWords(finalText)+'字');
+fsAfterChapterGenerated(curRd,chNum,finalText);
 try{if(ld('bj_contQualityOn',true))renderContQualityCard(finalText,document.getElementById('rdContent').parentElement);}catch(e){logError('op',e)}
 if(ld('bj_consistencyCheckOn',false)&&finalText&&finalText.length>=50&&!(_batchContRemain>0)){(function(){var _ccCont=document.getElementById('rdContent')&&document.getElementById('rdContent').parentElement;var _snapId2=curRd?curRd.id:'';if(_ccCont&&_snapId2){setTimeout(function(){showToast('正在进行一致性检测...',3000);doConsistencyCheck(finalText,_snapId2).then(function(r){if(r)renderConsistencyCard(r,_ccCont);}).catch(function(){});},800);}})();}
 if(_batchContRemain>0&&_batchArticleId&&curRd&&curRd.id===_batchArticleId){
@@ -11031,7 +11431,7 @@ const statusIcon=f.status==='done'?'<i class="fas fa-circle-check"></i>':'<i cla
 const statusText=f.status==='done'?'已回收':'待回收';
 item.innerHTML=
 '<div class="fs-item-hdr">'+
-'<span style="font-size:11px;font-weight:600;color:'+(f.status==='done'?'var(--success)':'#f0a030')+'">'+statusIcon+' '+statusText+'</span>'+
+'<span style="font-size:11px;font-weight:600;color:'+(f.status==='done'?'#8a8a96':'#f5b638')+'">'+statusIcon+' '+statusText+'</span>'+
 '<span style="font-size:10px;color:var(--text2)">#'+(i+1)+'</span>'+
 '</div>'+
 '<div class="fs-item-content">'+esc(f.content)+'</div>'+
@@ -11043,6 +11443,8 @@ item.innerHTML=
 '<div class="fs-item-acts">'+
 (f.status!=='done'?'<button class="done-btn" onclick="markFsDone('+i+')"><i class="fas fa-check-circle"></i> 标记已回收</button>':
 '<button onclick="markFsUndo('+i+')"><i class="fas fa-rotate-left"></i> 撤销回收</button>')+
+(curRd&&curRd.type==='long'?'<button onclick="jumpToForeshadow('+i+')" aria-label="跳转到埋设章节"><i class="fas fa-location-arrow"></i> 跳转</button>':'')+
+(f.status!=='done'&&curRd&&curRd.type==='long'?'<button onclick="fsRecoverPrompt('+i+')" aria-label="生成回收伏笔的续写提示词"><i class="fas fa-wand-magic-sparkles"></i> 回收提示词</button>':'')+
 '<button onclick="editFs('+i+')"><i class="fas fa-pencil"></i> 编辑</button>'+
 '<button class="del-btn" onclick="deleteFs('+i+')"><i class="fas fa-trash-alt"></i></button>'+
 '</div>';
@@ -11146,86 +11548,209 @@ showToast('伏笔已删除');
 },true);
 }
 
+// ---- 伏笔：章节解析 / 识别 / 跳转 / 回收提示词 ----
+// 「每章自动识别伏笔」开关：默认关闭（关闭时只在章节生成后提醒，不调用API），状态在设置页切换
+var fsAutoDetect=false;
+var _fsDetectBusy=false;
+
+// 解析"第三章"之类的中文数字；解析不了返回NaN
+function _fsParseChineseNumber(str){
+  var digits={'零':0,'一':1,'二':2,'两':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9};
+  if(!str)return NaN;
+  var total=0,current=0;
+  for(var k=0;k<str.length;k++){
+    var ch=str.charAt(k);
+    if(ch==='十'){total+=(current===0?1:current)*10;current=0;}
+    else if(ch==='百'){total+=(current===0?1:current)*100;current=0;}
+    else if(Object.prototype.hasOwnProperty.call(digits,ch)){current=digits[ch];}
+    else return NaN;
+  }
+  return total+current;
+}
+
+// 把伏笔的"埋设章节"文本（如"第3章"、"3"、"第十二章"）解析成0基章节索引；解析不出来返回-1
+function fsChapterIndex(f){
+  if(!f||typeof f.chapter!=='string')return -1;
+  var m=f.chapter.match(/(\d+)/);
+  if(m){
+    var n=parseInt(m[1],10);
+    return n>=1?n-1:-1;
+  }
+  var cm=f.chapter.match(/([零一二两三四五六七八九十百]+)/);
+  if(cm){
+    var cn=_fsParseChineseNumber(cm[1]);
+    return(!isNaN(cn)&&cn>=1)?cn-1:-1;
+  }
+  return -1;
+}
+
+// 每章的伏笔统计：{章节索引:{pending:未回收数,done:已回收数}}，章节解析不出来的伏笔不计入
+function fsChapterStats(articleId){
+  var stats={};
+  var list=getForeshadows(articleId);
+  if(!Array.isArray(list))return stats;
+  list.forEach(function(f){
+    var idx=fsChapterIndex(f);
+    if(idx<0)return;
+    if(!stats[idx])stats[idx]={pending:0,done:0};
+    if(f&&f.status==='done')stats[idx].done++;else stats[idx].pending++;
+  });
+  return stats;
+}
+
+function _fsCloseOverlayIfShown(){
+  var ov=document.getElementById('foreshadowOv');
+  if(ov&&ov.classList.contains('show'))closeForeshadow();
+}
+
+// 跳转到伏笔埋设的章节（目前定位到章节，不定位到具体段落：伏笔没有记录段落锚点）
+function jumpToForeshadow(idx){
+  if(!curRd||curRd.type!=='long'||!Array.isArray(curRd.chapters)){showToast('只有长篇可以跳转到章节');return;}
+  var list=getForeshadows(curRd.id);
+  if(!Array.isArray(list)||idx<0||idx>=list.length){showToast('找不到这条伏笔');return;}
+  var chIdx=fsChapterIndex(list[idx]);
+  if(chIdx<0||chIdx>=curRd.chapters.length){showToast('找不到这条伏笔对应的章节，请检查"埋设章节"');return;}
+  _fsCloseOverlayIfShown();
+  curCh=chIdx;
+  renderChContent();
+  var modal=document.getElementById('rdModal');
+  if(modal)modal.scrollTop=0;
+  showToast('已跳转到第'+(chIdx+1)+'章');
+}
+
+// 生成"回收这条伏笔"的续写指令，写入续写输入框（追加，不覆盖用户已写的指令）
+function fsRecoverPrompt(idx){
+  if(!curRd||curRd.type!=='long'){showToast('只有长篇可以生成回收提示词');return;}
+  var list=getForeshadows(curRd.id);
+  if(!Array.isArray(list)||idx<0||idx>=list.length){showToast('找不到这条伏笔');return;}
+  var f=list[idx];
+  if(!f||!f.content){showToast('这条伏笔没有内容');return;}
+  if(f.status==='done'){showToast('这条伏笔已经回收了');return;}
+  var dirEl=document.getElementById('dirInput');
+  if(!dirEl){showToast('找不到续写指令输入框');return;}
+  var line='【回收伏笔】本章请自然回收这条伏笔：'+f.content+(f.chapter?'（埋设于'+f.chapter+'）':'')+'。回收要合情合理，不要生硬解释。';
+  var prev=dirEl.value.trim();
+  dirEl.value=prev?prev+'\n'+line:line;
+  try{dirEl.dispatchEvent(new Event('input',{bubbles:true}));}catch(err){}
+  _fsCloseOverlayIfShown();
+  showToast('已写入续写指令，点「续写」即可');
+}
+
+// 给请求加超时，避免网络挂起时界面一直卡在"分析中"
+function _fsWithTimeout(promise,ms){
+  var timer=null;
+  var timeout=new Promise(function(resolve,reject){
+    timer=setTimeout(function(){reject(new Error('请求超时'));},ms);
+  });
+  return Promise.race([promise,timeout]).then(function(v){clearTimeout(timer);return v;},function(err){clearTimeout(timer);throw err;});
+}
+
+// 识别伏笔并写入该作品的伏笔列表。forcedChapterLabel非空时表示text只有这一章内容，章节一律记为该标签。
+// 始终resolve一个结果对象，不抛异常：{ok,added,msg}
+async function runForeshadowDetect(art,text,forcedChapterLabel){
+  if(!art||!art.id)return{ok:false,added:0,msg:'没有可分析的作品'};
+  if(_fsDetectBusy)return{ok:false,added:0,msg:'正在识别中，请稍候'};
+  var cfg=getCurApi();
+  if(!cfg||!cfg.url||!cfg.key)return{ok:false,added:0,msg:'请先在设置中配置API'};
+  if(typeof text!=='string'||countWords(text)<100)return{ok:false,added:0,msg:'文章内容太少，无法分析'};
+  _fsDetectBusy=true;
+  try{
+    var sysMsg='你读过的稿子里，有的伏笔藏在对话里一个字，有的藏在场景描写的细节里，有的藏在角色做了但没说的事里。你的工作就是把这些线索挖出来，归档，标清楚哪些已经收、哪些还悬在那里。\n\n';
+    sysMsg+='【输出格式】每条伏笔单独一行，严格按以下格式：\n';
+    sysMsg+='第X章|伏笔内容简述（20字以内）|是否已回收（是/否）\n\n';
+    sysMsg+='【判断标准】\n';
+    sysMsg+='- 真正的伏笔：埋下时读者察觉不到，但回头看会恍然大悟\n';
+    sysMsg+='- 不算伏笔：普通情节推进、常规人物行为、显而易见的铺垫\n';
+    sysMsg+='- 最多列出10条最重要的，宁缺毋滥\n';
+    sysMsg+='- 后文有明确回收或解释的，标"是"；仍悬而未决的，标"否"\n';
+    sysMsg+='- 只输出伏笔列表，不写分析过程或说明文字\n';
+    if(forcedChapterLabel){
+      sysMsg+='- 下面只有一章内容，章节一律写成「'+forcedChapterLabel+'」\n';
+    }
+    var userMsg='请分析以下文章中的伏笔：\n\n'+text;
+    var messages=[{role:'system',content:sysMsg},{role:'user',content:userMsg}];
+    var result=await _fsWithTimeout(callToolAPINonStream(messages),90000);
+    if(!result)return{ok:false,added:0,msg:'分析失败，请重试'};
+    var lines=String(result).split('\n').filter(function(l){return l.indexOf('|')!==-1;});
+    if(lines.length===0)return{ok:true,added:0,msg:'未识别到明显的伏笔'};
+    var list=getForeshadows(art.id);
+    if(!Array.isArray(list))list=[];
+    var addCount=0;
+    lines.forEach(function(line){
+      var parts=line.split('|');
+      if(parts.length<2)return;
+      var chapter=forcedChapterLabel||parts[0].trim();
+      var content=parts[1].trim();
+      var isDone=!!(parts[2]&&parts[2].indexOf('是')!==-1);
+      if(!content)return;
+      var head=content.substring(0,10);
+      if(list.some(function(f){return f&&typeof f.content==='string'&&f.content.indexOf(head)!==-1;}))return;
+      list.push({
+        content:content,
+        chapter:chapter,
+        planChapter:'',
+        status:isDone?'done':'pending',
+        doneChapter:isDone?'AI识别为已回收':'',
+        createdAt:new Date().toISOString(),
+        aiDetected:true
+      });
+      addCount++;
+    });
+    saveForeshadows(art.id,list);
+    return{ok:true,added:addCount,msg:'AI识别完成，新增'+addCount+'条伏笔'};
+  }catch(e){
+    return{ok:false,added:0,msg:'分析失败：'+((e&&e.message)?e.message:'网络异常')};
+  }finally{
+    _fsDetectBusy=false;
+  }
+}
+
 async function aiDetectForeshadow(){
-if(!curRd){showToast('请先打开一篇文章');return;}
-const cfg=getCurApi();
-if(!cfg.url||!cfg.key){showToast('请先在设置中配置API');return;}
-
-let text='';
-if(curRd.type==='long'&&curRd.chapters){
-curRd.chapters.forEach((ch,i)=>{
-text+='【第'+(i+1)+'章】\n'+ch+'\n\n';
-});
-}else{
-text=curRd.content||'';
+  if(!curRd){showToast('请先打开一篇文章');return;}
+  var art=curRd;
+  var text='';
+  if(art.type==='long'&&Array.isArray(art.chapters)){
+    art.chapters.forEach(function(ch,i){text+='【第'+(i+1)+'章】\n'+ch+'\n\n';});
+  }else{
+    text=art.content||'';
+  }
+  var btn=document.getElementById('aiDetectBtn');
+  if(btn){
+    btn.disabled=true;
+    btn.innerHTML='分析中 <span class="ldots"><span></span><span></span><span></span></span>';
+  }
+  var outcome;
+  try{
+    outcome=await runForeshadowDetect(art,text.substring(0,8000),'');
+  }finally{
+    if(btn){
+      btn.disabled=false;
+      btn.innerHTML='<i class="fas fa-robot"></i> AI识别';
+    }
+  }
+  if(curRd&&curRd.id===art.id)renderForeshadowList();
+  showToast(outcome.msg,3000);
 }
 
-if(countWords(text)<100){showToast('文章内容太少，无法分析');return;}
-
-const btn=document.getElementById('aiDetectBtn');
-btn.disabled=true;
-btn.innerHTML='分析中 <span class="ldots"><span></span><span></span><span></span></span>';
-
-let sysMsg='你读过的稿子里，有的伏笔藏在对话里一个字，有的藏在场景描写的细节里，有的藏在角色做了但没说的事里。你的工作就是把这些线索挖出来，归档，标清楚哪些已经收、哪些还悬在那里。\n\n';
-sysMsg+='【输出格式】每条伏笔单独一行，严格按以下格式：\n';
-sysMsg+='第X章|伏笔内容简述（20字以内）|是否已回收（是/否）\n\n';
-sysMsg+='【判断标准】\n';
-sysMsg+='- 真正的伏笔：埋下时读者察觉不到，但回头看会恍然大悟\n';
-sysMsg+='- 不算伏笔：普通情节推进、常规人物行为、显而易见的铺垫\n';
-sysMsg+='- 最多列出10条最重要的，宁缺毋滥\n';
-sysMsg+='- 后文有明确回收或解释的，标"是"；仍悬而未决的，标"否"\n';
-sysMsg+='- 只输出伏笔列表，不写分析过程或说明文字\n';
-
-const userMsg='请分析以下文章中的伏笔：\n\n'+text.substring(0,8000);
-const messages=[{role:'system',content:sysMsg},{role:'user',content:userMsg}];
-
-let result;
-try{
-  result=await callToolAPINonStream(messages);
-}catch(e){
-  btn.disabled=false;
-  btn.textContent='AI识别';
-  showToast('分析失败：'+(e.message||'网络异常'),3000);
-  return;
-}
-btn.disabled=false;
-btn.textContent='AI识别';
-
-if(!result){showToast('分析失败，请重试');return;}
-
-const lines=result.split('\n').filter(l=>l.includes('|'));
-if(lines.length===0){
-showToast('未识别到明显的伏笔');
-return;
-}
-
-const list=getForeshadows(curRd.id);
-let addCount=0;
-
-lines.forEach(line=>{
-const parts=line.split('|');
-if(parts.length>=2){
-const chapter=parts[0].trim();
-const content=parts[1].trim();
-const isDone=parts[2]&&parts[2].includes('是');
-if(content&&!list.some(f=>f.content.includes(content.substring(0,10)))){
-list.push({
-content:content,
-chapter:chapter,
-planChapter:'',
-status:isDone?'done':'pending',
-doneChapter:isDone?'AI识别为已回收':'',
-createdAt:new Date().toISOString(),
-aiDetected:true
-});
-addCount++;
-}
-}
-});
-
-saveForeshadows(curRd.id,list);
-renderForeshadowList();
-showToast('AI识别完成，新增'+addCount+'条伏笔');
+// 章节生成成功后调用：开关开启 → 自动识别这一章的伏笔；关闭 → 只提醒，不调用API
+function fsAfterChapterGenerated(art,chNum,text){
+  if(!art||!art.id||art.type!=='long'||typeof text!=='string'||!text)return;
+  var label='第'+chNum+'章';
+  var midBatch=(typeof batchContRemain==='number'&&batchContRemain>0);
+  if(fsAutoDetect){
+    runForeshadowDetect(art,text.substring(0,6000),label).then(function(outcome){
+      var ov=document.getElementById('foreshadowOv');
+      if(curRd&&curRd.id===art.id&&ov&&ov.classList.contains('show'))renderForeshadowList();
+      if(outcome.ok&&outcome.added>0)showToast(label+'识别到'+outcome.added+'条新伏笔',3000);
+      else if(!outcome.ok)showToast('伏笔自动识别失败：'+outcome.msg,3000);
+    });
+    return;
+  }
+  if(midBatch)return;
+  // 延后一点再提醒，避免盖住"创作完成"的提示
+  setTimeout(function(){
+    if(curRd&&curRd.id===art.id)showToast(label+'已生成，可打开「伏笔」点AI识别，检查新埋的伏笔',3500);
+  },2600);
 }
 // ==================== 续写质量反馈 ====================
 function contQualityCheck(text){
@@ -11412,16 +11937,18 @@ function closeGenLog(){
   navPop('genLogOv');
   document.getElementById('genLogOv').classList.remove('show');
   document.getElementById('bnav').classList.remove('hide');
+  // 日志页整体关闭，下拉同步收起即可，不播放动画
+  foldSlide(document.getElementById('genLogFilterDrop'),false,'show',true);
 }
 function setGenLogFilter(val,label){
   document.getElementById('genLogFilter').value=val;
   document.getElementById('genLogFilterText').textContent=label;
-  document.getElementById('genLogFilterDrop').style.display='none';
+  foldSlide(document.getElementById('genLogFilterDrop'),false);
   renderGenLogList();
 }
 function toggleGenLogFilter(){
   var d=document.getElementById('genLogFilterDrop');
-  if(d)d.style.display=d.style.display==='none'?'block':'none';
+  if(d)foldSlide(d,!d.classList.contains('show'));
 }
 function renderGenLogList(){
   const list=document.getElementById('genLogList');
@@ -11578,6 +12105,7 @@ globalWorld='';globalRule='';globalBanWords='';
 customSysPrompt='';
 sysPromptEntries=_defaultSysPromptEntries();
 localWorldBindings={};localRuleBindings={};
+worldMap=wmEmptyMap();localWorldMapBindings={};
 localBanWordsBindings={};localStyleBindings={};
 currentWorldBinding='';currentRuleBinding='';
 currentBanBinding='';currentStyleBinding='';
@@ -11588,7 +12116,7 @@ customTraits=[];
 sysPromptP=[];
 savedPhrases=[];
 charRelations=[];npcList=[];
-crWorks=[];resPacks=[];
+crWorks=[];resPacks=[];trashItems=[];
 useStream=true;
 userCard={name:'',bio:'',avatar:''};
 lockSettings={enabled:false,passHash:'',q:'',aHash:''};

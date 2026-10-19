@@ -7,25 +7,26 @@
 ║  script-1-core.js → script-2-content.js → script-3-settings.js → script-4-aitools.js → script-5-system.js
 ║  （原单文件共 40191 行；本文件对应原文件第 4664~9314 行，body 共 4651 行）
 ╠══════════════════════════════════════════════════════════════════
-║   GENERATE ARTICLE   32
-║   收藏夹系统              180
-║   快捷短语收藏             482
-║   READING            1287
-║   阅读页核心              1340
-║   翻页阅读器核心（全面重构）      1479
-║   阅读器浮层菜单            1971
-║   为此卷生成梗概            2464
-║   NOTES              2594
-║   阅读页全屏原文编辑          3195
-║   编辑器内作品更名           3199
-║   IMMERSIVE READ     3468
-║   阅读页折叠工具栏           3570
-║   CONTINUE CHAPTER   3671
-║   UNDO CHAPTER       3961
-║   COPY               3979
-║   COLLECTIONS        4134
-║   收藏页筛选器             4135
-║   弹出菜单公共工具           4394
+║   GENERATE ARTICLE   33
+║   收藏夹系统              181
+║   快捷短语收藏             483
+║   READING            1288
+║   阅读页核心              1341
+║   翻页阅读器核心（全面重构）      1481
+║   阅读器浮层菜单            1973
+║   为此卷生成梗概            2466
+║   NOTES              2596
+║   阅读页全屏原文编辑          3197
+║   编辑器内作品更名           3201
+║   IMMERSIVE READ     3472
+║   阅读页折叠工具栏           3574
+║   CONTINUE CHAPTER   3675
+║   UNDO CHAPTER       3965
+║   COPY               3983
+║   COLLECTIONS        4138
+║   收藏页筛选器             4139
+║   弹出菜单公共工具           4398
+║   新手教程（星笺分步引导）    4695
 ╚══════════════════════════════════════════════════════════════════
 */
 
@@ -817,14 +818,28 @@ function openEditPhraseDialog(idx){
 // 获取短语列表HTML（用于嵌入到其他弹窗，如长按编辑描述弹窗）
 function getPhraseChipsHtml(targetId){
   if(savedPhrases.length===0)return'';
-  var html='<div style="margin-top:8px"><div style="font-size:10px;color:var(--text2);margin-bottom:6px"><i class="fas fa-comment-dots"></i> 快捷短语（点击插入）</div><div style="display:flex;flex-wrap:wrap;gap:6px">';
+  var bodyId='phraseFoldBody_'+targetId;
+  // 折叠栏：默认收起；展开后列表限高可滚动，不会把上方输入框和下方按钮挤出弹窗
+  var html='<div class="phrase-fold">'+
+    '<button type="button" class="phrase-fold-hdr" aria-expanded="false" aria-controls="'+bodyId+'" onclick="togglePhraseFold(this)">'+
+    '<span><i class="fas fa-comment-dots"></i> 快捷短语（'+savedPhrases.length+'）</span><i class="fas fa-chevron-down phrase-fold-ico"></i></button>'+
+    '<div class="phrase-fold-body" id="'+bodyId+'" hidden><div class="phrase-fold-list">';
   savedPhrases.forEach(function(phrase,i){
     var p=typeof phrase==='string'?{title:'',content:phrase}:phrase;
     var label=p.title||p.content.substring(0,15);
     html+='<span class="phrase-chip" onclick="insertPhraseToTarget(\''+targetId+'\','+i+')" style="font-size:11px;padding:5px 10px" title="'+esc(p.content)+'">'+esc(label)+'</span>';
   });
-  html+='</div></div>';
+  html+='</div></div></div>';
   return html;
+}
+
+function togglePhraseFold(btn){
+  if(!btn||!btn.nextElementSibling)return;
+  var body=btn.nextElementSibling;
+  var willOpen=body.hasAttribute('hidden');
+  if(willOpen)body.removeAttribute('hidden');else body.setAttribute('hidden','');
+  btn.setAttribute('aria-expanded',willOpen?'true':'false');
+  btn.classList.toggle('open',willOpen);
 }
 
 function insertPhraseToTarget(targetId,phraseIdx){
@@ -1433,6 +1448,7 @@ const scrollHeight=rdModal.scrollHeight-rdModal.clientHeight;
 const pct=scrollHeight>0?Math.round(scrollTop/scrollHeight*100):0;
 document.getElementById('rdProgressBar').style.width=pct+'%';
 };
+try{ tutScheduleReaderGuide(); }catch(e){ logError('tutScheduleReaderGuide', e); }
 }
 
 function getTotalWords(a){
@@ -2440,11 +2456,12 @@ if(!preserveExpand)_chCatalogExpanded={}; // 重新打开目录：所有分卷/�
 document.getElementById('chPanelTitle').textContent='「'+curRd.title+'」目录';
 document.getElementById('chPanelInfo').textContent='共 '+curRd.chapters.length+' 章 · '+getTotalWords(curRd)+' 字';
 const list=document.getElementById('chPanelList');
+const fsStats=fsChapterStats(curRd.id); // 每章的伏笔统计，用来给目录里的章节打金色/灰色小圆点
 _renderChListGrouped(curRd,list,function(i){
 const wc=countWords(curRd.chapters[i]);
 const item=document.createElement('div');
 item.className='ch-item'+(i===curCh?' act':'');
-const chNotes=getArticleNotes(curRd.id).filter(n=>n.ch===i); const noteTag=chNotes.length>0?' · <i class="fas fa-pen"></i>'+chNotes.length:''; const readTime=Math.ceil(wc/500); const hasFs=getForeshadows(curRd.id).filter(f=>f.chapter&&f.chapter.includes(''+(i+1))).length; const fsTag=hasFs>0?' · <i class="fas fa-bullseye"></i>'+hasFs:''; var chSummary = (curRd.chSummaries && curRd.chSummaries[i]) ? curRd.chSummaries[i] : '';
+const chNotes=getArticleNotes(curRd.id).filter(n=>n.ch===i); const noteTag=chNotes.length>0?' · <i class="fas fa-pen"></i>'+chNotes.length:''; const readTime=Math.ceil(wc/500); const fsSt=fsStats[i]; const fsTag=fsSt?' · <i class="fas fa-circle '+(fsSt.pending>0?'fs-dot-gold':'fs-dot-gray')+'" title="'+(fsSt.pending>0?'有未回收伏笔':'伏笔均已回收')+'" aria-label="'+(fsSt.pending>0?'有未回收伏笔':'伏笔均已回收')+'"></i>'+(fsSt.pending+fsSt.done):''; var chSummary = (curRd.chSummaries && curRd.chSummaries[i]) ? curRd.chSummaries[i] : '';
 item.innerHTML='<span class="ch-item-num" style="font-size:14px;font-weight:700;width:60px;flex-shrink:0">第'+(i+1)+'章</span><div style="flex:1;min-width:0"><span style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block">'+esc((curRd.chapters[i]||'').replace(/\n/g,' ').substring(0,30))+'</span>'+(chSummary?'<span class="ch-summary">'+esc(chSummary)+'</span>':'')+'</div><span class="ch-item-wc" style="flex-shrink:0;font-size:10px;opacity:.7">'+wc+'字 · '+readTime+'min'+noteTag+fsTag+'</span>';
 item.onclick=()=>{curCh=i;renderChContent();closeChapterList();document.getElementById('rdModal').scrollTop=0;};
 _bindChItemLongPressDelete(item,function(){openChAction(curRd,i);});
@@ -3012,12 +3029,15 @@ lastItem.style.animation='noteSlideIn .4s ease';
 
 function toggleNoteSearch(){
 const wrap=document.getElementById('noteSearchWrap');
-if(wrap.style.display==='none'){
-wrap.style.display='block';
-document.getElementById('noteSearchInput').focus();
+const input=document.getElementById('noteSearchInput');
+if(!wrap||!input)return;
+if(!wrap.classList.contains('show')){
+foldSlide(wrap,true);
+// preventScroll：展开动画刚开始时输入框还在被裁剪的区域里，避免浏览器为了露出它去滚动被裁剪的容器
+input.focus({preventScroll:true});
 }else{
-wrap.style.display='none';
-document.getElementById('noteSearchInput').value='';
+foldSlide(wrap,false);
+input.value='';
 renderNotes();
 }
 }
@@ -3167,6 +3187,7 @@ function deleteRdChapterAt(idx){
   if(curRd.chapters.length<=1){showToast('至少保留一章');return;}
   var _chCountBefore=curRd.chapters.length;
   _shiftChapterVersionsAfterDelete(curRd.id,idx,_chCountBefore);
+  _removeChMeta(curRd.id,idx);
   curRd.chapters.splice(idx,1);
   if(curRd.chNames&&curRd.chNames.length>idx)curRd.chNames.splice(idx,1);
   if(curRd.chOutlines&&curRd.chOutlines.length>idx)curRd.chOutlines.splice(idx,1);
@@ -3417,6 +3438,8 @@ function rdEditGoToMatch(){
   document.getElementById('rdEditSearchCount').textContent=(_rdEditSearchIdx+1)+' / '+_rdEditSearchMatches.length;
 }
 function closeReading(){
+// 阅读页关闭时一并结束新手引导，避免遮罩留在已经消失的界面上
+try{ tutDismiss(); }catch(e){ logError('tutDismiss', e); }
 // 如果正在生成，先确认
 if(isGen){
 showDlg('正在生成中','关闭将停止当前生成，确定要离开吗？',function(){
@@ -3452,7 +3475,8 @@ if(_bnavEl){ _bnavEl.style.transform = 'translateZ(0)'; setTimeout(function(){ _
 var _alist = document.querySelectorAll('.acard');
 for(var _i=0;_i<_alist.length;_i++){ _alist[_i].style.transform='translateZ(0)'; }
 setTimeout(function(){ var _al=document.querySelectorAll('.acard'); for(var _i=0;_i<_al.length;_i++){_al[_i].style.transform='';} }, 100);
-document.getElementById('rdSettingsPanel').classList.remove('show');
+// 阅读器整体关闭，设置面板同步收起即可，不播放动画
+foldSlide(document.getElementById('rdSettingsPanel'),false,'show',true);
 document.getElementById('bnav').classList.remove('hide');
 closeNotePanel();
 closeChapterList();
@@ -3584,7 +3608,8 @@ closeAllToolPanels();
 }
 }
 function toggleRdSettings(){
-document.getElementById('rdSettingsPanel').classList.toggle('show');
+const panel=document.getElementById('rdSettingsPanel');
+if(panel)foldSlide(panel,!panel.classList.contains('show'));
 }
 
 function setRdFont(v){
@@ -4570,9 +4595,13 @@ const book=cols.books.find(b=>b.id===id);
 if(!book)return;
 const chCount=book.chapters?book.chapters.length:0;
 const wc=getTotalWords(book);
-showDlg('删除确认','确定要删除《'+book.title+'》吗？\n\n'+chCount+' 章 · '+wc+' 字\n\n此操作不可恢复！',()=>{
+showDlg('删除确认','确定要删除《'+book.title+'》吗？\n\n'+chCount+' 章 · '+wc+' 字\n\n会放进回收站，保留7天，期间可以恢复。',()=>{
+const target=cols.books.find(b=>b.id===id);
+if(!target){renderCollections();return;}
+// 先放进回收站再从书架移除：回收站写入失败时作品保持原样，不会凭空消失
+if(!_moveToTrash('colBook',target)){showToast('放入回收站失败，作品未删除',4000);return;}
 cols.books=cols.books.filter(b=>b.id!==id);
-sv(K.cols,cols);renderCollections();showToast('已删除');
+sv(K.cols,cols);renderCollections();showToast('已移入回收站（保留7天）');
 },true);
 }
 
@@ -4609,9 +4638,12 @@ function shareShort(id){
   );
 }
 function deleteShort(id){
-showDlg('删除确认','确定要删除这篇短文吗？',()=>{
+showDlg('删除确认','确定要删除这篇短文吗？\n\n会放进回收站，保留7天，期间可以恢复。',()=>{
+const target=cols.shorts.find(s=>s.id===id);
+if(!target){renderCollections();return;}
+if(!_moveToTrash('colShort',target)){showToast('放入回收站失败，短文未删除',4000);return;}
 cols.shorts=cols.shorts.filter(s=>s.id!==id);
-sv(K.cols,cols);renderCollections();showToast('已删除');
+sv(K.cols,cols);renderCollections();showToast('已移入回收站（保留7天）');
 },true);
 }
 // 短篇卡片菜单"复制"：不依赖当前是否正在阅读该短篇（curRd），直接按id从cols.shorts取内容复制
@@ -4679,4 +4711,348 @@ function exportShort(id){
   var s=cols.shorts.find(function(x){return x.id===id;});
   if(!s){showToast('找不到该短篇');return;}
   doExportWork(s,true);
+}
+
+// ==================== 新手教程：星笺分步引导 ====================
+// 整体流程：首次测试API通过 → 星笺询问是否跟着教学 → 快速向导 → 作坊引导 → 首次打开长篇时的阅读页引导
+// 状态标志（ld/sv 持久化）：
+//   bj_tutPromptDone    询问弹窗已处理（点"好的"/"不需要"/点遮罩关闭都算），之后不再询问
+//   bj_tutAccepted      用户点了"好的"；作坊引导和阅读页引导只在它为真时才会出现
+//   bj_tutWorkshopDone / bj_tutReaderDone   对应引导已经展示过，各只出现一次
+var _tutSession=null;     // 当前正在进行的引导；同一时间只允许一个
+var _tutOfferTimer=null;  // 询问弹窗的延迟定时器
+var _tutWsTimer=null;     // 作坊引导的延迟定时器
+var _tutRdTimer=null;     // 阅读页引导的延迟定时器
+
+function _tutUserName(){
+  return (typeof userCard!=='undefined' && userCard && userCard.name)?userCard.name:'你';
+}
+function _tutIsAccepted(){
+  return !!ld('bj_tutAccepted',false);
+}
+// 元素在文档里且有实际尺寸
+function _tutElVisible(el){
+  if(!el || !document.body.contains(el)) return false;
+  var r=el.getBoundingClientRect();
+  return r.width>0 && r.height>0;
+}
+// 在"可见"之外，再确认元素没被别的浮层盖住（取中心点命中测试；中心点在屏幕外时无法判断，按没被盖住处理）
+function _tutElReachable(el){
+  if(!_tutElVisible(el)) return false;
+  var r=el.getBoundingClientRect();
+  var x=r.left+r.width/2, y=r.top+r.height/2;
+  if(x<0 || y<0 || x>window.innerWidth || y>window.innerHeight) return true;
+  var hit=document.elementFromPoint(x,y);
+  return !!hit && (hit===el || el.contains(hit) || hit.contains(el));
+}
+
+// ---------- 第一步：测试连接通过后询问 ----------
+// 只对全新用户、且从没问过的情况生效
+function tutOfferAfterApiTest(){
+  if(!ld('bj_isNewUserFlag',false) || ld('bj_tutPromptDone',false)) return;
+  if(_tutOfferTimer) return; // 已在排队，连续测试时不重复弹
+  // 延后一点，让用户先看到"测试通过"的提示
+  _tutOfferTimer=setTimeout(function(){
+    _tutOfferTimer=null;
+    try{
+      // 延迟期间状态可能变了，重新确认
+      if(ld('bj_tutPromptDone',false)) return;
+      var dlg=document.getElementById('dlgOv');
+      var okBtn=document.getElementById('dlgOkBtn');
+      var cancelBtn=document.querySelector('#dlgOv .dlg-cancel');
+      // 确认弹窗是全局共用的一个节点：别的弹窗正在显示时不覆盖它，留到下次测试通过再问
+      if(!dlg || !okBtn || !cancelBtn || dlg.classList.contains('show')) return;
+      showDlg('星笺',_tutUserName()+'，API连上了。接下来要设定上下文提示词，AI才知道你想写什么样的故事。要不要星笺带你一起做一遍？',function(){
+        sv('bj_tutAccepted',true);
+        try{ openWizard(); }catch(e){ logError('tutOpenWizard',e); }
+      });
+      okBtn.textContent='好的';
+      cancelBtn.style.display='';
+      cancelBtn.textContent='不需要';
+      // 弹窗已经显示，之后无论怎么关闭都算处理过，不再重复询问
+      sv('bj_tutPromptDone',true);
+    }catch(e){ logError('tutOfferAfterApiTest',e); }
+  },700);
+}
+
+// ---------- 第二步：向导完成后进入作坊引导 ----------
+// 向导"完成并应用"后调用。已同意教学且作坊引导还没展示过时，带用户去作坊并安排引导；返回 true 表示后续由教程接管
+function tutAfterWizardApplied(){
+  try{
+    if(!_tutIsAccepted() || ld('bj_tutWorkshopDone',false)) return false;
+    var wsBtn=document.querySelector('.bnav-i');
+    if(!wsBtn) return false;
+    // 向导从API设置页的询问弹窗进来时，那一页还盖在上面，先关掉，否则作坊会被遮住
+    var apiModal=document.getElementById('setModalApi');
+    if(apiModal && apiModal.classList.contains('show')) closeSetModal('api');
+    if(!wsBtn.classList.contains('act')) switchPage('workshop',wsBtn);
+    tutScheduleWorkshopGuide();
+    return true;
+  }catch(e){
+    logError('tutAfterWizardApplied',e);
+    return false;
+  }
+}
+
+// 每次切换到某个页面后调用（switchPage 内）
+function tutOnPageEnter(pg){
+  if(pg==='workshop') tutScheduleWorkshopGuide();
+}
+
+function tutScheduleWorkshopGuide(){
+  if(!_tutIsAccepted() || ld('bj_tutWorkshopDone',false) || _tutWsTimer) return;
+  // 等页面切换动画结束、元素位置稳定后再开始
+  _tutWsTimer=setTimeout(function(){
+    _tutWsTimer=null;
+    try{ tutStartWorkshopGuide(); }catch(e){ logError('tutStartWorkshopGuide',e); }
+  },700);
+}
+
+function tutStartWorkshopGuide(){
+  if(_tutSession || !_tutIsAccepted() || ld('bj_tutWorkshopDone',false)) return false;
+  var pg=document.getElementById('pg-workshop');
+  var input=document.getElementById('searchInput');
+  // 作坊不是当前页、或输入框被别的浮层盖住时不开始，也不记为已展示，留给下一次进入作坊
+  if(!pg || !pg.classList.contains('act') || !_tutElReachable(input)) return false;
+  sv('bj_tutWorkshopDone',true);
+  return tutRun([
+    {pick:function(){
+      return {el:document.getElementById('searchInput'),text:'想写什么，就写在这儿。长按输入框可以放大，写长一点也不挤。'};
+    }},
+    {pick:function(){
+      return {el:document.getElementById('tagsWrap'),text:'标签最多选六个，也能用来筛出同类型的作品。想清空的话，双击任意一个标签就行。'};
+    }},
+    {pick:function(){
+      var previewBtn=document.querySelector('#pg-workshop button[onclick="showSettingPreview()"]');
+      if(_tutElVisible(previewBtn)) return {el:previewBtn,text:'点「查看当前生效设定」，确认没用错，就可以点「生成」了。'};
+      // 精简模式下这个按钮被隐藏，改为直接指向生成按钮
+      return {el:document.getElementById('btnGen'),text:'设定确认好了，就点「生成」吧。'};
+    }}
+  ]);
+}
+
+// ---------- 第三步：第一次打开长篇时的阅读页引导 ----------
+// openReading 末尾调用
+function tutScheduleReaderGuide(){
+  if(!_tutIsAccepted() || ld('bj_tutReaderDone',false) || _tutRdTimer) return;
+  // 续写相关的内容只有长篇才有
+  if(!curRd || curRd.type!=='long') return;
+  var rdId=curRd.id;
+  // 等翻页阅读器分页完成后再开始
+  _tutRdTimer=setTimeout(function(){
+    _tutRdTimer=null;
+    try{ tutStartReaderGuide(rdId); }catch(e){ logError('tutStartReaderGuide',e); }
+  },900);
+}
+
+function tutStartReaderGuide(rdId){
+  if(_tutSession || !_tutIsAccepted() || ld('bj_tutReaderDone',false)) return false;
+  var modal=document.getElementById('rdModal');
+  // 阅读页已关闭、或已换成别的作品时不再开始
+  if(!modal || !modal.classList.contains('show') || !curRd || curRd.id!==rdId || !_rdOverlayEl) return false;
+  sv('bj_tutReaderDone',true);
+  // 要指向浮层里的按钮，所以先把浮层呼出来；引导结束后再收起，恢复成正常阅读状态
+  _rdShowOverlay();
+  var topBtns=function(){
+    return _rdOverlayEl?_rdOverlayEl.querySelectorAll('.rd-reader-ov-top .rd-reader-ov-btn'):[];
+  };
+  var started=tutRun([
+    {pick:function(){
+      var b=topBtns();
+      return {el:b.length?b[b.length-1]:null,text:'想续写的话，得先点右上角的爱心收藏，没收藏的作品没法续写。'};
+    }},
+    {pick:function(){
+      var b=topBtns();
+      return {el:b.length>=2?b[b.length-2]:null,text:'旁边的铅笔是在线编辑，想改哪里直接改。'};
+    }},
+    {pick:function(){
+      // 续写区只在"长篇且已收藏"时才存在；还没收藏时找不到它，就居中讲解
+      var quick=_rdOverlayEl?_rdOverlayEl.querySelector('[onclick*="quickContinue"]'):null;
+      var how='快速续写直接往下写，更快；智能续写会先梳理前情和人物状态，更稳，不容易跑偏。';
+      if(quick && quick.parentElement) return {el:quick.parentElement,text:how};
+      return {el:null,text:'收藏之后就会出现续写按钮。'+how};
+    }},
+    {pick:function(){
+      var save=_rdOverlayEl?_rdOverlayEl.querySelector('[onclick*="manualSaveSnapshot"]'):null;
+      return {el:save,text:'写到喜欢的地方记得手动存档，也要定期去设置里导出备份。数据都在本机，丢了星笺也找不回来。其他的，你慢慢探索吧。'};
+    }}
+  ],function(){
+    // 引导结束（含被返回键、关闭阅读页打断）后收起浮层
+    if(_rdOverlayEl) _rdHideOverlay();
+  });
+  if(!started && _rdOverlayEl) _rdHideOverlay();
+  return started;
+}
+
+// ---------- 分步引导引擎 ----------
+// steps: [{pick:function(){ return {el:目标元素或null, text:'星笺说的话'}; }}]
+// el 为 null 时不高亮，气泡居中显示。onEnd 在引导结束时（无论正常结束还是被打断）调用一次。返回 true 表示引导已开始
+function tutRun(steps,onEnd){
+  tutDismiss();
+  // 开始前先筛掉目标已经不可见的步骤，这样进度"1 / N"里的 N 是准确的
+  var usable=steps.filter(function(st){
+    var p=null;
+    try{ p=st.pick(); }catch(e){ logError('tutPick',e); }
+    return !!p && typeof p.text==='string' && (!p.el || _tutElVisible(p.el));
+  });
+  if(usable.length===0) return false;
+
+  var blocker=document.createElement('div');
+  blocker.className='xj-tut-blocker';
+  // 引导期间吞掉点击和滚轮，避免用户操作把高亮位置带偏
+  blocker.addEventListener('click',function(e){e.stopPropagation();});
+  blocker.addEventListener('wheel',function(e){e.preventDefault();},{passive:false});
+
+  var spot=document.createElement('div');
+  spot.className='xj-tut-spot';
+  spot.setAttribute('aria-hidden','true');
+  spot.style.transition='none'; // 第一次定位不要从左上角滑过来
+
+  var bubble=document.createElement('div');
+  bubble.className='xj-tut-bubble';
+  bubble.setAttribute('role','dialog');
+  bubble.setAttribute('aria-label','星笺新手引导');
+  bubble.innerHTML=
+    '<div class="xj-tut-row"><img class="xj-tut-avatar" src="./photos/xinx.png" alt="星笺"><div class="xj-tut-text"></div></div>'+
+    '<div class="xj-tut-foot"><span class="xj-tut-count"></span><span class="xj-tut-btns"></span></div>';
+
+  var s={
+    steps:usable,idx:0,cur:null,onEnd:onEnd,raf:0,settleTimer:null,
+    nodes:{
+      blocker:blocker,spot:spot,bubble:bubble,
+      text:bubble.querySelector('.xj-tut-text'),
+      count:bubble.querySelector('.xj-tut-count'),
+      btns:bubble.querySelector('.xj-tut-btns')
+    }
+  };
+  // 窗口尺寸变化或任意容器滚动后，高亮框和气泡要跟着目标重新定位；合并到下一帧，避免连续触发
+  s.onReflow=function(){
+    if(s.raf) return;
+    s.raf=requestAnimationFrame(function(){ s.raf=0; _tutPlace(s); });
+  };
+  // 在捕获阶段拦截 Esc，否则全局的 Esc 处理会连带把阅读页等界面关掉
+  s.onKey=function(e){
+    if(e.key==='Escape'){ e.preventDefault(); e.stopPropagation(); tutDismiss(); }
+  };
+
+  _tutSession=s;
+  document.body.appendChild(blocker);
+  document.body.appendChild(spot);
+  document.body.appendChild(bubble);
+  window.addEventListener('resize',s.onReflow);
+  window.addEventListener('scroll',s.onReflow,true);
+  document.addEventListener('keydown',s.onKey,true);
+  navPush('xjTutOv');
+  _tutRenderStep(s);
+  requestAnimationFrame(function(){ spot.style.transition=''; });
+  return true;
+}
+
+function _tutMakeBtn(label,extraClass,onClick){
+  var b=document.createElement('button');
+  b.type='button';
+  b.className='xj-tut-btn'+(extraClass?' '+extraClass:'');
+  b.textContent=label;
+  b.onclick=function(){
+    // 点击瞬间就禁用，防止连点让同一步操作触发多次；点完后要么整个气泡被移除，要么按钮被下一步重建
+    b.disabled=true;
+    onClick();
+  };
+  return b;
+}
+
+function _tutRenderStep(s){
+  if(_tutSession!==s) return;
+  // 找到下一个目标仍然可见的步骤；目标已经消失的步骤直接跳过
+  var picked=null;
+  while(s.idx<s.steps.length){
+    var p=null;
+    try{ p=s.steps[s.idx].pick(); }catch(e){ logError('tutPick',e); }
+    if(p && typeof p.text==='string' && (!p.el || _tutElVisible(p.el))){ picked=p; break; }
+    s.idx++;
+  }
+  if(!picked){ tutDismiss(); return; }
+
+  s.cur=picked;
+  var isLast=(s.idx>=s.steps.length-1);
+  s.nodes.text.textContent=picked.text;
+  s.nodes.count.textContent=(s.idx+1)+' / '+s.steps.length;
+  s.nodes.btns.innerHTML='';
+  if(!isLast) s.nodes.btns.appendChild(_tutMakeBtn('跳过','',function(){ tutDismiss(); }));
+  var nextBtn=_tutMakeBtn(isLast?'知道了':'下一步','primary',function(){
+    if(isLast){ tutDismiss(); return; }
+    s.idx++;
+    _tutRenderStep(s);
+  });
+  s.nodes.btns.appendChild(nextBtn);
+
+  // 目标不在可视区时先滚进来；只在切换步骤时滚一次，重新定位时不滚，避免和滚动监听互相触发
+  if(picked.el){
+    var r=picked.el.getBoundingClientRect();
+    if(r.top<0 || r.bottom>window.innerHeight){
+      try{ picked.el.scrollIntoView({block:'center'}); }catch(e){}
+    }
+  }
+  _tutPlace(s);
+  try{ nextBtn.focus({preventScroll:true}); }catch(e){}
+  // 浮层淡入动画、滚动结束后位置会有细微偏移，稍后再校准一次
+  if(s.settleTimer) clearTimeout(s.settleTimer);
+  s.settleTimer=setTimeout(function(){ s.settleTimer=null; _tutPlace(s); },350);
+}
+
+// 根据当前步骤的目标，摆放高亮框和气泡
+function _tutPlace(s){
+  if(_tutSession!==s || !s.cur) return;
+  var vw=window.innerWidth, vh=window.innerHeight;
+  var spot=s.nodes.spot, bubble=s.nodes.bubble, blocker=s.nodes.blocker;
+  var bw=bubble.offsetWidth, bh=bubble.offsetHeight;
+  var margin=12, pad=6, gap=12;
+  var el=s.cur.el;
+  var left, top;
+  // 目标还在文档里才高亮；已被移除（如浮层被重建）就退化成居中显示，不留悬空的高亮框
+  if(el && _tutElVisible(el)){
+    var r=el.getBoundingClientRect();
+    spot.style.display='block';
+    spot.style.left=Math.round(r.left-pad)+'px';
+    spot.style.top=Math.round(r.top-pad)+'px';
+    spot.style.width=Math.round(r.width+pad*2)+'px';
+    spot.style.height=Math.round(r.height+pad*2)+'px';
+    blocker.classList.remove('xj-tut-dim');
+    var spaceBelow=vh-(r.bottom+pad), spaceAbove=r.top-pad;
+    if(spaceBelow>=bh+gap+margin) top=r.bottom+pad+gap;
+    else if(spaceAbove>=bh+gap+margin) top=r.top-pad-gap-bh;
+    else top=(r.top+r.height/2>vh/2)?margin:vh-bh-margin; // 上下都放不下：放到与目标相反的半屏
+    left=r.left+r.width/2-bw/2;
+  }else{
+    spot.style.display='none';
+    blocker.classList.add('xj-tut-dim'); // 没有高亮框时由遮罩自己负责变暗
+    top=(vh-bh)/2;
+    left=(vw-bw)/2;
+  }
+  left=Math.max(margin,Math.min(vw-bw-margin,left));
+  top=Math.max(margin,Math.min(vh-bh-margin,top));
+  bubble.style.left=Math.round(left)+'px';
+  bubble.style.top=Math.round(top)+'px';
+}
+
+// 结束引导并清理全部痕迹（遮罩、监听器、定时器、返回栈层级）；没有进行中的引导时也可安全调用
+function tutDismiss(){
+  if(_tutWsTimer){ clearTimeout(_tutWsTimer); _tutWsTimer=null; }
+  if(_tutRdTimer){ clearTimeout(_tutRdTimer); _tutRdTimer=null; }
+  var s=_tutSession;
+  if(!s) return;
+  _tutSession=null;
+  if(s.raf) cancelAnimationFrame(s.raf);
+  if(s.settleTimer) clearTimeout(s.settleTimer);
+  window.removeEventListener('resize',s.onReflow);
+  window.removeEventListener('scroll',s.onReflow,true);
+  document.removeEventListener('keydown',s.onKey,true);
+  ['blocker','spot','bubble'].forEach(function(k){
+    var n=s.nodes[k];
+    if(n && n.parentNode) n.parentNode.removeChild(n);
+  });
+  navPop('xjTutOv');
+  if(typeof s.onEnd==='function'){
+    try{ s.onEnd(); }catch(e){ logError('tutOnEnd',e); }
+  }
 }

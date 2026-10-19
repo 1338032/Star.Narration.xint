@@ -106,6 +106,8 @@ const map={api:'setModalApi',char:'setModalChar',world:'setModalWorld',style:'se
 const id=map[type];if(!id)return;
 // 关闭 API 设置时清理模型列表面板，避免残留展开状态
 if(type==='api'){
+  // 先取消还在进行的模型拉取，否则它返回后会把结果写回已经关闭、已清空的面板
+  if(typeof _cancelModelFetch==='function')_cancelModelFetch();
   var _mla=document.getElementById('modelListArea');
   if(_mla)_mla.innerHTML='';
   var _tmla=document.getElementById('toolModelListArea');
@@ -144,7 +146,7 @@ function showApiGuideOnboarding(){
 
   var skinClass=(typeof xjSkin!=='undefined' && xjSkin && xjSkin!=='default')?(' skin-'+xjSkin):'';
   var bubble=document.createElement('div');
-  bubble.className='xj-gb-bubble'+skinClass;
+  bubble.className='xj-gb-bubble api-guide-bubble'+skinClass;
   var uName=(typeof userCard!=='undefined' && userCard && userCard.name)?userCard.name:'你';
   bubble.textContent=uName+'，记得点这里看配置教程哦～也可以自己上网搜「API使用教程」多了解一下。想快速用起来的话，可以试试注册公益站或中转站；不过站点质量参差不齐，星笺没法保证一定好用，请自行甄别～';
   bubble.style.visibility='hidden';
@@ -194,7 +196,12 @@ function showApiGuideOnboarding(){
   window._apiGuideDismiss=dismiss;
   document.addEventListener('click',dismiss,true);
 }
-function toggleGrp(el){el.classList.toggle('exp');el.nextElementSibling.classList.toggle('show');}
+function toggleGrp(el){
+  const content=el.nextElementSibling;
+  if(!content)return;
+  el.classList.toggle('exp');
+  foldSlide(content,!content.classList.contains('show'));
+}
 
 // API Presets
 function saveApiPreset(){
@@ -216,7 +223,7 @@ function renderApiPresets(){
 const l=document.getElementById('apiPL');l.innerHTML='';
 apiP.forEach((p,i)=>{
 const it=document.createElement('div');it.className='pitem';
-var hasToolApi=p.toolUrl||p.toolKey||p.toolModel; it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc(p.model||'')+(hasToolApi?' + <i class="fas fa-tools"></i>工具API':'')+')</span></span><div class="pitem-a"><button class="btn-use" onclick="useApiP('+i+')">使用</button><button class="btn-del" onclick="delApiP('+i+')">删除</button></div>';
+var hasToolApi=p.toolUrl||p.toolKey||p.toolModel; it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc(p.model||'')+(hasToolApi?' + <i class="fas fa-tools"></i>工具API':'')+')</span></span><div class="pitem-a"><button class="btn-use" onclick="useApiP('+i+')">使用</button><button class="btn-ow" onclick="overwritePresetByType(&quot;api&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delApiP('+i+')">删除</button></div>';
 l.appendChild(it);
 });
 }
@@ -268,7 +275,7 @@ const l=document.getElementById('charPL');l.innerHTML='';
 charP.forEach((p,i)=>{
 const it=document.createElement('div');it.className='pitem';
 const charNames=(p.characters||[]).map(c=>c.name).filter(Boolean).join('、')||'未命名';
-it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc(charNames)+')</span></span><div class="pitem-a"><button class="btn-use" onclick="useCharP('+i+')">使用</button><button class="btn-del" onclick="delCharP('+i+')">删除</button></div>';
+it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc(charNames)+')</span></span><div class="pitem-a"><button class="btn-use" onclick="useCharP('+i+')">使用</button><button class="btn-ow" onclick="overwritePresetByType(&quot;char&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delCharP('+i+')">删除</button></div>';
 l.appendChild(it);
 });
 }
@@ -307,7 +314,7 @@ showToast('已清空世界观内容');
 }
 function saveWorldPreset(){
 showInp('保存世界观预设','为世界观起个名字',name=>{
-worldP.push({name,desc:document.getElementById('worldDesc').value,minWords:parseInt(document.getElementById('minWords').value)||800});
+worldP.push({name,desc:document.getElementById('worldDesc').value,minWords:parseInt(document.getElementById('minWords').value)||800,map:worldMap.img?wmCloneMap(worldMap):null});
 sv(K.worldP,worldP);saveCurSettings();renderWorldPresets();if(_presetType){renderPresetModalList();}showToast('世界观预设已保存');
 });
 }
@@ -315,15 +322,28 @@ function renderWorldPresets(){
 const l=document.getElementById('worldPL');l.innerHTML='';
 worldP.forEach((p,i)=>{
 const it=document.createElement('div');it.className='pitem';
-it.innerHTML='<span class="pitem-n">'+esc(p.name)+'</span><div class="pitem-a"><button class="btn-use" onclick="useWorldP('+i+')">使用</button><button class="btn-del" onclick="delWorldP('+i+')">删除</button></div>';
+it.innerHTML='<span class="pitem-n">'+esc(p.name)+'</span><div class="pitem-a"><button class="btn-use" onclick="useWorldP('+i+')">使用</button><button class="btn-ow" onclick="overwritePresetByType(&quot;world&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delWorldP('+i+')">删除</button></div>';
 l.appendChild(it);
 });
 }
 function useWorldP(i){
 const p=worldP[i];
+if(!p)return;
+// 当前已有地图且与预设里的地图不同时，先确认再替换，避免静默丢失（模板切换走静默流程，和文字一样直接替换）
+if(!_silentPresetApply&&worldMap.img&&!wmMapsEqual(worldMap,wmSanitizeMap(p.map))){
+showDlg('替换当前地图','使用该世界观预设会替换当前的世界地图（包括分区、地点戳、关联线），当前地图的数据将丢失。\n\n确定继续吗？',function(){_applyWorldPreset(p);},true);
+return;
+}
+_applyWorldPreset(p);
+}
+function _applyWorldPreset(p){
 document.getElementById('worldDesc').value=p.desc||'';
 document.getElementById('minWords').value=p.minWords||800;
 currentWorldPresetName=p.name||'';sv('bj_currentWorldPresetName',currentWorldPresetName);
+// 预设里没有地图时当前地图被清空：预设代表一整套世界观，和文字的处理保持一致
+worldMap=wmSanitizeMap(p.map);
+sv('bj_worldMap',worldMap);
+if(typeof wmRenderInline==='function')wmRenderInline();
 saveCurSettings();
 if(!_silentPresetApply)showToast('已加载世界观: '+p.name);
 refreshAllCounters();
@@ -356,7 +376,7 @@ function renderStylePresets(){
 const l=document.getElementById('stylePL');if(!l)return;l.innerHTML='';
 styleP.forEach((p,i)=>{
 const it=document.createElement('div');it.className='pitem';
-it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc((p.desc||'').substring(0,20))+'...)</span></span><div class="pitem-a"><button class="btn-use" onclick="useStyleP('+i+')">使用</button><button class="btn-del" onclick="delStyleP('+i+')">删除</button></div>';
+it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc((p.desc||'').substring(0,20))+'...)</span></span><div class="pitem-a"><button class="btn-use" onclick="useStyleP('+i+')">使用</button><button class="btn-ow" onclick="overwritePresetByType(&quot;style&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delStyleP('+i+')">删除</button></div>';
 l.appendChild(it);
 });
 }
@@ -399,7 +419,7 @@ function renderRulePresets(){
 const l=document.getElementById('rulePL');if(!l)return;l.innerHTML='';
 ruleP.forEach((p,i)=>{
 const it=document.createElement('div');it.className='pitem';
-it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc((p.desc||'').substring(0,20))+'...)</span></span><div class="pitem-a"><button class="btn-use" onclick="useRuleP('+i+')">使用</button><button class="btn-del" onclick="delRuleP('+i+')">删除</button></div>';
+it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc((p.desc||'').substring(0,20))+'...)</span></span><div class="pitem-a"><button class="btn-use" onclick="useRuleP('+i+')">使用</button><button class="btn-ow" onclick="overwritePresetByType(&quot;rule&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delRuleP('+i+')">删除</button></div>';
 l.appendChild(it);
 });
 }
@@ -443,7 +463,7 @@ const l=document.getElementById('banWordsPL');if(!l)return;l.innerHTML='';
 banWordsP.forEach((p,i)=>{
 const wordCount=(p.desc||'').split('\n').filter(w=>w.trim()).length;
 const it=document.createElement('div');it.className='pitem';
-it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+wordCount+'个词)</span></span><div class="pitem-a"><button class="btn-use" onclick="useBanWordsP('+i+')">使用</button><button class="btn-del" onclick="delBanWordsP('+i+')">删除</button></div>';
+it.innerHTML='<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+wordCount+'个词)</span></span><div class="pitem-a"><button class="btn-use" onclick="useBanWordsP('+i+')">使用</button><button class="btn-ow" onclick="overwritePresetByType(&quot;ban&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delBanWordsP('+i+')">删除</button></div>';
 l.appendChild(it);
 });
 }
@@ -492,7 +512,7 @@ function renderFontPresets(){
       '<span class="pitem-n">'+esc(p.name)+' <span style="font-size:9px;color:var(--text2)">('+esc((p.url||'').substring(0,30))+'...)</span></span>'+
       '<div class="pitem-a">'+
         '<button class="btn-use" onclick="useFontP('+i+')">使用</button>'+
-        '<button class="btn-del" onclick="delFontP('+i+')">删除</button>'+
+        '<button class="btn-ow" onclick="overwritePresetByType(&quot;font&quot;,'+i+')">覆盖</button><button class="btn-del" onclick="delFontP('+i+')">删除</button>'+
       '</div>';
     l.appendChild(it);
   });
@@ -527,6 +547,7 @@ function renderSysPromptPresets(){
       <span class="pitem-n">${esc(p.name)} <span style="font-size:9px;color:var(--text2)">(${descTxt})</span></span>
       <div class="pitem-a">
         <button class="btn-use" onclick="useSysPromptPreset(${i})">使用</button>
+        <button class="btn-ow" onclick="overwritePresetByType('sysPrompt',${i})">覆盖</button>
         <button class="btn-del" onclick="delSysPromptPreset(${i})">删除</button>
       </div>
     `;
@@ -610,6 +631,10 @@ sv('bj_currentCharPresetName',currentCharPresetName);
 // 加载局部世界观
 const localWorld=localWorldBindings[presetName]||'';
 document.getElementById('worldDesc').value=localWorld;
+// 局部世界观的地图和文字用同一个键读取
+worldMap=wmBoundMap(presetName);
+sv('bj_worldMap',worldMap);
+if(typeof wmRenderInline==='function')wmRenderInline();
 
 // 加载局部规则
 const localRule=localRuleBindings[presetName]||'';
@@ -652,11 +677,18 @@ function switchWorldBinding(presetName){
 if(currentWorldBinding){
 localWorldBindings[currentWorldBinding]=document.getElementById('worldDesc').value||'';
 sv('bj_localWorldBindings',localWorldBindings);
+// 离开旧绑定前，把当前地图存回旧绑定的槽位
+if(worldMap.img)localWorldMapBindings[currentWorldBinding]=wmCloneMap(worldMap);
+else delete localWorldMapBindings[currentWorldBinding];
+sv('bj_localWorldMapBindings',localWorldMapBindings);
 }
 currentWorldBinding=presetName;
 sv('bj_currentWorldBinding',currentWorldBinding);
 const content=presetName?localWorldBindings[presetName]||'':'';
 document.getElementById('worldDesc').value=content;
+worldMap=presetName?wmBoundMap(presetName):wmEmptyMap();
+sv('bj_worldMap',worldMap);
+if(typeof wmRenderInline==='function')wmRenderInline();
 const el=document.getElementById('worldDesc');
 if(el) limitTextarea(el,3000,'lwCount');
 if(presetName)showToast('已切换到「'+presetName+'」的世界观');
@@ -1372,6 +1404,45 @@ function toggleSimpleUiSwitch(){
   updateSimpleUiSwitch();
   showToast(ap.simpleUI?'已开启简洁模式':'已关闭简洁模式');
 }
+// ==================== 毛玻璃效果 ====================
+// 默认开启：老用户的 ap 里没有 glassUI 字段，只有显式为 false 才算关闭
+function isGlassUiOn(){
+  return !(ap&&ap.glassUI===false);
+}
+
+// class 挂在 <html> 而不是 <body>：setTheme / applyAppearance / quickThemeSwitch 都会整体重置 body.className，挂在 body 上切主题时会被清掉
+function applyGlassUiClass(){
+  if(isGlassUiOn()){
+    document.documentElement.classList.add('glass-ui');
+  }else{
+    document.documentElement.classList.remove('glass-ui');
+  }
+}
+
+function updateGlassUiSwitch(){
+  const cb=document.getElementById('glassUiOn');
+  const track=document.getElementById('glassUiTrack');
+  const thumb=document.getElementById('glassUiThumb');
+  const sw=document.getElementById('glassUiSwitch');
+  if(!cb||!track||!thumb)return;
+  cb.checked=isGlassUiOn();
+  if(cb.checked){
+    track.style.background='var(--accent)';
+    thumb.style.left='22px';
+  }else{
+    track.style.background='var(--border)';
+    thumb.style.left='2px';
+  }
+  if(sw)sw.setAttribute('aria-checked',cb.checked?'true':'false');
+}
+
+function toggleGlassUiSwitch(){
+  ap.glassUI=!isGlassUiOn();
+  sv(K.ap,ap);
+  applyGlassUiClass();
+  updateGlassUiSwitch();
+  showToast(ap.glassUI?'已开启毛玻璃效果':'已关闭毛玻璃效果');
+}
 // ==================== 全屏模式 ====================
 function enterFullscreen(){
   var el=document.documentElement;
@@ -1428,6 +1499,7 @@ if(ap.theme==='auto'){
 
 // 简洁模式：根据 ap.simpleUI 给 body 加/去 simple-ui 类
 applySimpleUiClass();
+applyGlassUiClass();
 // 全屏模式：浏览器不允许自动进入全屏，必须由用户手势触发
 // 所以如果保存了全屏状态但实际不在全屏，需要在首次用户交互时重新进入
 if(ap.fullscreen){
@@ -1455,6 +1527,7 @@ loadFont(ap.fontUrl);
 
 // 同步“简洁模式”开关按钮的样式
 updateSimpleUiSwitch();
+updateGlassUiSwitch();
 try{updateContQualityUI();}catch(e){}
 }
 // ==================== 内置字体 ====================
@@ -1768,9 +1841,10 @@ sv('bj_timeline_'+id,tlObj[id]);
 }
 });
 }
-function exportData(){
+// 收集备份用的完整数据对象（旧版JSON备份的结构）；打包成zip由exportData负责。
+// 注意：不在这里标记"已备份"，要等压缩包真正生成并发起下载后才标记，否则打包失败也会被当成备份成功
+function _collectBackupData(){
     saveCurSettings();
-    markBackupDone();
     // 导出前强制刷新写入队列
 try{if(_svTimer){clearTimeout(_svTimer);_svTimer=null;}_flushSv();}catch(e){}
 // 从IndexedDB重新加载确保数据最新
@@ -1804,6 +1878,7 @@ try{
         workshop: ws,
         crWorks: crWorks,
         crFolders: crFolders,
+        trash: trashItems,
         resPacks: resPacks,
         tags: tags,
         appearance: ap,
@@ -1817,12 +1892,15 @@ globalWorld: globalWorld,
         globalRule: globalRule,
         globalBanWords: globalBanWords,
         localWorldBindings: localWorldBindings,
+        worldMap: worldMap,
+        localWorldMapBindings: localWorldMapBindings,
         localRuleBindings: localRuleBindings,
         localBanWordsBindings: localBanWordsBindings,
         localStyleBindings: localStyleBindings,
         currentCharPresetName: currentCharPresetName,
         articleContexts: articleContexts,
         storyWheels: storyWheels,
+        wheelUserPresets: getWheelUserPresets(),
         genLogs: genLogs,
         fontPresets: fontP,
         sysPromptPresets: sysPromptP,
@@ -1842,7 +1920,7 @@ globalWorld: globalWorld,
         ttsSettings: ttsSettings_,
         devMode: devMode,xjVisible: xjVisible,
 xjBubbleEnabled: xjBubbleEnabled,
-        rdBgImg: rdBgImg,autoSaveToast:autoSaveToast,contAutoScroll:contAutoScroll,genVibrate:genVibrate,rdProgressMemory:rdProgressMemory,edExitConfirm:edExitConfirm,showThemeBtn:showThemeBtn,genConfirm:genConfirm,contAutoExtend:contAutoExtend,contDirMemory:contDirMemory,paraLongPress:paraLongPress,rdFooterVisible:rdFooterVisible,backupReminder:backupReminder,backupInterval:backupInterval,storageFullReminder:storageFullReminder,navBarText:navBarText,rpStreamOutput:ld('bj_rpStreamOutput',true),rpMsgSplit:ld('bj_rpMsgSplit',true),clearDataConfirm:clearDataConfirm,rpTimeAware:ld('bj_rpTimeAware',false),xjMsgSplit:xjMsgSplit,dwBlink:dwBlink,volSynFromOutline:volSynFromOutline,volSynExcerptLen:volSynExcerptLen,
+        rdBgImg: rdBgImg,autoSaveToast:autoSaveToast,contAutoScroll:contAutoScroll,genVibrate:genVibrate,rdProgressMemory:rdProgressMemory,edExitConfirm:edExitConfirm,showThemeBtn:showThemeBtn,genConfirm:genConfirm,contAutoExtend:contAutoExtend,contDirMemory:contDirMemory,paraLongPress:paraLongPress,rdFooterVisible:rdFooterVisible,backupReminder:backupReminder,backupInterval:backupInterval,storageFullReminder:storageFullReminder,navBarText:navBarText,rpStreamOutput:ld('bj_rpStreamOutput',true),rpMsgSplit:ld('bj_rpMsgSplit',true),clearDataConfirm:clearDataConfirm,rpTimeAware:ld('bj_rpTimeAware',false),xjMsgSplit:xjMsgSplit,dwBlink:dwBlink,volSynFromOutline:volSynFromOutline,fsAutoDetect:fsAutoDetect,volSynExcerptLen:volSynExcerptLen,
         xjPetData: (function(){
           try{var r=localStorage.getItem('xj_pet_v3');return r?JSON.parse(r):null;}
           catch(e){return null;}
@@ -1913,27 +1991,431 @@ return {journeys:j?JSON.parse(j):null,settings:s?JSON.parse(s):null,bindings:b?J
         edRdLineHeight: ld('bj_edRdLineHeight',2)
     };
 
-    let jsonStr;
-try{
-  jsonStr = JSON.stringify(data, null, 2);
-  // 基本完整性校验（避免大数据时完整解析卡顿）
-  if(!jsonStr || jsonStr.length<10 || jsonStr[0]!=='{'){
-    throw new Error('序列化结果异常');
+    return data;
+}
+
+// ==================== 备份压缩包（zip）读写 ====================
+// 备份压缩包用下面这组独立函数读写，没有复用EPUB/DOCX用的_minimalZip/_readZip，原因有三：
+// ① 备份数据量大，需要DEFLATE压缩（_minimalZip只存储不压缩）；
+// ② 导入时必须逐个文件校验CRC32，才能分辨"哪个文件坏了"并只跳过它；
+// ③ 文件名必须标记为UTF-8，否则中文目录名在Windows资源管理器里会显示成乱码。
+var _zipCrcTable=null;
+function _zipCrc32(bytes){
+  if(!_zipCrcTable){
+    _zipCrcTable=new Uint32Array(256);
+    for(var i=0;i<256;i++){
+      var c=i;
+      for(var j=0;j<8;j++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);
+      _zipCrcTable[i]=c>>>0;
+    }
   }
-}catch(e){
-  showToastForce('导出数据序列化异常：'+e.message+'，尝试修复中...',4000);
-  // 尝试清理不可序列化的内容后重试
+  var crc=0xFFFFFFFF;
+  for(var k=0;k<bytes.length;k++)crc=(_zipCrcTable[(crc^bytes[k])&0xFF]^(crc>>>8))>>>0;
+  return(crc^0xFFFFFFFF)>>>0;
+}
+// 用浏览器原生CompressionStream做raw deflate；环境不支持（或压缩出错）时返回null，由调用方退回"只存储"
+// 读和写必须同时进行：先写完再读会在数据超过流的缓冲区时永久卡住
+async function _zipDeflateRaw(bytes){
+  if(typeof CompressionStream!=='function')return null;
   try{
-    var cleanData=JSON.parse(JSON.stringify(data));
-    jsonStr=JSON.stringify(cleanData,null,2);
-  }catch(e2){
-    showToast('导出失败，数据中包含无法序列化的内容',5000);
-    return;
+    var cs=new CompressionStream('deflate-raw');
+    var writer=cs.writable.getWriter();
+    var readPromise=new Response(cs.readable).arrayBuffer();
+    var writePromise=writer.write(bytes).then(function(){return writer.close();});
+    var results=await Promise.all([writePromise,readPromise]);
+    return new Uint8Array(results[1]);
+  }catch(err){
+    return null;
   }
 }
-    const filename = '星叙_' + new Date().toLocaleDateString().replace(/\//g, '-') + '_备份.json';
+async function _zipInflateRaw(bytes){
+  if(typeof DecompressionStream!=='function')throw new Error('当前浏览器不支持解压');
+  var ds=new DecompressionStream('deflate-raw');
+  var writer=ds.writable.getWriter();
+  var readPromise=new Response(ds.readable).arrayBuffer();
+  var writePromise=writer.write(bytes).then(function(){return writer.close();});
+  var results=await Promise.all([writePromise,readPromise]);
+  return new Uint8Array(results[1]);
+}
+// files: [{name:string, data:Uint8Array}]；返回zip的Blob
+async function _buildBackupZipBlob(files){
+  if(files.length>65534)throw new Error('备份文件数量过多，超出zip格式上限');
+  var enc=new TextEncoder();
+  var now=new Date();
+  var dosTime=((now.getHours()<<11)|(now.getMinutes()<<5)|(now.getSeconds()>>1))&0xFFFF;
+  var dosDate=(((Math.max(now.getFullYear(),1980)-1980)<<9)|((now.getMonth()+1)<<5)|now.getDate())&0xFFFF;
+  var localParts=[],centralParts=[],offset=0,centralSize=0;
+  for(var i=0;i<files.length;i++){
+    var f=files[i];
+    var nameBytes=enc.encode(f.name);
+    var raw=f.data;
+    var crc=_zipCrc32(raw);
+    var packed=await _zipDeflateRaw(raw);
+    var method=8;
+    // 压缩失败或压缩后反而更大时，退回只存储
+    if(!packed||packed.length>=raw.length){packed=raw;method=0;}
+    if(raw.length>0xFFFFFFF0||offset>0xFFFFFFF0)throw new Error('备份数据过大，超出zip格式上限');
+    var lh=new Uint8Array(30+nameBytes.length);
+    var lv=new DataView(lh.buffer);
+    lv.setUint32(0,0x04034b50,true);lv.setUint16(4,20,true);lv.setUint16(6,0x0800,true);lv.setUint16(8,method,true);
+    lv.setUint16(10,dosTime,true);lv.setUint16(12,dosDate,true);lv.setUint32(14,crc,true);
+    lv.setUint32(18,packed.length,true);lv.setUint32(22,raw.length,true);lv.setUint16(26,nameBytes.length,true);lv.setUint16(28,0,true);
+    lh.set(nameBytes,30);
+    var cd=new Uint8Array(46+nameBytes.length);
+    var cv=new DataView(cd.buffer);
+    cv.setUint32(0,0x02014b50,true);cv.setUint16(4,20,true);cv.setUint16(6,20,true);cv.setUint16(8,0x0800,true);cv.setUint16(10,method,true);
+    cv.setUint16(12,dosTime,true);cv.setUint16(14,dosDate,true);cv.setUint32(16,crc,true);
+    cv.setUint32(20,packed.length,true);cv.setUint32(24,raw.length,true);cv.setUint16(28,nameBytes.length,true);
+    cv.setUint32(42,offset,true);
+    cd.set(nameBytes,46);
+    localParts.push(lh,packed);
+    centralParts.push(cd);
+    offset+=lh.length+packed.length;
+    centralSize+=cd.length;
+  }
+  var eocd=new Uint8Array(22);
+  var ev=new DataView(eocd.buffer);
+  ev.setUint32(0,0x06054b50,true);ev.setUint16(8,files.length,true);ev.setUint16(10,files.length,true);
+  ev.setUint32(12,centralSize,true);ev.setUint32(16,offset,true);
+  return new Blob(localParts.concat(centralParts,[eocd]),{type:'application/zip'});
+}
+// 读取zip并逐个文件校验：返回 {entries:[{name,data,ok,reason}], declaredCount}
+// 某个文件读不出来/校验不过只会让该文件的ok=false，不影响其他文件；只有整个压缩包结构读不了才抛错
+async function _readZipVerified(arrayBuffer){
+  var bytes=new Uint8Array(arrayBuffer);
+  if(bytes.length<22)throw new Error('文件太小，不是有效的压缩包');
+  var dv=new DataView(arrayBuffer);
+  var eocdOffset=-1;
+  var searchStart=Math.max(0,bytes.length-65557);
+  for(var i=bytes.length-22;i>=searchStart;i--){
+    if(dv.getUint32(i,true)===0x06054b50){eocdOffset=i;break;}
+  }
+  if(eocdOffset===-1)throw new Error('找不到压缩包目录，文件可能被截断或不是zip');
+  var declaredCount=dv.getUint16(eocdOffset+10,true);
+  var pos=dv.getUint32(eocdOffset+16,true);
+  var td=new TextDecoder('utf-8');
+  var entries=[];
+  for(var n=0;n<declaredCount;n++){
+    if(pos+46>bytes.length||dv.getUint32(pos,true)!==0x02014b50)break;
+    var flags=dv.getUint16(pos+8,true);
+    var method=dv.getUint16(pos+10,true);
+    var crc=dv.getUint32(pos+16,true);
+    var compSize=dv.getUint32(pos+20,true);
+    var rawSize=dv.getUint32(pos+24,true);
+    var nameLen=dv.getUint16(pos+28,true);
+    var extraLen=dv.getUint16(pos+30,true);
+    var commentLen=dv.getUint16(pos+32,true);
+    var lhOffset=dv.getUint32(pos+42,true);
+    var entry={name:td.decode(bytes.subarray(pos+46,pos+46+nameLen)),data:null,ok:false,reason:''};
+    entries.push(entry);
+    pos+=46+nameLen+extraLen+commentLen;
+    try{
+      if(flags&1)throw new Error('文件已加密，无法读取');
+      if(lhOffset+30>bytes.length||dv.getUint32(lhOffset,true)!==0x04034b50)throw new Error('文件头损坏');
+      var dataStart=lhOffset+30+dv.getUint16(lhOffset+26,true)+dv.getUint16(lhOffset+28,true);
+      if(dataStart+compSize>bytes.length)throw new Error('数据不完整');
+      var packed=bytes.subarray(dataStart,dataStart+compSize);
+      var out;
+      if(method===0)out=packed;
+      else if(method===8){
+        try{out=await _zipInflateRaw(packed);}
+        catch(ie){throw new Error((ie&&ie.message&&ie.message.indexOf('不支持')!==-1)?ie.message:'压缩数据已损坏');}
+      }
+      else throw new Error('不支持的压缩方式');
+      if(out.length!==rawSize)throw new Error('文件大小不符');
+      if(_zipCrc32(out)!==crc)throw new Error('校验失败，内容已损坏');
+      entry.data=out;
+      entry.ok=true;
+    }catch(err){
+      entry.reason=(err&&err.message)||'读取失败';
+    }
+  }
+  return {entries:entries,declaredCount:declaredCount};
+}
 
-    _exportFileWithFallback(filename,jsonStr,'application/json');
+// ==================== 备份压缩包：文件分类与组装 ====================
+// 备份包里的文件分两类：
+// ① 作品类（小说/草稿/收藏的长篇短篇/回收站条目）每篇单独一个文件，一篇坏了只丢这一篇；
+// ② 其余数据按类别合并成几个文件（下面的分组表）。分组表里没列出的字段会自动归入"其它/其它数据.json"，
+//    所以以后exportData新增字段不用同步改这里，也不会漏备份。
+// 每个文件都是自描述的（带_app/_kind），导入时不依赖文件名；manifest.json只用来核对有没有文件丢失。
+var _BACKUP_GROUPS=[
+  {path:'作品/作坊文章.json',keys:['workshop']},
+  {path:'作品/文件夹与标签.json',keys:['collectionsMeta','crFolders','tags']},
+  {path:'作品/创作上下文与项目.json',keys:['articleContexts','advProjects','advGenres']},
+  {path:'设定与预设/API配置.json',keys:['apiPresets','curApi','toolApi','rpApiOverride']},
+  {path:'设定与预设/人物世界观文风规则.json',keys:['charPresets','worldPresets','stylePresets','rulePresets','curRule','banWords','banWordsPresets','curChars','charRelations','npcList','curWorld','globalRule','globalBanWords','localWorldBindings','worldMap','localWorldMapBindings','localRuleBindings','localBanWordsBindings','localStyleBindings','currentCharPresetName','currentWorldBinding','currentRuleBinding','currentBanBinding','currentStyleBinding','currentWorldPresetName','currentRulePresetName','currentBanPresetName','currentStylePresetName','customTraits','genTemplates']},
+  {path:'设定与预设/系统提示词与字体.json',keys:['sysPromptPresets','sysPromptEntries','customSysPrompt','customSysPromptPosition','fontPresets']},
+  {path:'素材与笔记/笔记.json',keys:['notes']},
+  {path:'素材与笔记/伏笔与时间线.json',keys:['foreshadow','timeline']},
+  {path:'素材与笔记/素材库与收藏.json',keys:['materials','resPacks','favItems','savedPhrases','storyWheels','wheelUserPresets']},
+  {path:'角色模拟/角色模拟.json',keys:['rpChars','rpSettings','rpCurrentCharId','rpGroups','rpCurrentGroupId','rpWorldFolders','rpBookLib','rpGrpPlayPresets','rpDiaries','rpDiaryAutoEnabled','rpDiaryAutoTime','rpDiaryAutoLastDates','rpUserPresets','rpBubbleColors']},
+  {path:'穿书/穿书系统.json',keys:['tbData']},
+  {path:'小星/小星.json',keys:['xjPetData','xjMessages','xjContextLen']},
+  {path:'媒体/背景图与铃声.json',keys:['rdBgImg','homeBgImg','rpContactBgImg','rtBgImg','xjBg','ringData','ringName','ringVolume']},
+  {path:'生成日志/生成日志.json',keys:['genLogs']},
+  {path:'外观与设置/外观与设置.json',keys:['appearance','userCard','lockSettings','goalSettings','goalProgress','goalYearStats','dndMode','ttsSettings','devMode','dailyStreak','useStream','consistencyCheckOn','contQualityOn','ctxAutoSave','globalFloatBtnOn','noDescLimit','edFontSize','edLetterSpacing','edLineHeight','edRdFontSize','edRdLetterSpacing','edRdLineHeight']}
+];
+var _BACKUP_REST_PATH='其它/其它数据.json';
+
+// 文件名里不能出现的字符统一换成下划线；'@'用作"标题@id"的分隔符，所以标题里的@也要替换掉
+function _backupSafeName(s){
+  var t=String(s==null?'':s).replace(/[\\\/:*?"<>|@\u0000-\u001f]/g,'_').replace(/^\.+/,'').trim();
+  t=Array.from(t).slice(0,40).join('');
+  return t||'未命名';
+}
+function _backupSafeId(id){
+  return String(id==null?'':id).replace(/[^\w.\-]/g,'_').slice(0,80);
+}
+function _backupKindFromPath(path){
+  if(path.indexOf('作品/创作页/')===0)return 'crWork';
+  if(path.indexOf('作品/收藏页/长篇/')===0)return 'colBook';
+  if(path.indexOf('作品/收藏页/短篇/')===0)return 'colShort';
+  if(path.indexOf('回收站/')===0)return 'trashItem';
+  return '';
+}
+function _backupIdFromPath(path){
+  var m=/@([^@\/]+)\.json$/i.exec(path);
+  return m?m[1]:'';
+}
+
+// 把exportData收集到的data拆成备份包里的文件列表：[{name,data:Uint8Array}]
+function _buildBackupFiles(data){
+  var enc=new TextEncoder();
+  var files=[];
+  var manifestFiles=[];
+  var usedPaths=Object.create(null);
+  var counts={crWork:0,colBook:0,colShort:0,trashItem:0};
+  function uniquePath(path){
+    var p=path,n=1;
+    while(usedPaths[p]){n++;p=path.replace(/\.json$/,'')+'_'+n+'.json';}
+    usedPaths[p]=true;
+    return p;
+  }
+  function put(path,kind,envelope,id){
+    var json;
+    try{json=JSON.stringify(envelope,null,2);}
+    catch(err){throw new Error('「'+path+'」里的数据无法序列化：'+err.message);}
+    if(typeof json!=='string')throw new Error('「'+path+'」里的数据无法序列化');
+    var finalPath=uniquePath(path);
+    files.push({name:finalPath,data:enc.encode(json)});
+    var info={path:finalPath,kind:kind};
+    if(id!==undefined&&id!==null&&id!=='')info.id=String(id);
+    manifestFiles.push(info);
+  }
+  function putItems(list,kind,dirOf,titleOf){
+    (Array.isArray(list)?list:[]).forEach(function(item,index){
+      if(!item||typeof item!=='object')return;
+      var idPart=_backupSafeId(item.id)||('no-id-'+index);
+      put(dirOf(item)+_backupSafeName(titleOf(item))+'@'+idPart+'.json',kind,{_app:'syn',_kind:kind,_index:index,data:item},item.id);
+      counts[kind]++;
+    });
+  }
+
+  var flat={};
+  Object.keys(data).forEach(function(k){flat[k]=data[k];});
+  var colsObj=flat.collections;
+  delete flat.collections;
+  var books=[],shorts=[];
+  if(colsObj&&typeof colsObj==='object'){
+    books=colsObj.books;
+    shorts=colsObj.shorts;
+    var meta={};
+    Object.keys(colsObj).forEach(function(k){if(k!=='books'&&k!=='shorts')meta[k]=colsObj[k];});
+    flat.collectionsMeta=meta;
+  }
+  var crList=flat.crWorks;delete flat.crWorks;
+  var trashList=flat.trash;delete flat.trash;
+
+  putItems(crList,'crWork',function(w){
+    return w.type==='novel'?'作品/创作页/小说/':(w.type==='draft'?'作品/创作页/草稿/':'作品/创作页/其它/');
+  },function(w){return w.title;});
+  putItems(books,'colBook',function(){return '作品/收藏页/长篇/';},function(b){return b.title;});
+  putItems(shorts,'colShort',function(){return '作品/收藏页/短篇/';},function(s){return s.title;});
+  putItems(trashList,'trashItem',function(){return '回收站/';},function(t){return t.data&&t.data.title;});
+
+  var usedKeys=Object.create(null);
+  function putGroup(path,keys){
+    var obj={},any=false;
+    keys.forEach(function(k){
+      if(usedKeys[k]||k.charAt(0)==='_'||flat[k]===undefined)return;
+      usedKeys[k]=true;
+      obj[k]=flat[k];
+      any=true;
+    });
+    if(any)put(path,'group',{_app:'syn',_kind:'group',data:obj});
+  }
+  _BACKUP_GROUPS.forEach(function(g){putGroup(g.path,g.keys);});
+  putGroup(_BACKUP_REST_PATH,Object.keys(flat).filter(function(k){return !usedKeys[k];}));
+
+  var manifest={_app:'syn',_kind:'manifest',_backupFormat:1,_version:data._version,_ver:data._ver,_exportedAt:data._exportedAt,counts:counts,files:manifestFiles};
+  files.unshift({name:'manifest.json',data:enc.encode(JSON.stringify(manifest,null,2))});
+  return files;
+}
+
+// 解析备份压缩包：返回 {data, damaged:[{name,reason}], usable}
+// data的结构和旧版JSON备份完全一致，所以后面的恢复逻辑（_runImportData）新旧两种备份共用同一套。
+// 损坏/缺失的文件会被跳过；作品类文件损坏时，如果本机有同ID的作品就保留本机版本，避免"覆盖导入"把它一起丢掉。
+async function _parseBackupZip(arrayBuffer){
+  var zip=await _readZipVerified(arrayBuffer);
+  var td=new TextDecoder('utf-8');
+  var damaged=[];
+  var seen=Object.create(null);
+  var groups=[];
+  var items={crWork:[],colBook:[],colShort:[],trashItem:[]};
+  var manifest=null;
+  var dataFileCount=0;
+  function markDamaged(name,reason,kind,id){
+    damaged.push({name:name,reason:reason,kind:kind||_backupKindFromPath(name),id:id||_backupIdFromPath(name)});
+  }
+  zip.entries.forEach(function(entry){
+    var name=entry.name;
+    if(!name||name.charAt(name.length-1)==='/'||!/\.json$/i.test(name))return;
+    seen[name]=true;
+    if(!entry.ok){markDamaged(name,entry.reason||'读取失败');return;}
+    var env;
+    try{env=JSON.parse(td.decode(entry.data));}
+    catch(err){markDamaged(name,'内容无法解析');return;}
+    // 不是星叙写出的文件（比如用户自己往压缩包里塞的）直接忽略，不算损坏
+    if(!env||typeof env!=='object'||env._app!=='syn')return;
+    var kind=env._kind;
+    var payloadOk=!!env.data&&typeof env.data==='object'&&!Array.isArray(env.data);
+    if(kind==='manifest'){
+      manifest=env;
+    }else if(kind==='group'){
+      if(payloadOk){groups.push(env.data);dataFileCount++;}
+      else markDamaged(name,'格式不正确');
+    }else if(Object.prototype.hasOwnProperty.call(items,kind)){
+      if(payloadOk){
+        items[kind].push({index:(typeof env._index==='number'&&isFinite(env._index))?env._index:items[kind].length,data:env.data});
+        dataFileCount++;
+      }else markDamaged(name,'格式不正确',kind);
+    }
+  });
+  if(zip.entries.length<zip.declaredCount){
+    for(var m=zip.entries.length;m<zip.declaredCount;m++)markDamaged('未识别的文件 '+(m+1),'压缩包目录损坏');
+  }
+  var manifestOk=!!(manifest&&Array.isArray(manifest.files)&&manifest.counts&&typeof manifest.counts==='object');
+  if(manifestOk){
+    var infoByPath=Object.create(null);
+    manifest.files.forEach(function(f){
+      if(f&&typeof f.path==='string'){
+        infoByPath[f.path]=f;
+        if(!seen[f.path])markDamaged(f.path,'文件缺失',typeof f.kind==='string'?f.kind:'',typeof f.id==='string'?_backupSafeId(f.id):'');
+      }
+    });
+    damaged.forEach(function(d){
+      var f=infoByPath[d.name];
+      if(f&&typeof f.id==='string'&&!d.id)d.id=_backupSafeId(f.id);
+    });
+  }
+  if(dataFileCount===0){
+    if(damaged.length>0)throw new Error('压缩包里的 '+damaged.length+' 个文件全部无法读取（'+damaged[0].reason+'）');
+    throw new Error('这个压缩包里没有可识别的星叙备份数据');
+  }
+
+  var data={_app:'syn',_version:(manifestOk&&Number(manifest._version)>0)?Number(manifest._version):3};
+  if(manifest&&typeof manifest._ver==='string')data._ver=manifest._ver;
+  if(manifest&&typeof manifest._exportedAt==='string')data._exportedAt=manifest._exportedAt;
+  groups.forEach(function(g){
+    Object.keys(g).forEach(function(k){if(k!=='__proto__')data[k]=g[k];});
+  });
+
+  var keepIds={crWork:new Set(),colBook:new Set(),colShort:new Set(),trashItem:new Set()};
+  damaged.forEach(function(d){
+    if(d.id&&typeof d.kind==='string'&&Object.prototype.hasOwnProperty.call(keepIds,d.kind))keepIds[d.kind].add(d.id);
+  });
+  // 组装某类作品：按原顺序排列；损坏文件对应的本机作品原样保留；
+  // 没有可信的manifest时，如果备份里一篇都没读到，则保持本机列表不变（无法确认是"备份里本来就没有"还是"全丢了"）
+  function collect(kind,localList){
+    var list=items[kind].slice().sort(function(a,b){return a.index-b.index;}).map(function(x){return x.data;});
+    var local=Array.isArray(localList)?localList:[];
+    if(keepIds[kind].size>0){
+      var have=new Set(list.map(function(x){return String(x.id);}));
+      local.forEach(function(it){
+        if(it&&it.id!==undefined&&it.id!==null&&keepIds[kind].has(_backupSafeId(it.id))&&!have.has(String(it.id)))list.push(it);
+      });
+    }
+    if(!manifestOk&&list.length===0)list=local.slice();
+    return list;
+  }
+  data.crWorks=collect('crWork',crWorks);
+  var localCols=(cols&&typeof cols==='object')?cols:{};
+  var meta=data.collectionsMeta;
+  delete data.collectionsMeta;
+  if(!meta||typeof meta!=='object'||Array.isArray(meta)){
+    // 文件夹信息的文件损坏时沿用本机的文件夹，避免收藏条目的folderId全部失效
+    meta={};
+    Object.keys(localCols).forEach(function(k){if(k!=='books'&&k!=='shorts')meta[k]=localCols[k];});
+  }
+  data.collections=Object.assign({},meta,{books:collect('colBook',localCols.books),shorts:collect('colShort',localCols.shorts)});
+  data.trash=collect('trashItem',trashItems);
+  return {data:data,damaged:damaged,usable:dataFileCount};
+}
+
+// ==================== 导出备份 ====================
+var _exportBusy=false;
+function _setBackupBusyUI(busy){
+  try{
+    document.querySelectorAll('.datagrid-card[onclick="exportData()"]').forEach(function(card){
+      card.style.pointerEvents=busy?'none':'';
+      card.style.opacity=busy?'.55':'';
+      card.setAttribute('aria-busy',busy?'true':'false');
+    });
+  }catch(e){logError('backupBusyUI',e);}
+}
+function _markBackupDoneSafe(){
+  try{markBackupDone();}catch(e){logError('markBackupDone',e);}
+}
+// 触发浏览器下载；返回是否成功发起
+function _downloadBackupBlob(blob,filename){
+  var url=null,a=null;
+  try{
+    url=URL.createObjectURL(blob);
+    a=document.createElement('a');
+    a.href=url;a.download=filename;a.style.display='none';
+    document.body.appendChild(a);
+    a.click();
+    return true;
+  }catch(err){
+    logError('downloadBackup',err);
+    return false;
+  }finally{
+    // 大文件下载需要时间，延迟较久再释放；释放后下载不受影响
+    setTimeout(function(){
+      try{if(url)URL.revokeObjectURL(url);if(a&&a.parentNode)a.parentNode.removeChild(a);}catch(e){}
+    },60000);
+  }
+}
+async function exportData(){
+  if(_exportBusy){showToast('正在打包备份，请稍候');return;}
+  _exportBusy=true;
+  _setBackupBusyUI(true);
+  try{
+    var data=_collectBackupData();
+    showToast('正在打包备份...',3000);
+    var files=_buildBackupFiles(data);
+    var blob=await _buildBackupZipBlob(files);
+    var filename=('星叙_'+new Date().toLocaleDateString().replace(/\//g,'-')+'_备份.zip').replace(/[\\:*?"<>|]/g,'-');
+    if(!_downloadBackupBlob(blob,filename)){
+      // 个别WebView不允许脚本触发下载：退回旧的JSON导出，它还带有"复制到剪贴板"的兜底
+      showToast('当前环境无法下载压缩包，已改为导出JSON备份',4000);
+      _exportFileWithFallback(filename.replace(/\.zip$/,'.json'),JSON.stringify(data,null,2),'application/json');
+      _markBackupDoneSafe();
+      return;
+    }
+    _markBackupDoneSafe();
+    var sizeLabel=blob.size>=1048576?(blob.size/1048576).toFixed(2)+'MB':(blob.size/1024).toFixed(1)+'KB';
+    var html='<div style="font-size:12px;line-height:1.8;color:var(--text);margin-bottom:14px;">已尝试导出备份压缩包：<br><b style="color:var(--accent2);">'+esc(filename)+'</b><br><span style="font-size:11px;color:var(--text2);">共 '+files.length+' 个文件 · '+sizeLabel+'，请检查手机「下载」目录是否已收到。</span></div>';
+    showDlg('导出完成',html,function(){},false,true);
+    setTimeout(function(){var okBtn=document.getElementById('dlgOkBtn');if(okBtn)okBtn.textContent='✓ 已收到，关闭';},50);
+  }catch(err){
+    logError('exportData',err);
+    showToast('导出失败：'+((err&&err.message)||'未知错误'),5000);
+  }finally{
+    _exportBusy=false;
+    _setBackupBusyUI(false);
+  }
 }
 
 function fallbackExport(jsonStr,fileName){
@@ -1947,12 +2429,45 @@ setTimeout(()=>{document.body.removeChild(a);},500);
 showToast('数据已导出');
 }
 
+// ==================== 导入备份 ====================
+// 同一时间只处理一个备份文件，避免快速连选两次导致两个解析任务互相覆盖
+var _importBusy=false;
 function importData(e){
-const file=e.target.files[0];if(!file)return;
+const input=e.target;
+const file=input.files&&input.files[0];
+if(!file){input.value='';return;}
+if(_importBusy){showToast('正在读取备份文件，请稍候');input.value='';return;}
+_importBusy=true;
 const reader=new FileReader();
-reader.onload=ev=>{
+reader.onerror=()=>{_importBusy=false;showToast('读取文件失败，请重试',3000);};
+reader.onabort=()=>{_importBusy=false;};
+reader.onload=async ev=>{
 try{
-let rawText=ev.target.result||'';
+const buf=ev.target.result;
+if(!(buf instanceof ArrayBuffer)||buf.byteLength===0){showToast('文件是空的，无法导入',3000);return;}
+const head=new Uint8Array(buf,0,Math.min(2,buf.byteLength));
+// zip文件以"PK"开头；不是zip的按旧版JSON备份处理
+if(head.length===2&&head[0]===0x50&&head[1]===0x4B){
+  showToast('正在读取备份压缩包...',2000);
+  const parsed=await _parseBackupZip(buf);
+  _runImportData(parsed.data,parsed.damaged);
+}else{
+  _importLegacyJson(buf);
+}
+}catch(err){
+logError('importData',err);
+showToast('备份读取失败：'+((err&&err.message)||'未知错误'),5000);
+}finally{
+_importBusy=false;
+}
+};
+reader.readAsArrayBuffer(file);
+input.value='';
+}
+// 旧版单文件JSON备份：解析逻辑保持原样，解析完交给和zip共用的恢复流程
+function _importLegacyJson(buf){
+let rawText='';
+try{rawText=new TextDecoder('utf-8').decode(buf);}catch(de){showToast('文件读取失败：无法识别的文件编码',4000);return;}
 // 去BOM和不可见字符
 rawText=rawText.replace(/^\uFEFF/,'').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,'');
 let data;
@@ -1963,11 +2478,22 @@ try{data=JSON.parse(rawText);}catch(pe){
     data=JSON.parse(fixed);
     showToast('JSON已自动修复并导入',2000);
   }catch(pe2){
-    showToast('文件解析失败：不是有效的JSON文件\n\n错误：'+pe2.message,5000);
+    showToast('文件解析失败：不是有效的备份文件（新版备份为.zip，旧版为.json）\n\n错误：'+pe2.message,5000);
     return;
   }
 }
-if(data._app!=='bijiAI' && data._app!=='syn'){showToast('文件格式不正确（非星叙/笔记AI备份文件）',3000);return;}
+if(!data||typeof data!=='object'||(data._app!=='bijiAI' && data._app!=='syn')){showToast('文件格式不正确（非星叙/笔记AI备份文件）',3000);return;}
+_runImportData(data,[]);
+}
+// 备份恢复：zip和旧版JSON共用。data是旧版JSON备份的结构；damagedList是zip里被跳过的损坏文件[{name,reason}]
+function _runImportData(data,damagedList){
+try{
+damagedList=Array.isArray(damagedList)?damagedList:[];
+let confirmMsg='导入将覆盖当前所有设置和收藏数据，是否继续？';
+if(damagedList.length>0){
+  const shown=damagedList.slice(0,8).map(d=>'· '+d.name+'（'+d.reason+'）').join('\n');
+  confirmMsg+='\n\n⚠ 发现 '+damagedList.length+' 个损坏的文件，将被跳过，其余文件正常导入；这些文件对应的数据尽量保留本机现有内容：\n'+shown+(damagedList.length>8?'\n…等共 '+damagedList.length+' 个':'');
+}
 // 版本兼容转换
 var dataVer=data._version||1;
 try{
@@ -2021,7 +2547,8 @@ try{
 }catch(compatErr){
   console.warn('版本兼容转换异常（不影响导入）:',compatErr);
 }
-showDlg('导入确认','导入将覆盖当前所有设置和收藏数据，是否继续？',()=>{
+showDlg('导入确认',confirmMsg,()=>{
+try{
 if(data.apiPresets){apiP=data.apiPresets;sv(K.apiP,apiP);}
 if(data.charPresets){charP=data.charPresets;sv(K.charP,charP);}
 if(data.worldPresets){worldP=data.worldPresets;sv(K.worldP,worldP);}
@@ -2076,6 +2603,7 @@ if(data.tags){tags=data.tags;sv(K.tags,tags);}
 if(data.workshop){ws=data.workshop;sv(K.ws,ws);}
 if(data.crWorks){crWorks=data.crWorks;sv('bj_crWorks',crWorks);}
 if(data.crFolders){crFolders=data.crFolders;sv('bj_crFolders',crFolders);}
+if(Array.isArray(data.trash)){trashItems=_sanitizeTrashList(data.trash);sv('bj_trash',trashItems);_purgeExpiredTrash();}
 if(data.resPacks){resPacks=data.resPacks;sv('bj_resPacks',resPacks);}
 if(data.dwEntries&&Array.isArray(data.dwEntries)){sv('dw_entries',data.dwEntries);}
 if(data.dwCustomPrompts&&Array.isArray(data.dwCustomPrompts)){try{localStorage.setItem('dw_custom_prompts',JSON.stringify(data.dwCustomPrompts));}catch(e){}}
@@ -2104,6 +2632,9 @@ if(data.globalWorld){globalWorld=data.globalWorld;sv('bj_globalWorld',globalWorl
 if(data.globalRule){globalRule=data.globalRule;sv('bj_globalRule',globalRule);}
 if(data.globalBanWords){globalBanWords=data.globalBanWords;sv('bj_globalBanWords',globalBanWords);}
 if(data.localWorldBindings){localWorldBindings=data.localWorldBindings;sv('bj_localWorldBindings',localWorldBindings);}
+// 备份里没有地图字段（旧备份或该文件损坏被跳过）时保留本机现有地图，避免误删
+if(data.worldMap!==undefined){worldMap=wmSanitizeMap(data.worldMap);sv('bj_worldMap',worldMap);}
+if(data.localWorldMapBindings!==undefined){localWorldMapBindings=wmSanitizeBindings(data.localWorldMapBindings);sv('bj_localWorldMapBindings',localWorldMapBindings);}
 if(data.localRuleBindings){localRuleBindings=data.localRuleBindings;sv('bj_localRuleBindings',localRuleBindings);}
 if(data.localBanWordsBindings){localBanWordsBindings=data.localBanWordsBindings;sv('bj_localBanWordsBindings',localBanWordsBindings);}
 if(data.localStyleBindings){localStyleBindings=data.localStyleBindings;sv('bj_localStyleBindings',localStyleBindings);}
@@ -2111,6 +2642,7 @@ if(data.currentCharPresetName){currentCharPresetName=data.currentCharPresetName;
 if(data.userCard){userCard=data.userCard;sv('bj_userCard',userCard);}
 if(data.articleContexts){articleContexts=data.articleContexts;sv('bj_articleContexts',articleContexts);}
 if(data.storyWheels){storyWheels=data.storyWheels;sv('bj_storyWheels',storyWheels);}
+if(Array.isArray(data.wheelUserPresets)){saveWheelUserPresets(data.wheelUserPresets);}
 if(data.genLogs){genLogs=data.genLogs;sv('bj_genLogs',genLogs);}
 if(data.fontPresets){fontP=data.fontPresets;sv('bj_fontP',fontP);}
 if(data.sysPromptPresets){ sysPromptP = data.sysPromptPresets; sv('bj_sysPromptP', sysPromptP); }
@@ -2201,6 +2733,7 @@ if(typeof data.consistencyCheckOn!=='undefined'){sv('bj_consistencyCheckOn',data
 if(typeof data.contQualityOn!=='undefined'){sv('bj_contQualityOn',data.contQualityOn);}
 if(typeof data.ctxAutoSave!=='undefined'){window.ctxAutoSave=data.ctxAutoSave;sv('bj_ctxAutoSave',data.ctxAutoSave);}
 if(typeof data.volSynFromOutline!=='undefined'){volSynFromOutline=data.volSynFromOutline;sv('bj_volSynFromOutline',volSynFromOutline);}
+if(typeof data.fsAutoDetect!=='undefined'){fsAutoDetect=!!data.fsAutoDetect;sv('bj_fsAutoDetect',fsAutoDetect);}
 if(data.volSynExcerptLen){volSynExcerptLen=data.volSynExcerptLen;sv('bj_volSynExcerptLen',volSynExcerptLen);}
 if(typeof data.globalFloatBtnOn!=='undefined'){globalFloatBtnOn=data.globalFloatBtnOn;sv('bj_globalFloatBtnOn',globalFloatBtnOn);}
 if(typeof data.noDescLimit!=='undefined'){noDescLimit=data.noDescLimit;sv('bj_noDescLimit',noDescLimit);}
@@ -2221,6 +2754,7 @@ document.getElementById('apiMaxTokens').value=api.maxTokens||4096;
 const world=data.curWorld||data.currentWorld||{};
 document.getElementById('worldDesc').value=world.desc||'';
 document.getElementById('minWords').value=world.minWords||800;
+if(typeof wmRenderInline==='function')wmRenderInline();
 
 renderTags();renderAllPresets();renderCollections();renderCharCards();
 applyAppearance();
@@ -2242,13 +2776,383 @@ try{
   if(!Array.isArray(characters)||characters.length===0)characters=[{name:'',desc:''}];
   sv(K.ws,ws);sv(K.cols,cols);sv('bj_crWorks',crWorks);sv(K.curChars,characters);
 }catch(intErr){console.warn('导入后检查异常:',intErr);}
-showToast('数据导入成功');
+showToast(damagedList.length>0?('数据导入成功，已跳过 '+damagedList.length+' 个损坏文件'):'数据导入成功',damagedList.length>0?5000:2000);
 _unlocked=false; initLockSystem();
-});renderUserCard();
-}catch(err){showToast('文件解析失败: '+err.message,3000);}
-};
-reader.readAsText(file);e.target.value='';
+}catch(applyErr){
+// showDlg会吞掉回调里的异常，这里必须自己提示，否则导入到一半失败用户完全不知情
+logError('importData',applyErr);
+showToast('导入过程中出错：'+((applyErr&&applyErr.message)||'未知错误')+'（部分数据可能已写入，建议重新导入）',6000);
 }
+});renderUserCard();
+}catch(err){logError('importData',err);showToast('导入失败: '+((err&&err.message)||'未知错误'),4000);}
+}
+
+// ==================== 回收站 ====================
+// 删除创作页的小说/草稿、收藏页的长篇/短篇时，不再直接销毁，而是先放进回收站保留7天；
+// 期间可在"数据管理→回收站"里恢复。过期条目在启动、打开回收站、再次删除时自动清除。
+var TRASH_KEEP_MS=7*24*60*60*1000;
+var TRASH_KIND_LABELS={crNovel:'创作·小说',crDraft:'创作·草稿',colBook:'收藏·长篇',colShort:'收藏·短篇'};
+let trashItems=ld('bj_trash',[]);
+let trashSelected=new Set();          // 当前勾选的条目id
+var _trashTextCache=new Map();        // 条目id -> 小写全文，仅在搜索时按需生成，关闭回收站时清空
+var _trashVisibleIds=[];              // 当前列表里显示的条目id（供"全选"使用）
+var _trashPainters=new Map();         // 条目id -> 刷新该卡片选中样式的函数（勾选时原地刷新，避免整列表重绘导致滚动跳动）
+var _trashBusy=false;
+var _trashSearchTimer=null;
+
+function _isValidTrashItem(it){
+  return !!it&&typeof it==='object'&&typeof it.id==='string'&&it.id!==''&&
+    Object.prototype.hasOwnProperty.call(TRASH_KIND_LABELS,it.kind)&&
+    typeof it.deletedAt==='string'&&!isNaN(new Date(it.deletedAt).getTime())&&
+    !!it.data&&typeof it.data==='object'&&!Array.isArray(it.data)&&
+    it.data.id!==undefined&&it.data.id!==null&&it.data.id!=='';
+}
+// 导入的备份内容不可信，逐条校验，结构不对的丢弃
+function _sanitizeTrashList(list){
+  return (Array.isArray(list)?list:[]).filter(_isValidTrashItem);
+}
+function _loadTrash(){
+  var raw=ld('bj_trash',[]);
+  trashItems=Array.isArray(raw)?raw:[];
+  _purgeExpiredTrash();
+}
+function _purgeExpiredTrash(){
+  try{
+    if(!Array.isArray(trashItems))trashItems=[];
+    var now=Date.now();
+    var before=trashItems.length;
+    trashItems=trashItems.filter(function(it){
+      return _isValidTrashItem(it)&&(now-new Date(it.deletedAt).getTime())<=TRASH_KEEP_MS;
+    });
+    if(trashItems.length!==before){
+      sv('bj_trash',trashItems);
+      _trashTextCache.clear();
+    }
+  }catch(e){logError('purgeTrash',e);}
+}
+function _trashWordCount(kind,work){
+  try{
+    if(kind==='crNovel'||kind==='crDraft')return getCrWordCount(work);
+    if(kind==='colBook')return getTotalWords(work);
+    return countWords(work.content||'');
+  }catch(e){return 0;}
+}
+// 把作品放进回收站，成功返回true。调用方必须在返回true之后才从原列表移除作品：
+// 这样回收站写入失败时作品保持原样，不会凭空消失
+function _moveToTrash(kind,work){
+  try{
+    if(!work||typeof work!=='object'||!Object.prototype.hasOwnProperty.call(TRASH_KIND_LABELS,kind))return false;
+    // 深拷贝：之后原对象从列表移除/被编辑器继续引用，都不会影响回收站里的数据
+    var copy=JSON.parse(JSON.stringify(work));
+    if(copy.id===undefined||copy.id===null||copy.id==='')return false;
+    _purgeExpiredTrash();
+    trashItems.unshift({id:uid(),kind:kind,deletedAt:new Date().toISOString(),wc:_trashWordCount(kind,copy),data:copy});
+    sv('bj_trash',trashItems);
+    _trashTextCache.clear();
+    return true;
+  }catch(e){
+    logError('moveToTrash',e);
+    return false;
+  }
+}
+function _trashTitle(it){
+  var t=(it&&it.data&&typeof it.data.title==='string')?it.data.title.trim():'';
+  return t||'无标题';
+}
+// 取作品第一段有内容的正文做预览，避免为了预览把整本小说拼接一遍
+function _trashPreview(work){
+  var src='';
+  if(work&&typeof work.content==='string'&&work.content){
+    src=work.content;
+  }else if(work&&Array.isArray(work.chapters)){
+    for(var i=0;i<work.chapters.length;i++){
+      var ch=work.chapters[i];
+      var s=typeof ch==='string'?ch:((ch&&typeof ch.content==='string')?ch.content:'');
+      if(s&&s.trim()){src=s;break;}
+    }
+  }
+  return src.slice(0,400).replace(/\s+/g,' ').trim().slice(0,120);
+}
+function _trashFullText(work){
+  if(!work||typeof work!=='object')return '';
+  if(typeof work.content==='string'&&work.content)return work.content;
+  if(Array.isArray(work.chapters)){
+    return work.chapters.map(function(ch){
+      return typeof ch==='string'?ch:((ch&&typeof ch.content==='string')?ch.content:'');
+    }).join('\n');
+  }
+  return '';
+}
+function _trashSearchText(it){
+  var c=_trashTextCache.get(it.id);
+  if(c===undefined){
+    c=_trashFullText(it.data).toLowerCase();
+    _trashTextCache.set(it.id,c);
+  }
+  return c;
+}
+function _trashRemainLabel(it,now){
+  var left=new Date(it.deletedAt).getTime()+TRASH_KEEP_MS-now;
+  if(left<=0)return '即将清除';
+  var days=Math.ceil(left/86400000);
+  return days<=1?'不足1天后清除':('还剩 '+days+' 天');
+}
+function _trashFilteredItems(){
+  var searchEl=document.getElementById('trashSearch');
+  var filterEl=document.getElementById('trashFilter');
+  var kw=((searchEl&&searchEl.value)||'').trim().toLowerCase();
+  var filter=(filterEl&&filterEl.value)||'all';
+  var items=Array.isArray(trashItems)?trashItems:[];
+  if(filter!=='all')items=items.filter(function(it){return it.kind===filter;});
+  if(kw){
+    items=items.filter(function(it){
+      return _trashTitle(it).toLowerCase().indexOf(kw)!==-1||_trashSearchText(it).indexOf(kw)!==-1;
+    });
+  }
+  return items;
+}
+function _updateTrashButtons(){
+  var total=Array.isArray(trashItems)?trashItems.length:0;
+  var countEl=document.getElementById('trashCount');
+  if(countEl)countEl.textContent=total+'项';
+  var n=trashSelected.size;
+  var restoreBtn=document.getElementById('trashRestoreBtn');
+  if(restoreBtn){
+    restoreBtn.disabled=_trashBusy||n===0;
+    restoreBtn.style.opacity=restoreBtn.disabled?'.5':'';
+    restoreBtn.innerHTML='<i class="fas fa-rotate-left"></i> 恢复选中'+(n>0?'（'+n+'）':'');
+  }
+  var allBtn=document.getElementById('trashSelectAllBtn');
+  if(allBtn){
+    var allSel=_trashVisibleIds.length>0&&_trashVisibleIds.every(function(id){return trashSelected.has(id);});
+    allBtn.textContent=allSel?'取消全选':'全选';
+    allBtn.disabled=_trashVisibleIds.length===0;
+    allBtn.style.opacity=allBtn.disabled?'.5':'';
+  }
+  var clearBtn=document.getElementById('trashClearBtn');
+  if(clearBtn){
+    clearBtn.disabled=_trashBusy||total===0;
+    clearBtn.style.opacity=clearBtn.disabled?'.5':'';
+  }
+}
+// 卡片内容全部用DOM API+textContent构建：标题/正文来自作品和导入的备份，不能当HTML处理
+function _buildTrashCard(it,now){
+  var title=_trashTitle(it);
+  var card=document.createElement('div');
+  card.className='res-card';
+  card.style.cssText='padding:14px;cursor:pointer;margin-bottom:10px';
+  card.setAttribute('role','checkbox');
+  card.setAttribute('aria-label',title);
+  card.tabIndex=0;
+
+  var hd=document.createElement('div');
+  hd.className='res-card-hd';
+  var box=document.createElement('span');
+  box.setAttribute('aria-hidden','true');
+  box.style.cssText='width:20px;height:20px;border-radius:6px;flex-shrink:0;margin-right:10px;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff';
+  var t=document.createElement('div');
+  t.className='res-card-t';
+  t.textContent=title;
+  var badge=document.createElement('span');
+  badge.className='res-card-type exp';
+  badge.textContent=TRASH_KIND_LABELS[it.kind]||'作品';
+  hd.appendChild(box);hd.appendChild(t);hd.appendChild(badge);
+
+  var preview=_trashPreview(it.data);
+  var pv=document.createElement('div');
+  pv.className='res-card-pv';
+  pv.textContent=preview||'（没有正文内容）';
+
+  var wc=(typeof it.wc==='number'&&isFinite(it.wc))?it.wc:_trashWordCount(it.kind,it.data);
+  var ft=document.createElement('div');
+  ft.className='res-card-ft';
+  var info=document.createElement('span');
+  info.className='res-card-info';
+  info.textContent=wc+'字 · 删除于 '+new Date(it.deletedAt).toLocaleString()+' · '+_trashRemainLabel(it,now);
+  ft.appendChild(info);
+
+  card.appendChild(hd);card.appendChild(pv);card.appendChild(ft);
+
+  function paint(){
+    var sel=trashSelected.has(it.id);
+    card.style.borderColor=sel?'var(--accent)':'var(--border)';
+    card.setAttribute('aria-checked',sel?'true':'false');
+    box.style.border='2px solid '+(sel?'var(--accent)':'var(--border)');
+    box.style.background=sel?'var(--accent)':'transparent';
+    box.innerHTML='';
+    if(sel){var ck=document.createElement('i');ck.className='fas fa-check';box.appendChild(ck);}
+  }
+  function toggle(){
+    if(trashSelected.has(it.id))trashSelected.delete(it.id);else trashSelected.add(it.id);
+    paint();
+    _updateTrashButtons();
+  }
+  card.addEventListener('click',toggle);
+  card.addEventListener('keydown',function(ev){
+    if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();toggle();}
+  });
+  _trashPainters.set(it.id,paint);
+  paint();
+  return card;
+}
+function renderTrashList(){
+  var list=document.getElementById('trashList');
+  if(!list)return;
+  _purgeExpiredTrash();
+  // 已被清除/恢复的条目不能继续留在选中集合里
+  var exist=new Set(trashItems.map(function(it){return it.id;}));
+  trashSelected.forEach(function(id){if(!exist.has(id))trashSelected.delete(id);});
+  var items=_trashFilteredItems();
+  _trashVisibleIds=items.map(function(it){return it.id;});
+  _trashPainters.clear();
+  list.innerHTML='';
+  if(items.length===0){
+    var empty=document.createElement('div');
+    empty.className='empty-st';
+    var p=document.createElement('p');
+    var hasFilter=trashItems.length>0;
+    p.textContent=hasFilter?'没有符合条件的内容':'回收站是空的\n删除的小说和草稿会在这里保留7天';
+    p.style.whiteSpace='pre-line';
+    empty.appendChild(p);
+    list.appendChild(empty);
+  }else{
+    var now=Date.now();
+    items.forEach(function(it){list.appendChild(_buildTrashCard(it,now));});
+  }
+  _updateTrashButtons();
+}
+function _trashSearchChanged(){
+  if(_trashSearchTimer)clearTimeout(_trashSearchTimer);
+  _trashSearchTimer=setTimeout(function(){_trashSearchTimer=null;renderTrashList();},150);
+}
+function toggleTrashFilter(){
+  var drop=document.getElementById('trashFilterDrop');
+  if(drop)foldSlide(drop,!drop.classList.contains('show'));
+}
+function setTrashFilter(val,label){
+  var f=document.getElementById('trashFilter');
+  var tx=document.getElementById('trashFilterText');
+  var drop=document.getElementById('trashFilterDrop');
+  if(f)f.value=val;
+  if(tx)tx.textContent=label;
+  if(drop)foldSlide(drop,false);
+  renderTrashList();
+}
+function openTrash(){
+  var ov=document.getElementById('trashOv');
+  if(!ov){showToast('回收站页面加载失败，请刷新后重试',3000);return;}
+  _purgeExpiredTrash();
+  trashSelected.clear();
+  var searchEl=document.getElementById('trashSearch');
+  if(searchEl)searchEl.value='';
+  setTrashFilter('all','全部');
+  ov.classList.add('show');
+  navPush('trashOv');
+  var nav=document.getElementById('bnav');
+  if(nav)nav.classList.add('hide');
+}
+function closeTrash(){
+  navPop('trashOv');
+  var ov=document.getElementById('trashOv');
+  if(ov)ov.classList.remove('show');
+  var nav=document.getElementById('bnav');
+  if(nav)nav.classList.remove('hide');
+  var drop=document.getElementById('trashFilterDrop');
+  // 回收站整体关闭，下拉同步收起即可，不播放动画
+  if(drop)foldSlide(drop,false,'show',true);
+  if(_trashSearchTimer){clearTimeout(_trashSearchTimer);_trashSearchTimer=null;}
+  trashSelected.clear();
+  _trashTextCache.clear();
+  _trashPainters.clear();
+}
+function toggleTrashSelectAll(){
+  if(_trashVisibleIds.length===0)return;
+  var allSel=_trashVisibleIds.every(function(id){return trashSelected.has(id);});
+  _trashVisibleIds.forEach(function(id){
+    if(allSel)trashSelected.delete(id);else trashSelected.add(id);
+    var paint=_trashPainters.get(id);
+    if(paint)paint();
+  });
+  _updateTrashButtons();
+}
+// 把一个回收站条目放回原列表，成功返回true。id和现有作品冲突时换新id，所属文件夹已被删除时归入"未分类"
+function _restoreTrashItem(it){
+  try{
+    var work=JSON.parse(JSON.stringify(it.data));
+    if(it.kind==='crNovel'||it.kind==='crDraft'){
+      if(!Array.isArray(crWorks))crWorks=[];
+      if(crWorks.some(function(w){return w&&w.id===work.id;}))work.id=uid();
+      if(work.folderId&&!(Array.isArray(crFolders)&&crFolders.some(function(f){return f&&f.id===work.folderId;})))work.folderId='';
+      crWorks.unshift(work);
+      sv('bj_crWorks',crWorks);
+      return true;
+    }
+    if(it.kind==='colBook'||it.kind==='colShort'){
+      if(!cols||typeof cols!=='object')cols={books:[],shorts:[],folders:[]};
+      if(!Array.isArray(cols.books))cols.books=[];
+      if(!Array.isArray(cols.shorts))cols.shorts=[];
+      if(!Array.isArray(cols.folders))cols.folders=[];
+      var arr=it.kind==='colBook'?cols.books:cols.shorts;
+      if(arr.some(function(x){return x&&x.id===work.id;}))work.id=uid();
+      if(work.folderId&&!cols.folders.some(function(f){return f&&f.id===work.folderId;}))work.folderId='';
+      arr.unshift(work);
+      sv(K.cols,cols);
+      return true;
+    }
+    return false;
+  }catch(e){
+    logError('restoreTrashItem',e);
+    return false;
+  }
+}
+function restoreSelectedTrash(){
+  if(_trashBusy)return;
+  if(trashSelected.size===0){showToast('请先选中要恢复的内容');return;}
+  _trashBusy=true;
+  _updateTrashButtons();
+  try{
+    _purgeExpiredTrash();
+    var restoredIds=new Set();
+    var failed=0,expired=0;
+    Array.from(trashSelected).forEach(function(id){
+      var it=trashItems.find(function(x){return x&&x.id===id;});
+      if(!it){expired++;return;}
+      if(_restoreTrashItem(it))restoredIds.add(id);else failed++;
+    });
+    if(restoredIds.size>0){
+      trashItems=trashItems.filter(function(x){return !restoredIds.has(x.id);});
+      sv('bj_trash',trashItems);
+      _trashTextCache.clear();
+      restoredIds.forEach(function(id){trashSelected.delete(id);});
+      try{if(typeof renderCrList==='function')renderCrList();}catch(e){logError('trashRender',e);}
+      try{if(typeof renderCollections==='function')renderCollections();}catch(e){logError('trashRender',e);}
+      try{if(typeof updateStats==='function')updateStats();}catch(e){logError('trashRender',e);}
+    }
+    var msg='已恢复 '+restoredIds.size+' 项';
+    if(failed>0)msg+='，'+failed+' 项恢复失败';
+    if(expired>0)msg+='，'+expired+' 项已过期被清除';
+    showToast(msg,(failed>0||expired>0)?4000:2000);
+  }catch(e){
+    logError('restoreSelectedTrash',e);
+    showToast('恢复失败：'+((e&&e.message)||'未知错误'),4000);
+  }finally{
+    _trashBusy=false;
+    renderTrashList();
+  }
+}
+function clearTrashAll(){
+  _purgeExpiredTrash();
+  if(trashItems.length===0){showToast('回收站已经是空的');return;}
+  showDlg('清空回收站','确定要清空回收站吗？里面的 '+trashItems.length+' 项内容将被永久删除，无法恢复！',function(){
+    trashItems=[];
+    sv('bj_trash',trashItems);
+    trashSelected.clear();
+    _trashTextCache.clear();
+    renderTrashList();
+    showToast('回收站已清空');
+  },true);
+}
+
 function deleteWsArticle(id){
 const article=ws.find(a=>a.id===id);
 if(!article)return;
@@ -2295,6 +3199,8 @@ function cleanOldData(){
   (cols.books||[]).forEach(function(b){if(b&&b.id)allArtIds.add(b.id);});
   (cols.shorts||[]).forEach(function(s){if(s&&s.id)allArtIds.add(s.id);});
   (crWorks||[]).forEach(function(w){if(w&&w.id)allArtIds.add(w.id);});
+  // 回收站里的作品还可能被恢复，它们的上下文设置不能当孤儿清掉
+  (Array.isArray(trashItems)?trashItems:[]).forEach(function(t){if(t&&t.data&&t.data.id)allArtIds.add(t.data.id);});
   var orphanCtxIds=Object.keys(articleContexts||{}).filter(function(id){return !allArtIds.has(id);});
 
   // ④ 旧角色日记（90天前）
@@ -2802,11 +3708,15 @@ showToast(work.pinned?'已置顶「'+(work.title||'无标题')+'」 ⭐':'已取
 function deleteCrWork(id){
 const work=crWorks.find(w=>w.id===id);
 if(!work)return;
-showDlg('删除确认','确定要删除「'+(work.title||'无标题')+'」吗？不可恢复。',()=>{
+showDlg('删除确认','确定要删除「'+(work.title||'无标题')+'」吗？\n\n会放进回收站，保留7天，期间可以恢复。',()=>{
+const target=crWorks.find(w=>w.id===id);
+if(!target){showToast('这个作品已不存在');renderCrList();return;}
+// 先放进回收站再从列表移除：回收站写入失败时作品保持原样，不会凭空消失
+if(!_moveToTrash(target.type==='draft'?'crDraft':'crNovel',target)){showToast('放入回收站失败，作品未删除',4000);return;}
 crWorks=crWorks.filter(w=>w.id!==id);
 sv('bj_crWorks',crWorks);
 renderCrList();
-showToast('已删除');
+showToast('已移入回收站（保留7天）');
 },true);
 }
 function renameCrWork(id){
@@ -4337,130 +5247,208 @@ navPush('edChOv');
 });
 }
 // ==================== 编辑器章节拖拽排序 ====================
-function bindEdChDragSort(listEl){
-  var dragIdx=-1;
-  var dragEl=null;
-  var placeholder=null;
-  var startY=0;
-  var items=[];
-  var moved=false;
-
-  listEl.querySelectorAll('.ch-drag-handle').forEach(function(handle){
+// 通用拖拽排序：用 Pointer Events 同时兼容触摸与鼠标。
+// 触摸：长按150ms后才进入拖拽，避免和列表滚动冲突；鼠标：按下即可拖。
+// opts:{container,handleSel,itemSel,getIdx(item),getGroup(item),onDrop(fromIdx,toIdx)}
+// 拖拽候选范围限定在同一分组（getGroup相同）内，和原目录拖拽的规则一致。
+function _bindPointerDragSort(opts){
+  if(!opts||!opts.container||typeof opts.onDrop!=='function')return;
+  // 老旧环境没有Pointer Events时不绑定拖拽（仍可用"移动到分卷"等菜单调整），避免半吊子的行为
+  if(typeof window.PointerEvent==='undefined')return;
+  var container=opts.container;
+  container.querySelectorAll(opts.handleSel).forEach(function(handle){
     var lpTimer=null;
-    handle.addEventListener('touchstart',function(e){
+    var dragEl=null;
+    var pointerId=null;
+    var startY=0;
+    var moved=false;
+    var items=[];
+    var fromIdx=-1;
+    handle.style.touchAction='none';
+
+    function markOver(clientY){
+      items.forEach(function(it){
+        var rect=it.getBoundingClientRect();
+        var hit=it!==dragEl&&clientY>rect.top&&clientY<rect.bottom;
+        it.classList.toggle('drag-over',hit);
+      });
+    }
+    function beginDrag(item){
+      dragEl=item;
+      dragEl.classList.add('dragging');
+      try{if(navigator.vibrate)navigator.vibrate(30);}catch(err){}
+      var grp=opts.getGroup(item);
+      items=Array.prototype.slice.call(container.querySelectorAll(opts.itemSel)).filter(function(it){return opts.getGroup(it)===grp;});
+    }
+    // commit=true 时按松手位置落点；无论成功与否都还原所有拖拽状态
+    function finish(commit,clientY){
+      clearTimeout(lpTimer);
+      lpTimer=null;
+      var toIdx=-1;
+      if(dragEl&&commit){
+        items.forEach(function(it){
+          var rect=it.getBoundingClientRect();
+          if(it!==dragEl&&clientY>rect.top&&clientY<rect.bottom)toIdx=opts.getIdx(it);
+        });
+      }
+      items.forEach(function(it){it.classList.remove('drag-over');});
+      if(dragEl)dragEl.classList.remove('dragging');
+      if(pointerId!==null){try{handle.releasePointerCapture(pointerId);}catch(err){}}
+      var wasDragging=!!dragEl;
+      var from=fromIdx;
+      dragEl=null;
+      pointerId=null;
+      items=[];
+      fromIdx=-1;
+      if(wasDragging&&!isNaN(from)&&!isNaN(toIdx)&&toIdx>=0&&toIdx!==from)opts.onDrop(from,toIdx);
+    }
+
+    handle.addEventListener('pointerdown',function(e){
+      if(e.pointerType==='mouse'&&e.button!==0)return;
+      if(pointerId!==null)return; // 已经有一次拖拽在进行
+      var item=handle.closest(opts.itemSel);
+      if(!item)return;
       e.preventDefault();
       moved=false;
-      startY=e.touches[0].clientY;
-      var item=handle.closest('.ch-item');
-      dragIdx=parseInt(handle.dataset.drag);
-      lpTimer=setTimeout(function(){
-        if(moved)return;
-        dragEl=item;
-        dragEl.classList.add('dragging');
-        try{if(navigator.vibrate)navigator.vibrate(30);}catch(e){}
-        // 拖拽候选范围限定在同一个分卷分组内（同 dataset.vol）：卷内章节可以不连续，
-        // 允许跨组拖拽会导致"拖到别的卷区域，但分卷归属没变"这种视觉上说不通的结果——
-        // 跨卷移动请用长按菜单里的"移动到分卷"，这里只负责组内顺序调整
-        items=Array.from(listEl.querySelectorAll('.ch-item')).filter(function(it){return it.dataset.vol===item.dataset.vol;});
-      },150);
-    },{passive:false});
-
-    handle.addEventListener('touchmove',function(e){
-      e.preventDefault();
-      var dy=Math.abs(e.touches[0].clientY-startY);
-      if(dy>5)moved=true;
-      if(!dragEl)return;
-      var touchY=e.touches[0].clientY;
-      items.forEach(function(it){
-        it.classList.remove('drag-over');
-        var rect=it.getBoundingClientRect();
-        var midY=rect.top+rect.height/2;
-        if(touchY>rect.top&&touchY<rect.bottom&&it!==dragEl){
-          if(touchY<midY){
-            it.classList.add('drag-over');
-          }
-        }
-      });
-    },{passive:false});
-
-    handle.addEventListener('touchend',function(e){
-      clearTimeout(lpTimer);
-      if(!dragEl){return;}
-      var touchY=e.changedTouches[0].clientY;
-      var targetIdx=-1;
-      items.forEach(function(it,idx2){
-        it.classList.remove('drag-over');
-        var rect=it.getBoundingClientRect();
-        if(touchY>rect.top&&touchY<rect.bottom&&it!==dragEl){
-          targetIdx=parseInt(it.dataset.chIdx);
-        }
-      });
-      dragEl.classList.remove('dragging');
-
-      if(targetIdx>=0&&targetIdx!==dragIdx&&curEd&&curEd.chapters){
-        // 版本历史要在chapters本身被splice之前搬移，此时chapters.length还是搬移前的章节总数（搬移不改变总数）
-        _moveChapterVersions(curEd.id,dragIdx,targetIdx,curEd.chapters.length);
-        // 执行章节交换
-        var ch=curEd.chapters.splice(dragIdx,1)[0];
-        curEd.chapters.splice(targetIdx,0,ch);
-        // 同步章节名
-        if(curEd.chNames){
-          var nm=curEd.chNames.splice(dragIdx,1)[0];
-          curEd.chNames.splice(targetIdx,0,nm);
-        }
-        // 同步章节大纲
-        if(curEd.chOutlines){
-          var ol=curEd.chOutlines.splice(dragIdx,1)[0];
-          curEd.chOutlines.splice(targetIdx,0,ol);
-        }
-        // 同步章节大纲标签
-        if(curEd.chOutlineTags){
-          var tg=curEd.chOutlineTags.splice(dragIdx,1)[0];
-          curEd.chOutlineTags.splice(targetIdx,0,tg);
-        }
-        // 同步章节大纲修改时间
-        if(curEd.chOutlineUpdatedAt){
-          var ut=curEd.chOutlineUpdatedAt.splice(dragIdx,1)[0];
-          curEd.chOutlineUpdatedAt.splice(targetIdx,0,ut);
-        }
-        // 同步章节摘要
-        if(curEd.chSummaries){
-          var sm=curEd.chSummaries.splice(dragIdx,1)[0];
-          curEd.chSummaries.splice(targetIdx,0,sm);
-        }
-        // 同步章节所属分卷（拖拽范围本身已限定在同一分卷内，这里的搬移不会改变分卷归属，只是保持索引对齐）
-        if(curEd.chVolume){
-          var vl=curEd.chVolume.splice(dragIdx,1)[0];
-          curEd.chVolume.splice(targetIdx,0,vl);
-        }
-        // 更新当前编辑章节索引
-        if(curEdCh===dragIdx){
-          curEdCh=targetIdx;
-        }else if(dragIdx<curEdCh&&targetIdx>=curEdCh){
-          curEdCh--;
-        }else if(dragIdx>curEdCh&&targetIdx<=curEdCh){
-          curEdCh++;
-        }
-        document.getElementById('edTextarea').value=curEd.chapters[curEdCh]||'';
-        updateEdWc();
-        renderEdChBar();
-        saveEditorContent();
-        // 重新渲染目录
-        closeEdChList();
-        openEdChList(true);
-        showToast('章节已移动');
+      startY=e.clientY;
+      pointerId=e.pointerId;
+      fromIdx=opts.getIdx(item);
+      try{handle.setPointerCapture(e.pointerId);}catch(err){}
+      if(e.pointerType==='mouse'){
+        beginDrag(item);
+      }else{
+        lpTimer=setTimeout(function(){
+          if(moved||pointerId===null)return;
+          beginDrag(item);
+        },150);
       }
-
-      dragEl=null;
-      dragIdx=-1;
     });
-
-    handle.addEventListener('touchcancel',function(){
-      clearTimeout(lpTimer);
-      if(dragEl)dragEl.classList.remove('dragging');
-      items.forEach(function(it){it.classList.remove('drag-over');});
-      dragEl=null;dragIdx=-1;
+    handle.addEventListener('pointermove',function(e){
+      if(e.pointerId!==pointerId)return;
+      if(!dragEl){
+        if(Math.abs(e.clientY-startY)>5)moved=true;
+        return;
+      }
+      e.preventDefault();
+      markOver(e.clientY);
     });
+    handle.addEventListener('pointerup',function(e){
+      if(e.pointerId!==pointerId)return;
+      finish(true,e.clientY);
+    });
+    handle.addEventListener('pointercancel',function(e){
+      if(e.pointerId!==pointerId)return;
+      finish(false,0);
+    });
+    handle.addEventListener('lostpointercapture',function(){
+      // 指针捕获意外丢失（比如元素被重新渲染）时放弃本次拖拽，避免残留dragging样式
+      if(pointerId!==null)finish(false,0);
+    });
+  });
+}
+
+// ==================== 章节附加信息：本章目标 / 涉及角色 ====================
+// 和章节版本历史一样按"作品id"独立存储（bj_chmeta_作品id），不放进作品对象里，
+// 这样阅读器长篇和创作页作品共用一套读写，也不用改syncArticle。
+// 章节被拖拽/删除时必须同步搬移（_moveChMeta/_removeChMeta），否则会错位到别的章节上。
+function getChMeta(workId){
+  if(!workId)return[];
+  var list=ld('bj_chmeta_'+workId,[]);
+  return Array.isArray(list)?list:[];
+}
+function saveChMeta(workId,list){
+  if(!workId||!Array.isArray(list))return;
+  sv('bj_chmeta_'+workId,list);
+}
+function _normChMeta(m){
+  return{
+    goal:(m&&typeof m.goal==='string')?m.goal:'',
+    chars:(m&&typeof m.chars==='string')?m.chars:''
+  };
+}
+function getChMetaAt(workId,idx){
+  return _normChMeta(getChMeta(workId)[idx]);
+}
+function setChMetaAt(workId,idx,field,value){
+  if(!workId||typeof idx!=='number'||isNaN(idx)||idx<0)return false;
+  if(field!=='goal'&&field!=='chars')return false;
+  var limit=field==='goal'?200:100;
+  var clean=String(value==null?'':value).trim().slice(0,limit);
+  var list=getChMeta(workId);
+  while(list.length<=idx)list.push({goal:'',chars:''});
+  var cur=_normChMeta(list[idx]);
+  if(cur[field]===clean)return false;
+  cur[field]=clean;
+  list[idx]=cur;
+  saveChMeta(workId,list);
+  return true;
+}
+function _moveChMeta(workId,fromIdx,toIdx,chapterCount){
+  if(!workId)return;
+  var list=getChMeta(workId);
+  if(list.length===0)return;
+  var all=[];
+  for(var i=0;i<chapterCount;i++)all.push(_normChMeta(list[i]));
+  var moved=all.splice(fromIdx,1)[0];
+  all.splice(toIdx,0,moved);
+  saveChMeta(workId,all);
+}
+function _removeChMeta(workId,idx){
+  if(!workId)return;
+  var list=getChMeta(workId);
+  if(idx<0||idx>=list.length)return;
+  list.splice(idx,1);
+  saveChMeta(workId,list);
+}
+
+// 创作页：把第dragIdx章移到targetIdx位置，同步所有平行数据（章节名/大纲/标签/摘要/分卷/版本历史/附加信息）。
+// refreshList=false 时不重建目录弹窗（大纲树自己负责刷新）。成功返回true。
+function _edApplyChapterMove(dragIdx,targetIdx,refreshList){
+  if(!curEd||!Array.isArray(curEd.chapters))return false;
+  var total=curEd.chapters.length;
+  if(typeof dragIdx!=='number'||typeof targetIdx!=='number'||isNaN(dragIdx)||isNaN(targetIdx))return false;
+  if(dragIdx<0||dragIdx>=total||targetIdx<0||targetIdx>=total||dragIdx===targetIdx)return false;
+  // 当前编辑框里可能有还没写回的最新文字，先写回再搬移，避免搬完后被旧内容覆盖
+  saveEditorChapter();
+  // 版本历史/附加信息要在chapters本身被splice之前搬移，此时chapters.length还是搬移前的章节总数（搬移不改变总数）
+  _moveChapterVersions(curEd.id,dragIdx,targetIdx,total);
+  _moveChMeta(curEd.id,dragIdx,targetIdx,total);
+  var ch=curEd.chapters.splice(dragIdx,1)[0];
+  curEd.chapters.splice(targetIdx,0,ch);
+  ['chNames','chOutlines','chOutlineTags','chOutlineUpdatedAt','chSummaries','chVolume'].forEach(function(field){
+    if(Array.isArray(curEd[field])){
+      var item=curEd[field].splice(dragIdx,1)[0];
+      curEd[field].splice(targetIdx,0,item);
+    }
+  });
+  // 更新当前编辑章节索引
+  if(curEdCh===dragIdx){
+    curEdCh=targetIdx;
+  }else if(dragIdx<curEdCh&&targetIdx>=curEdCh){
+    curEdCh--;
+  }else if(dragIdx>curEdCh&&targetIdx<=curEdCh){
+    curEdCh++;
+  }
+  document.getElementById('edTextarea').value=curEd.chapters[curEdCh]||'';
+  updateEdWc();
+  renderEdChBar();
+  saveEditorContent();
+  if(refreshList!==false){
+    closeEdChList();
+    openEdChList(true);
+  }
+  showToast('章节已移动');
+  return true;
+}
+
+function bindEdChDragSort(listEl){
+  _bindPointerDragSort({
+    container:listEl,
+    handleSel:'.ch-drag-handle',
+    itemSel:'.ch-item',
+    getIdx:function(it){return parseInt(it.dataset.chIdx,10);},
+    getGroup:function(it){return it.dataset.vol;},
+    onDrop:function(fromIdx,toIdx){_edApplyChapterMove(fromIdx,toIdx,true);}
   });
 }
 function closeEdChList(){
@@ -4666,7 +5654,7 @@ let edFmtClearExtra=ld('bj_edFmtClearExtra',true);
 
 function toggleEdWriteSettings(){
 const el=document.getElementById('edWriteSettings');
-if(el)el.classList.toggle('show');
+if(el)foldSlide(el,!el.classList.contains('show'));
 }
 
 function setEdFont(v){
@@ -4795,18 +5783,19 @@ let edSearchIdx=-1;
 function toggleEdSearch(){
 const bar=document.getElementById('edSearchBar');
 if(!bar)return;
-if(bar.style.display==='flex'){
+if(bar.classList.contains('show')){
 closeEdSearch();
 }else{
-bar.style.display='flex';
+foldSlide(bar,true);
 const inp=document.getElementById('edSearchInput');
-if(inp)inp.focus();
+// preventScroll：展开动画刚开始时输入框还在被裁剪的区域里，避免浏览器为了露出它去滚动被裁剪的容器
+if(inp)inp.focus({preventScroll:true});
 }
 }
 
 function closeEdSearch(){
 const bar=document.getElementById('edSearchBar');
-if(bar)bar.style.display='none';
+if(bar)foldSlide(bar,false);
 const inp=document.getElementById('edSearchInput');
 if(inp)inp.value='';
 edSearchMatches=[];
@@ -5504,7 +6493,7 @@ let edPreviewMode=false;
 function toggleEdMdToolbar(){
   edMdToolbarVisible=!edMdToolbarVisible;
   const bar=document.getElementById('edMdToolbar');
-  if(bar) bar.classList.toggle('show',edMdToolbarVisible);
+  if(bar) foldSlide(bar,edMdToolbarVisible);
   showToast(edMdToolbarVisible?'Markdown工具栏已显示':'Markdown工具栏已隐藏');
 }
 
@@ -5980,7 +6969,7 @@ function parsePrfResult(text,type){
       if(prfSource==='editor'&&document.getElementById('edModal').classList.contains('show')){
         var bar=document.getElementById('edSearchBar');
         if(bar){
-          bar.style.display='flex';
+          foldSlide(bar,true);
           document.getElementById('edSearchInput').value=kw;
           doEdSearch();
           closeProofread();
@@ -6122,7 +7111,7 @@ tag.onclick=function(){
 doCopy(word);
 // 自动打开搜索栏并填入
 const bar=document.getElementById('edSearchBar');
-bar.style.display='flex';
+foldSlide(bar,true);
 document.getElementById('edSearchInput').value=word;
 edSearchScope='chapter';
 document.getElementById('edSearchScopeBtn').textContent='本章';
@@ -6375,6 +7364,700 @@ return '<div class="ch-outline-item" data-ch="'+i+'">'+
 '<div class="tx-wrap"><textarea data-ch="'+i+'" placeholder="【必填内容】本章必须出现的事件、人物行为、情绪走向、要埋的伏笔、禁止出现的内容...写得越详细AI越听话">'+esc(outline)+'</textarea><div class="tx-resize-handle"></div></div>'+
 '</div>';
 }
+// ==================== 大纲树（思维导图：作品 → 卷 → 章 → 要点/伏笔） ====================
+// 同一个界面服务两种作品：mode='ed' 创作页作品(curEd)，章下面的叶子是"本章要点"（取自章节大纲，只读）；
+// mode='rd' 阅读器长篇(curRd)，章下面的叶子是该章伏笔（未回收金色、已回收灰色）。
+// 拖拽排序（长按章节节点后拖到同卷另一章）只在 'ed' 开放：阅读器长篇的快照/伏笔都按章节序号存储，调序会让它们错位。
+var _otMode='';
+var _otExpanded={};      // 章节索引 → 是否展开叶子
+var _otVolCollapsed={};  // 分卷key → 是否折叠
+var _otDirty=false;      // 在树里改动过数据，关闭时需要刷新底下的目录/大纲页
+var _OT_MIN_K=0.4;
+var _OT_MAX_K=2.5;
+var _OT_INIT_K=0.85;
+var _OT_GAP_X=56;
+var _OT_GAP_Y=10;
+var _OT_W={root:128,vol:132,ch:176,leaf:210};
+var _OT_H={root:42,vol:38,ch:42,leaf:30};
+var _OT_AUTO_COLLAPSE_CHAPTERS=60; // 章节多于这个数时，打开时只展开第一卷，避免一次画出几百个节点
+var _otView={x:16,y:16,k:_OT_INIT_K};
+var _otPointers={};      // pointerId → {x,y}
+var _otGesture=null;     // 当前手势：{mode:'tap'|'pan'|'pinch'|'drag',...}
+var _otEventsBound=false;
+var _otCanvasW=0;
+var _otCanvasH=0;
+var _otSheetCtx=null;    // 详情面板当前内容 {kind:'ch'|'fs',idx}
+
+function _otWork(){
+  if(_otMode==='ed')return curEd;
+  if(_otMode==='rd')return curRd;
+  return null;
+}
+
+function _otClamp(v,lo,hi){return Math.min(hi,Math.max(lo,v));}
+
+function openOutlineTree(mode){
+  var work=null;
+  if(mode==='ed'){
+    if(!curEd||curEd.type!=='novel'||!Array.isArray(curEd.chapters)){showToast('请先打开一篇长篇作品');return;}
+    work=curEd;
+    // 把还没落盘的编辑内容先保存，保证树里看到的是最新状态
+    if(typeof _autoSaveChOutlineTextareas==='function')_autoSaveChOutlineTextareas();
+    saveEditorChapter();
+  }else if(mode==='rd'){
+    if(!curRd||curRd.type!=='long'||!Array.isArray(curRd.chapters)){showToast('请先打开一篇长篇作品');return;}
+    work=curRd;
+  }else{
+    return;
+  }
+  var ov=document.getElementById('outlineTreeOv');
+  if(!ov){showToast('大纲树界面未就绪');return;}
+  if(ov.classList.contains('show'))return; // 已经打开，避免重复入栈
+  _ensureVolFields(work);
+  _otMode=mode;
+  _otExpanded={};
+  _otVolCollapsed={};
+  _otDirty=false;
+  _otPointers={};
+  _otGesture=null;
+  // 章节很多时只展开第一卷
+  if(work.chapters.length>_OT_AUTO_COLLAPSE_CHAPTERS&&(work.volumes||[]).length>0){
+    _buildVolGroups(work).forEach(function(g,gi){
+      if(gi>0)_otVolCollapsed[g.id||'']=true;
+    });
+  }
+  if(typeof window.PointerEvent==='undefined'){
+    showToast('当前浏览器不支持手势操作，只能查看',3000);
+  }else{
+    _otBindViewport();
+  }
+  ov.classList.add('show');
+  navPush('outlineTreeOv');
+  renderOutlineTree(true);
+}
+
+function closeOutlineTree(){
+  var ov=document.getElementById('outlineTreeOv');
+  if(!ov||!ov.classList.contains('show'))return;
+  _otCancelGesture();
+  _otCloseSheet();
+  navPop('outlineTreeOv');
+  ov.classList.remove('show');
+  var mode=_otMode;
+  var dirty=_otDirty;
+  _otMode='';
+  _otDirty=false;
+  if(!dirty)return;
+  // 刷新树下面还开着的页面，让它们反映刚才的改动
+  var chOutlineOv=document.getElementById('chOutlineOv');
+  if(mode==='ed'&&chOutlineOv&&chOutlineOv.classList.contains('show'))renderChOutlineList();
+  var edChOv=document.getElementById('edChOv');
+  if(mode==='ed'&&edChOv&&edChOv.classList.contains('show')){closeEdChList();openEdChList(true);}
+  var chOv=document.getElementById('chOv');
+  if(mode==='rd'&&chOv&&chOv.classList.contains('show')){closeChapterList();openChapterList(true);}
+}
+
+// ---- 数据模型：整理成 root → vol → ch → leaf 的节点树 ----
+function _otLeafData(work,chIdx,fsByCh){
+  var leaves=[];
+  if(_otMode==='rd'){
+    (fsByCh[chIdx]||[]).forEach(function(x){
+      leaves.push({kind:'fs',text:x.f.content||'',fsIdx:x.idx,done:x.f.status==='done'});
+    });
+  }else{
+    var lines=String((work.chOutlines&&work.chOutlines[chIdx])||'').split('\n').map(function(s){return s.trim();}).filter(function(s){return s;});
+    lines.slice(0,6).forEach(function(s){leaves.push({kind:'pt',text:s.length>40?s.slice(0,40)+'…':s});});
+    if(lines.length>6)leaves.push({kind:'more',text:'…还有'+(lines.length-6)+'条'});
+  }
+  return leaves;
+}
+
+function _otBuildModel(work){
+  var chapters=work.chapters;
+  var fsByCh={};
+  var fsUnplaced=[];
+  if(_otMode==='rd'){
+    var fsList=getForeshadows(work.id);
+    if(!Array.isArray(fsList))fsList=[];
+    fsList.forEach(function(f,fi){
+      if(!f)return;
+      var ci=fsChapterIndex(f);
+      if(ci<0||ci>=chapters.length){fsUnplaced.push({f:f,idx:fi});return;}
+      if(!fsByCh[ci])fsByCh[ci]=[];
+      fsByCh[ci].push({f:f,idx:fi});
+    });
+  }
+  var root={type:'root',label:work.title||'未命名作品',children:[],depth:0};
+  var hasAnyVolume=(work.volumes||[]).length>0;
+  var meta=getChMeta(work.id);
+  function makeChapter(i,volKey,depth){
+    var name=(work.chNames&&work.chNames[i])?work.chNames[i]:'';
+    var leaves=_otLeafData(work,i,fsByCh);
+    var pending=0;
+    var fsCount=(fsByCh[i]||[]).length;
+    (fsByCh[i]||[]).forEach(function(x){if(x.f.status!=='done')pending++;});
+    var m=_normChMeta(meta[i]);
+    var node={type:'ch',idx:i,vol:volKey,depth:depth,children:[],
+      label:'第'+(i+1)+'章'+(name?' '+name:''),
+      leafCount:leaves.length,pending:pending,fsCount:fsCount,hasGoal:!!m.goal,hasChars:!!m.chars};
+    if(_otExpanded[i]){
+      leaves.forEach(function(l){
+        node.children.push({type:'leaf',kind:l.kind,text:l.text,fsIdx:l.fsIdx,done:!!l.done,parentIdx:i,depth:depth+1,children:[]});
+      });
+    }
+    return node;
+  }
+  _buildVolGroups(work).forEach(function(g){
+    if(g.indices.length===0)return;
+    var key=g.id||'';
+    if(hasAnyVolume){
+      var collapsed=!!_otVolCollapsed[key];
+      var vol={type:'vol',key:key,label:g.name||(g.id===null?'未分卷':'未命名分卷'),count:g.indices.length,collapsed:collapsed,depth:1,children:[]};
+      if(!collapsed)g.indices.forEach(function(i){vol.children.push(makeChapter(i,key,2));});
+      root.children.push(vol);
+    }else{
+      g.indices.forEach(function(i){root.children.push(makeChapter(i,key,1));});
+    }
+  });
+  if(fsUnplaced.length>0){
+    var pseudo={type:'vol',key:'__unplaced',label:'未定位章节的伏笔',count:fsUnplaced.length,collapsed:false,isStatic:true,depth:1,children:[]};
+    fsUnplaced.forEach(function(x){
+      pseudo.children.push({type:'leaf',kind:'fs',text:x.f.content||'',fsIdx:x.idx,done:x.f.status==='done',parentIdx:-1,depth:2,children:[]});
+    });
+    root.children.push(pseudo);
+  }
+  return root;
+}
+
+// ---- 布局：从左到右的树，每个节点按"子树高度"垂直居中 ----
+function _otSubH(node){
+  if(node._sh)return node._sh;
+  var h=_OT_H[node.type];
+  if(node.children.length>0){
+    var sum=0;
+    node.children.forEach(function(c){sum+=_otSubH(c);});
+    sum+=_OT_GAP_Y*(node.children.length-1);
+    h=Math.max(h,sum);
+  }
+  node._sh=h;
+  return h;
+}
+function _otAssignY(node,top){
+  node.w=_OT_W[node.type];
+  node.h=_OT_H[node.type];
+  var sub=_otSubH(node);
+  if(node.children.length===0){
+    node.y=top+(sub-node.h)/2;
+    return;
+  }
+  var cursor=top;
+  node.children.forEach(function(c){
+    _otAssignY(c,cursor);
+    cursor+=_otSubH(c)+_OT_GAP_Y;
+  });
+  var first=node.children[0];
+  var last=node.children[node.children.length-1];
+  node.y=(first.y+first.h/2+last.y+last.h/2)/2-node.h/2;
+}
+function _otFlatten(node,out){
+  out.push(node);
+  node.children.forEach(function(c){_otFlatten(c,out);});
+  return out;
+}
+
+function _otNodeClass(n){
+  var cls='ot-node ot-t-'+n.type;
+  if(n.type==='ch'){
+    if(n.pending>0)cls+=' ot-fs-gold';
+    else if(n.fsCount>0)cls+=' ot-fs-gray';
+  }
+  if(n.type==='leaf'&&n.kind==='fs')cls+=n.done?' ot-fs-gray':' ot-fs-gold';
+  if(n.type==='leaf'&&n.kind==='more')cls+=' ot-more';
+  return cls;
+}
+
+function _otNodeHtml(n){
+  var attrs=' data-type="'+n.type+'"';
+  var label=n.label||n.text||'';
+  var aria=label;
+  var inner='';
+  if(n.type==='root'){
+    inner='<span class="ot-nlabel">'+esc(label)+'</span>';
+    aria='作品「'+label+'」，点击展开或折叠全部分卷';
+  }else if(n.type==='vol'){
+    attrs+=' data-vol="'+esc(n.key)+'"'+(n.isStatic?' data-static="1"':'');
+    inner='<i class="fas fa-'+(n.collapsed?'chevron-right':'chevron-down')+' ot-ico"></i><span class="ot-nlabel">'+esc(label)+'</span><span class="ot-cnt">'+n.count+'</span>';
+    aria=label+'，共'+n.count+'项'+(n.isStatic?'':'，点击'+(n.collapsed?'展开':'折叠'));
+  }else if(n.type==='ch'){
+    attrs+=' data-idx="'+n.idx+'" data-vol="'+esc(n.vol)+'"';
+    var badges='';
+    if(n.hasGoal)badges+='<i class="fas fa-flag ot-mi" aria-hidden="true"></i>';
+    if(n.hasChars)badges+='<i class="fas fa-user ot-mi" aria-hidden="true"></i>';
+    inner='<span class="ot-nlabel">'+esc(label)+'</span>'+badges+
+      (n.leafCount>0?'<span class="ot-tg" data-tg="1" aria-hidden="true"><i class="fas fa-'+(_otExpanded[n.idx]?'chevron-left':'chevron-right')+'"></i>'+n.leafCount+'</span>':'');
+    aria=label+'，点击查看详情'+(n.leafCount>0?'；右侧按钮'+(_otExpanded[n.idx]?'收起':'展开')+(_otMode==='rd'?'伏笔':'要点'):'');
+  }else{
+    attrs+=' data-kind="'+n.kind+'" data-parent="'+n.parentIdx+'"'+(n.kind==='fs'?' data-fs="'+n.fsIdx+'"':'');
+    inner=(n.kind==='fs'?'<i class="fas fa-bullseye ot-ico"></i>':'')+'<span class="ot-nlabel">'+esc(label)+'</span>';
+    aria=(n.kind==='fs'?(n.done?'已回收的伏笔：':'未回收的伏笔：'):'')+label;
+  }
+  return '<div class="'+_otNodeClass(n)+'"'+attrs+' role="button" tabindex="0" aria-label="'+esc(aria)+'" style="left:'+n.x+'px;top:'+n.y+'px;width:'+n.w+'px;height:'+n.h+'px">'+inner+'</div>';
+}
+
+function _otLinkPath(p,c){
+  var x1=p.x+p.w,y1=p.y+p.h/2,x2=c.x,y2=c.y+c.h/2;
+  var xm=(x1+x2)/2;
+  var cls='ot-link';
+  if(c.type==='leaf'&&c.kind==='fs')cls+=c.done?' ot-link-gray':' ot-link-gold';
+  else if(c.type==='ch'&&c.pending>0)cls+=' ot-link-gold';
+  return '<path class="'+cls+'" d="M'+x1+' '+y1+' C'+xm+' '+y1+' '+xm+' '+y2+' '+x2+' '+y2+'"/>';
+}
+
+function renderOutlineTree(resetView){
+  var work=_otWork();
+  var canvas=document.getElementById('otCanvas');
+  var vp=document.getElementById('otViewport');
+  if(!work||!canvas||!vp)return;
+  var info=document.getElementById('outlineTreeInfo');
+  if(info)info.textContent='共 '+work.chapters.length+' 章';
+  var hint=document.getElementById('outlineTreeHint');
+  if(hint){
+    hint.textContent=_otMode==='ed'
+      ?'拖动画布平移，双指/按钮缩放；点节点看详情，点章节右侧箭头展开要点；长按章节拖到同卷另一章可调序'
+      :'拖动画布平移，双指/按钮缩放；点节点看详情，点章节右侧箭头展开伏笔（金色未回收，灰色已回收）';
+  }
+  if(work.chapters.length===0){
+    canvas.innerHTML='';
+    canvas.style.width='0px';canvas.style.height='0px';
+    vp.setAttribute('data-empty','1');
+    return;
+  }
+  vp.removeAttribute('data-empty');
+  var root=_otBuildModel(work);
+  _otAssignY(root,0);
+  var all=_otFlatten(root,[]);
+  // 每一列（同一深度）宽度取该列最宽的节点，列与列之间留固定间距
+  var colW=[];
+  all.forEach(function(n){
+    var w=_OT_W[n.type];
+    if(!colW[n.depth]||colW[n.depth]<w)colW[n.depth]=w;
+  });
+  var colX=[];
+  var acc=0;
+  colW.forEach(function(w,d){colX[d]=acc;acc+=w+_OT_GAP_X;});
+  var maxX=0,maxY=0;
+  all.forEach(function(n){
+    n.x=colX[n.depth];
+    if(n.x+n.w>maxX)maxX=n.x+n.w;
+    if(n.y+n.h>maxY)maxY=n.y+n.h;
+  });
+  var PAD=24;
+  _otCanvasW=maxX+PAD*2;
+  _otCanvasH=maxY+PAD*2;
+  var links='';
+  all.forEach(function(p){p.children.forEach(function(c){links+=_otLinkPath(p,c);});});
+  var nodesHtml=all.map(_otNodeHtml).join('');
+  canvas.style.width=_otCanvasW+'px';
+  canvas.style.height=_otCanvasH+'px';
+  canvas.innerHTML='<div class="ot-inner" style="left:'+PAD+'px;top:'+PAD+'px"><svg class="ot-svg" width="'+maxX+'" height="'+maxY+'" viewBox="0 0 '+maxX+' '+maxY+'" aria-hidden="true">'+links+'</svg>'+nodesHtml+'</div>';
+  if(resetView)otResetView();else _otApplyView();
+}
+
+// ---- 视图：平移 + 缩放 ----
+function _otApplyView(){
+  var canvas=document.getElementById('otCanvas');
+  var vp=document.getElementById('otViewport');
+  if(!canvas||!vp)return;
+  if(!isFinite(_otView.x)||!isFinite(_otView.y)||!isFinite(_otView.k)){_otView={x:16,y:16,k:_OT_INIT_K};}
+  _otView.k=_otClamp(_otView.k,_OT_MIN_K,_OT_MAX_K);
+  // 允许拖出一部分，但至少留80px内容在可视区内，避免整张图被拖丢
+  var keep=80;
+  var cw=_otCanvasW*_otView.k;
+  var chh=_otCanvasH*_otView.k;
+  _otView.x=_otClamp(_otView.x,keep-cw,vp.clientWidth-keep);
+  _otView.y=_otClamp(_otView.y,keep-chh,vp.clientHeight-keep);
+  canvas.style.transform='translate('+_otView.x+'px,'+_otView.y+'px) scale('+_otView.k+')';
+}
+function otResetView(){
+  var vp=document.getElementById('otViewport');
+  if(!vp)return;
+  _otView.k=_OT_INIT_K;
+  _otView.x=16;
+  var h=_otCanvasH*_otView.k;
+  _otView.y=h<vp.clientHeight?(vp.clientHeight-h)/2:16;
+  _otApplyView();
+}
+function _otZoomAt(clientX,clientY,factor){
+  var vp=document.getElementById('otViewport');
+  if(!vp||!isFinite(factor)||factor<=0)return;
+  var rect=vp.getBoundingClientRect();
+  var px=clientX-rect.left;
+  var py=clientY-rect.top;
+  var nk=_otClamp(_otView.k*factor,_OT_MIN_K,_OT_MAX_K);
+  if(nk===_otView.k)return;
+  _otView.x=px-(px-_otView.x)*nk/_otView.k;
+  _otView.y=py-(py-_otView.y)*nk/_otView.k;
+  _otView.k=nk;
+  _otApplyView();
+}
+function otZoomBy(factor){
+  var vp=document.getElementById('otViewport');
+  if(!vp)return;
+  var rect=vp.getBoundingClientRect();
+  _otZoomAt(rect.left+rect.width/2,rect.top+rect.height/2,factor);
+}
+
+// ---- 手势：单指/鼠标平移，双指缩放，长按章节拖拽调序 ----
+function _otBindViewport(){
+  if(_otEventsBound)return;
+  var vp=document.getElementById('otViewport');
+  if(!vp)return;
+  vp.addEventListener('pointerdown',_otPointerDown);
+  vp.addEventListener('pointermove',_otPointerMove);
+  vp.addEventListener('pointerup',_otPointerUp);
+  vp.addEventListener('pointercancel',_otCancelGesture);
+  vp.addEventListener('wheel',_otWheel,{passive:false});
+  vp.addEventListener('keydown',_otKeydown);
+  var sheet=document.getElementById('otSheet');
+  if(sheet){
+    sheet.addEventListener('click',_otSheetClick);
+    sheet.addEventListener('change',_otSheetChange);
+  }
+  _otEventsBound=true;
+}
+
+function _otCancelLongPress(){
+  if(_otGesture&&_otGesture.lp){clearTimeout(_otGesture.lp);_otGesture.lp=null;}
+}
+function _otClearDragMarks(){
+  var canvas=document.getElementById('otCanvas');
+  if(!canvas)return;
+  canvas.querySelectorAll('.dragging,.drag-over').forEach(function(el){
+    el.classList.remove('dragging');
+    el.classList.remove('drag-over');
+    el.style.transform='';
+  });
+}
+// 取消当前所有手势并还原拖拽样式（pointercancel、关闭界面时都走这里，不留脏状态）
+function _otCancelGesture(){
+  _otCancelLongPress();
+  _otClearDragMarks();
+  _otGesture=null;
+  _otPointers={};
+}
+
+function _otPointDist(a,b){
+  var dx=a.x-b.x,dy=a.y-b.y;
+  return Math.sqrt(dx*dx+dy*dy);
+}
+
+function _otPointerDown(e){
+  if(e.pointerType==='mouse'&&e.button!==0)return;
+  var target=e.target;
+  if(!target||!target.closest)return;
+  if(target.closest('.ot-ctl'))return; // 缩放按钮自己处理点击
+  var vp=document.getElementById('otViewport');
+  _otPointers[e.pointerId]={x:e.clientX,y:e.clientY};
+  var ids=Object.keys(_otPointers);
+  if(ids.length===1){
+    _otCancelLongPress();
+    var g={mode:'tap',sx:e.clientX,sy:e.clientY,vx:_otView.x,vy:_otView.y,downEl:target,pid:e.pointerId,lp:null,dragEl:null};
+    _otGesture=g;
+    var chEl=target.closest('.ot-t-ch');
+    if(_otMode==='ed'&&chEl&&!target.closest('[data-tg]')){
+      g.lp=setTimeout(function(){
+        g.lp=null;
+        if(_otGesture!==g||g.mode!=='tap')return;
+        g.mode='drag';
+        g.dragEl=chEl;
+        chEl.classList.add('dragging');
+        try{if(navigator.vibrate)navigator.vibrate(30);}catch(err){}
+        try{vp.setPointerCapture(g.pid);}catch(err){}
+      },350);
+    }
+  }else if(ids.length===2){
+    _otCancelLongPress();
+    _otClearDragMarks();
+    var a=_otPointers[ids[0]];
+    var b=_otPointers[ids[1]];
+    _otGesture={mode:'pinch',d0:Math.max(_otPointDist(a,b),1),k0:_otView.k,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,vx:_otView.x,vy:_otView.y};
+    try{vp.setPointerCapture(e.pointerId);}catch(err){}
+  }
+}
+
+function _otPointerMove(e){
+  if(!_otPointers[e.pointerId])return;
+  _otPointers[e.pointerId]={x:e.clientX,y:e.clientY};
+  var g=_otGesture;
+  if(!g)return;
+  var vp=document.getElementById('otViewport');
+  if(g.mode==='pinch'){
+    var ids=Object.keys(_otPointers);
+    if(ids.length<2)return;
+    var a=_otPointers[ids[0]];
+    var b=_otPointers[ids[1]];
+    var rect=vp.getBoundingClientRect();
+    var nk=_otClamp(g.k0*_otPointDist(a,b)/g.d0,_OT_MIN_K,_OT_MAX_K);
+    // 手势开始时两指中点下的那个画布位置，缩放后要仍然落在两指当前中点下
+    var cpx=(g.mx-rect.left-g.vx)/g.k0;
+    var cpy=(g.my-rect.top-g.vy)/g.k0;
+    _otView.k=nk;
+    _otView.x=(a.x+b.x)/2-rect.left-cpx*nk;
+    _otView.y=(a.y+b.y)/2-rect.top-cpy*nk;
+    _otApplyView();
+    return;
+  }
+  if(e.pointerId!==g.pid)return;
+  var dx=e.clientX-g.sx;
+  var dy=e.clientY-g.sy;
+  if(g.mode==='tap'&&Math.abs(dx)+Math.abs(dy)>8){
+    _otCancelLongPress();
+    g.mode='pan';
+    try{vp.setPointerCapture(g.pid);}catch(err){}
+  }
+  if(g.mode==='pan'){
+    e.preventDefault();
+    _otView.x=g.vx+dx;
+    _otView.y=g.vy+dy;
+    _otApplyView();
+  }else if(g.mode==='drag'){
+    e.preventDefault();
+    g.dragEl.style.transform='translate('+(dx/_otView.k)+'px,'+(dy/_otView.k)+'px)';
+    var over=_otDropTarget(g,e.clientX,e.clientY);
+    var canvas=document.getElementById('otCanvas');
+    canvas.querySelectorAll('.drag-over').forEach(function(el){el.classList.remove('drag-over');});
+    if(over)over.classList.add('drag-over');
+  }
+}
+
+// 拖拽落点：指针下的章节节点，且必须和被拖节点同属一个分卷、不是自己
+function _otDropTarget(g,clientX,clientY){
+  var el=document.elementFromPoint(clientX,clientY);
+  var t=el&&el.closest?el.closest('.ot-t-ch'):null;
+  if(!t||t===g.dragEl)return null;
+  if(t.getAttribute('data-vol')!==g.dragEl.getAttribute('data-vol'))return null;
+  return t;
+}
+
+function _otPointerUp(e){
+  var wasTracked=!!_otPointers[e.pointerId];
+  delete _otPointers[e.pointerId];
+  var vp=document.getElementById('otViewport');
+  try{vp.releasePointerCapture(e.pointerId);}catch(err){}
+  var g=_otGesture;
+  if(!g||!wasTracked)return;
+  if(g.mode==='pinch'){
+    // 双指缩放结束后，剩下的那根手指不再触发点击/平移
+    if(Object.keys(_otPointers).length<2)_otGesture=null;
+    return;
+  }
+  if(e.pointerId!==g.pid)return;
+  _otCancelLongPress();
+  _otGesture=null;
+  if(g.mode==='tap'){
+    _otTap(g.downEl);
+    return;
+  }
+  if(g.mode==='drag'){
+    var over=_otDropTarget(g,e.clientX,e.clientY);
+    var from=parseInt(g.dragEl.getAttribute('data-idx'),10);
+    var to=over?parseInt(over.getAttribute('data-idx'),10):-1;
+    _otClearDragMarks();
+    if(!isNaN(from)&&!isNaN(to)&&to>=0&&to!==from&&_edApplyChapterMove(from,to,false)){
+      _otDirty=true;
+      _otExpanded={}; // 章节序号变了，原来的展开状态已经对不上
+      _otCloseSheet();
+      renderOutlineTree(false);
+    }
+  }
+}
+
+function _otWheel(e){
+  e.preventDefault();
+  if(e.ctrlKey||e.metaKey){
+    _otZoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.01));
+  }else{
+    _otView.x-=e.deltaX;
+    _otView.y-=e.deltaY;
+    _otApplyView();
+  }
+}
+
+function _otKeydown(e){
+  var node=e.target&&e.target.closest?e.target.closest('.ot-node'):null;
+  if(node&&(e.key==='Enter'||e.key===' ')){e.preventDefault();_otTap(node);return;}
+  if(e.key==='+'||e.key==='='){e.preventDefault();otZoomBy(1.25);return;}
+  if(e.key==='-'){e.preventDefault();otZoomBy(0.8);return;}
+  var step=40;
+  if(e.key==='ArrowLeft'){e.preventDefault();_otView.x+=step;_otApplyView();}
+  else if(e.key==='ArrowRight'){e.preventDefault();_otView.x-=step;_otApplyView();}
+  else if(e.key==='ArrowUp'){e.preventDefault();_otView.y+=step;_otApplyView();}
+  else if(e.key==='ArrowDown'){e.preventDefault();_otView.y-=step;_otApplyView();}
+}
+
+// ---- 点击节点 ----
+function _otTap(el){
+  if(!el||!el.closest)return;
+  var node=el.closest('.ot-node');
+  if(!node)return;
+  var type=node.getAttribute('data-type');
+  var idx=parseInt(node.getAttribute('data-idx'),10);
+  if(type==='root'){
+    var work=_otWork();
+    if(!work)return;
+    var keys=_buildVolGroups(work).filter(function(g){return g.indices.length>0;}).map(function(g){return g.id||'';});
+    var anyOpen=keys.some(function(k){return !_otVolCollapsed[k];});
+    keys.forEach(function(k){_otVolCollapsed[k]=anyOpen;});
+    renderOutlineTree(false);
+  }else if(type==='vol'){
+    if(node.getAttribute('data-static'))return;
+    var key=node.getAttribute('data-vol')||'';
+    _otVolCollapsed[key]=!_otVolCollapsed[key];
+    renderOutlineTree(false);
+  }else if(type==='ch'){
+    if(isNaN(idx))return;
+    if(el.closest('[data-tg]')){
+      _otExpanded[idx]=!_otExpanded[idx];
+      renderOutlineTree(false);
+    }else{
+      _otOpenSheet({kind:'ch',idx:idx});
+    }
+  }else if(type==='leaf'){
+    if(node.getAttribute('data-kind')==='fs'){
+      var fi=parseInt(node.getAttribute('data-fs'),10);
+      if(!isNaN(fi))_otOpenSheet({kind:'fs',idx:fi});
+    }else{
+      var pi=parseInt(node.getAttribute('data-parent'),10);
+      if(!isNaN(pi)&&pi>=0)_otOpenSheet({kind:'ch',idx:pi});
+    }
+  }
+}
+
+// ---- 详情面板（底部） ----
+function _otOpenSheet(ctx){
+  var work=_otWork();
+  var sheet=document.getElementById('otSheet');
+  var body=document.getElementById('otSheetBody');
+  var title=document.getElementById('otSheetTitle');
+  if(!work||!sheet||!body||!title||!ctx)return;
+  var html='';
+  if(ctx.kind==='ch'){
+    if(ctx.idx<0||ctx.idx>=work.chapters.length)return;
+    var i=ctx.idx;
+    var name=(work.chNames&&work.chNames[i])?work.chNames[i]:'';
+    var meta=getChMetaAt(work.id,i);
+    title.textContent='第'+(i+1)+'章'+(name?' '+name:'');
+    html='<label class="ot-lbl" for="otGoalInput">本章目标</label>'+
+      '<input type="text" class="ot-in" id="otGoalInput" data-meta="goal" data-ch="'+i+'" maxlength="200" placeholder="这一章要达成什么" value="'+esc(meta.goal)+'">'+
+      '<label class="ot-lbl" for="otCharsInput">涉及角色</label>'+
+      '<input type="text" class="ot-in" id="otCharsInput" data-meta="chars" data-ch="'+i+'" maxlength="100" placeholder="用顿号或逗号分隔" value="'+esc(meta.chars)+'">'+
+      '<div class="ot-acts"><button type="button" data-act="go" data-ch="'+i+'"><i class="fas fa-arrow-up-right-from-square"></i> 打开本章</button></div>';
+  }else if(ctx.kind==='fs'){
+    var list=getForeshadows(work.id);
+    if(!Array.isArray(list)||ctx.idx<0||ctx.idx>=list.length)return;
+    var f=list[ctx.idx];
+    var done=f&&f.status==='done';
+    title.textContent=done?'伏笔（已回收）':'伏笔（未回收）';
+    html='<div class="ot-fs-text '+(done?'ot-fs-gray':'ot-fs-gold')+'">'+esc(f.content||'')+'</div>'+
+      '<div class="ot-fs-meta">埋设：'+esc(f.chapter||'未知')+(f.planChapter?'　计划：'+esc(f.planChapter):'')+(f.doneChapter?'　回收：'+esc(f.doneChapter):'')+'</div>'+
+      '<div class="ot-acts">'+
+      '<button type="button" data-act="fstoggle" data-fs="'+ctx.idx+'"><i class="fas fa-'+(done?'rotate-left':'check')+'"></i> '+(done?'撤销回收':'标记已回收')+'</button>'+
+      (done?'':'<button type="button" data-act="fsrec" data-fs="'+ctx.idx+'"><i class="fas fa-wand-magic-sparkles"></i> 回收提示词</button>')+
+      (fsChapterIndex(f)>=0?'<button type="button" data-act="fsgo" data-fs="'+ctx.idx+'"><i class="fas fa-location-arrow"></i> 打开埋设章</button>':'')+
+      '</div>';
+  }else{
+    return;
+  }
+  _otSheetCtx=ctx;
+  body.innerHTML=html;
+  sheet.classList.add('show');
+  sheet.setAttribute('aria-hidden','false');
+}
+
+function _otCloseSheet(){
+  var sheet=document.getElementById('otSheet');
+  _otSheetCtx=null;
+  if(!sheet)return;
+  sheet.classList.remove('show');
+  sheet.setAttribute('aria-hidden','true');
+}
+
+function _otSheetChange(e){
+  var inp=e.target&&e.target.closest?e.target.closest('[data-meta]'):null;
+  if(!inp)return;
+  var work=_otWork();
+  var ci=parseInt(inp.getAttribute('data-ch'),10);
+  if(!work||isNaN(ci)||ci<0||ci>=work.chapters.length)return;
+  if(setChMetaAt(work.id,ci,inp.getAttribute('data-meta'),inp.value)){
+    _otDirty=true;
+    renderOutlineTree(false); // 节点上的"已设目标/角色"标记要跟着更新
+  }
+}
+
+function _otSheetClick(e){
+  var btn=e.target&&e.target.closest?e.target.closest('[data-act]'):null;
+  if(!btn)return;
+  var act=btn.getAttribute('data-act');
+  if(act==='go'){
+    var ci=parseInt(btn.getAttribute('data-ch'),10);
+    if(!isNaN(ci))_otGoChapter(ci);
+    return;
+  }
+  var fi=parseInt(btn.getAttribute('data-fs'),10);
+  if(isNaN(fi))return;
+  if(act==='fstoggle'){
+    _otToggleForeshadow(fi);
+    _otOpenSheet({kind:'fs',idx:fi}); // 状态变了，面板内容刷新
+  }else if(act==='fsrec'){
+    closeOutlineTree();
+    // 阅读器目录还开着的话先关掉，让用户直接回到阅读页看到已写入的续写指令
+    var chOv=document.getElementById('chOv');
+    if(chOv&&chOv.classList.contains('show'))closeChapterList();
+    fsRecoverPrompt(fi);
+  }else if(act==='fsgo'){
+    var list=getForeshadows(curRd?curRd.id:'');
+    if(!Array.isArray(list)||fi<0||fi>=list.length)return;
+    var chIdx=fsChapterIndex(list[fi]);
+    if(chIdx>=0)_otGoChapter(chIdx);
+  }
+}
+
+// 在树里切换一条伏笔的回收状态（沿用伏笔面板的标记逻辑），完成后重绘
+function _otToggleForeshadow(fsIdx){
+  if(_otMode!=='rd'||!curRd)return;
+  var list=getForeshadows(curRd.id);
+  if(!Array.isArray(list)||fsIdx<0||fsIdx>=list.length)return;
+  if(list[fsIdx].status==='done')markFsUndo(fsIdx);else markFsDone(fsIdx);
+  _otDirty=true;
+  renderOutlineTree(false);
+}
+
+// 从树里跳到某一章的正文
+function _otGoChapter(i){
+  var mode=_otMode;
+  var work=_otWork();
+  if(!work||!Array.isArray(work.chapters)||i<0||i>=work.chapters.length)return;
+  closeOutlineTree();
+  if(mode==='ed'){
+    var chOutlineOv=document.getElementById('chOutlineOv');
+    if(chOutlineOv&&chOutlineOv.classList.contains('show'))closeChOutline();
+    var edChOv=document.getElementById('edChOv');
+    if(edChOv&&edChOv.classList.contains('show'))closeEdChList();
+    saveEditorChapter();
+    saveEditorContent();
+    curEdCh=i;
+    document.getElementById('edTextarea').value=curEd.chapters[curEdCh]||'';
+    updateEdWc();
+    renderEdChBar();
+  }else if(mode==='rd'){
+    var chOv=document.getElementById('chOv');
+    if(chOv&&chOv.classList.contains('show'))closeChapterList();
+    curCh=i;
+    renderChContent();
+    var modal=document.getElementById('rdModal');
+    if(modal)modal.scrollTop=0;
+  }
+}
 function renameEdChapter(){
 if(!curEd||curEd.type!=='novel')return;
 if(!curEd.chNames)curEd.chNames=[];
@@ -6397,10 +8080,22 @@ if(curEd.type!=='novel'){
   // 草稿没有"章节"概念，这里删除的是整个草稿
   var draftId=curEd.id;
   var draftWc=countWords(curEd.content||'');
-  showDlg('删除草稿','确定要删除这篇草稿吗？('+draftWc+'字)\n\n此操作不可恢复！',function(){
+  showDlg('删除草稿','确定要删除这篇草稿吗？('+draftWc+'字)\n\n会放进回收站，保留7天，期间可以恢复。',function(){
+    var target=crWorks.find(function(w){return w.id===draftId;});
+    if(!target){showToast('这篇草稿已不存在');return;}
+    // 编辑框里可能有还没自动保存的最新文字，放进回收站的内容以编辑框当前内容为准
+    var snapshot=Object.assign({},target);
+    if(curEd&&curEd.id===draftId){
+      var _edTx=document.getElementById('edTextarea');
+      if(_edTx)snapshot.content=_edTx.value||'';
+      var _edTt=document.getElementById('edTitle');
+      if(_edTt)snapshot.title=(_edTt.value||'').trim()||snapshot.title;
+    }
+    // 先放进回收站再从列表移除：失败时草稿保持原样，不会凭空消失
+    if(!_moveToTrash('crDraft',snapshot)){showToast('放入回收站失败，草稿未删除',4000);return;}
     crWorks=crWorks.filter(function(w){return w.id!==draftId;});
     sv('bj_crWorks',crWorks);
-    showToast('已删除');
+    showToast('已移入回收站（保留7天）');
     // 直接关闭编辑器，不走closeEditor()——那个函数会重新保存当前内容，
     // 但作品已经被删了，保存会往一个不存在的作品上写入无意义的数据
     navPop('edModal');
@@ -6796,6 +8491,7 @@ function deleteEdChapterAt(idx){
   edPushUndo();
   var _chCountBefore=curEd.chapters.length;
   _shiftChapterVersionsAfterDelete(curEd.id,idx,_chCountBefore);
+  _removeChMeta(curEd.id,idx);
   curEd.chapters.splice(idx,1);
   if(curEd.chNames&&curEd.chNames.length>idx)curEd.chNames.splice(idx,1);
   if(curEd.chOutlines&&curEd.chOutlines.length>idx)curEd.chOutlines.splice(idx,1);

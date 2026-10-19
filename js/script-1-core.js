@@ -12,49 +12,50 @@
 ║   STORAGE                                                 211
 ║   SAFE LOCAL STORAGE HELPER                               280
 ║   APP STATE CONTAINER                                     292
-║   STATE                                                   294
-║   后台保活 & 生成队列                                             365
-║   内置官方资源包                                                 462
-║   END 内置官方资源包                                             543
-║   PAGE LOADING SYSTEM                                     571
-║   TOAST                                                   655
-║   CONFIRM DIALOG                                          681
-║   INPUT DIALOG                                            723
-║   INPUT LIMIT HELPERS 输入限制工具                              736
-║   统一错误处理                                                  848
-║   UTILITY                                                 856
-║   Token估算                                                 879
-║   NAV                                                     1014
-║   TAGS                                                    1076
-║   TYPE SWITCH                                             1354
-║   ARTICLES RENDER                                         1362
-║   TOGGLE LIKE (by id)                                     1431
-║   SYNC HELPER                                             1513
-║   API CONFIG                                              1561
-║   CHARACTER MANAGEMENT                                    2019
-║   人物关系图                                                   2059
-║   NPC设定                                                   2329
-║   万能输入框                                                   2358
-║   万能输入框 END                                               2509
-║   今日一写 END                                                2852
-║   自定义灵感管理                                                 2854
-║   自定义灵感管理 END                                             2919
-║   人物设定页 Tab 切换                                            2921
-║   三句话人设                                                   2935
-║   三句话人设 END                                               3001
-║   这里发生了什么                                                 3003
-║   这里发生了什么 END                                             3022
-║   万能输入框 全屏页                                               3024
-║   万能输入框 全屏页 END                                           3327
-║   AI建档                                                    3329
-║   AI建档 END                                                3394
-║   我卡住了                                                    3396
-║   我卡住了 END                                                3417
-║   懒人通道                                                    3436
-║   懒人通道 END                                                3524
-║   SYSTEM PROMPT                                           3741
-║   系统提示词条目内容生成（供 buildSysPrompt 和条目列表渲染共用，两边保证读到的是同一份文本）   3742
-║   STREAM API CALL                                         4126
+║   WORLD MAP 世界地图（数据层）                                    294
+║   STATE                                                   446
+║   后台保活 & 生成队列                                             520
+║   内置官方资源包                                                 617
+║   END 内置官方资源包                                             698
+║   PAGE LOADING SYSTEM                                     726
+║   TOAST                                                   810
+║   CONFIRM DIALOG                                          836
+║   INPUT DIALOG                                            878
+║   INPUT LIMIT HELPERS 输入限制工具                              891
+║   统一错误处理                                                  1003
+║   UTILITY                                                 1011
+║   Token估算                                                 1034
+║   NAV                                                     1169
+║   TAGS                                                    1234
+║   TYPE SWITCH                                             1512
+║   ARTICLES RENDER                                         1520
+║   TOGGLE LIKE (by id)                                     1589
+║   SYNC HELPER                                             1671
+║   API CONFIG                                              1719
+║   CHARACTER MANAGEMENT                                    2177
+║   人物关系图                                                   2217
+║   NPC设定                                                   2489
+║   万能输入框                                                   2518
+║   万能输入框 END                                               2669
+║   今日一写 END                                                3012
+║   自定义灵感管理                                                 3014
+║   自定义灵感管理 END                                             3079
+║   人物设定页 Tab 切换                                            3081
+║   三句话人设                                                   3095
+║   三句话人设 END                                               3161
+║   这里发生了什么                                                 3163
+║   这里发生了什么 END                                             3182
+║   万能输入框 全屏页                                               3184
+║   万能输入框 全屏页 END                                           3487
+║   AI建档                                                    3489
+║   AI建档 END                                                3554
+║   我卡住了                                                    3556
+║   我卡住了 END                                                3577
+║   懒人通道                                                    3596
+║   懒人通道 END                                                3684
+║   SYSTEM PROMPT                                           3901
+║   系统提示词条目内容生成（供 buildSysPrompt 和条目列表渲染共用，两边保证读到的是同一份文本）   3902
+║   STREAM API CALL                                         4286
 ╚══════════════════════════════════════════════════════════════════
 */
 
@@ -290,6 +291,393 @@ function safeLS(op, key, val) {
 }
 // ==================== APP STATE CONTAINER ====================
 const AppState = {};
+// ==================== WORLD MAP 世界地图（数据层）====================
+// 编辑器界面在 script-6-worldmap.js；这里只放状态校验、克隆、保存和提示词文字。
+// 预设(script-3)、备份(script-3/4/5)、提示词拼接(script-1/5)都要用到，所以必须先于它们加载。
+const WM_W=1280; // 地图图片固定为 16:9 的 1280×720；分区/地点的坐标一律存 0~1 的比例，不依赖像素尺寸
+const WM_H=720;
+const WM_COLORS=[
+{hex:'#e74c3c',name:'红'},{hex:'#f39c12',name:'橙'},{hex:'#f1c40f',name:'黄'},{hex:'#2ecc71',name:'绿'},
+{hex:'#00cec9',name:'青'},{hex:'#3498db',name:'蓝'},{hex:'#9b59b6',name:'紫'}
+];
+// zones/pins/links：数量上限；vertices：单个分区的顶点数上限；name/content：字数上限；
+// prompt：启用地图后追加进提示词的字数上限；undo：撤回步数；img：地图图片(data URL)字符数上限
+const WM_LIMIT={zones:30,pins:50,links:80,vertices:60,name:20,content:500,prompt:2000,undo:30,img:3000000};
+// 自动空间关系的判定参数（单位：地图像素，即 1280×720 坐标系）：
+// ADJ_TOL：两个分区的边相距不超过这个值算「相邻」；NEAR_TOL：地点在分区外、离分区边界不超过这个值写「靠近」；
+// CENTER_RATIO：地点离分区重心不超过「等面积圆半径」的这个比例写「中部」；MAX_OFF_REL：被取消写入的自动关系最多记录多少条
+const WM_ADJ_TOL=4;
+const WM_NEAR_TOL=40;
+const WM_CENTER_RATIO=0.25;
+const WM_MAX_OFF_REL=2000;
+const WM_DIR_NAMES=['东','东北','北','西北','西','西南','南','东南']; // 图片上方为正北
+// 地点类型：id 存进数据；name 是选择器上的短名；label 是写进提示词的名称（默认的针不写）。图标在 script-6-worldmap.js 里
+const WM_PIN_TYPES=[
+{id:'pin',name:'默认',label:''},{id:'city',name:'城',label:'城市'},{id:'village',name:'村',label:'村庄'},
+{id:'mountain',name:'山',label:'山地'},{id:'port',name:'港',label:'港口'},{id:'ruins',name:'遗迹',label:'遗迹'},
+{id:'pass',name:'关隘',label:'关隘'},{id:'forest',name:'森林',label:'森林'},{id:'temple',name:'神殿',label:'神殿'}
+];
+function wmEmptyMap(){return {img:'',enabled:false,autoSpatial:true,offRel:[],zones:[],pins:[],links:[]};}
+function wmNewId(prefix){return prefix+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+// 文字清洗：去掉控制字符并按字数截断；singleLine=true 时把换行压成空格（名称用）
+function wmCleanText(v,max,singleLine){
+var s=typeof v==='string'?v:(v==null?'':String(v));
+s=s.replace(/\r\n?/g,'\n').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g,'');
+if(singleLine)s=s.replace(/[\n\t]+/g,' ');
+s=s.trim();
+var chars=Array.from(s);
+return chars.length>max?chars.slice(0,max).join('').trim():s;
+}
+function wmCleanColor(c){
+for(var i=0;i<WM_COLORS.length;i++){if(WM_COLORS[i].hex===c)return c;}
+return WM_COLORS[0].hex;
+}
+// 坐标比例：非数字返回 null（调用方丢弃该点），超出范围夹到 0~1
+function wmCleanRatio(n){
+var v=typeof n==='number'?n:parseFloat(n);
+if(!isFinite(v))return null;
+return Math.round(Math.min(1,Math.max(0,v))*10000)/10000;
+}
+function wmCleanId(v){return (typeof v==='string'&&/^[A-Za-z0-9_-]{1,40}$/.test(v))?v:'';}
+// 地点类型：不认识的值（旧数据、手改的备份）一律退回默认的针
+function wmCleanPinType(v){
+for(var i=0;i<WM_PIN_TYPES.length;i++){if(WM_PIN_TYPES[i].id===v)return v;}
+return WM_PIN_TYPES[0].id;
+}
+function wmPinTypeLabel(v){
+for(var i=0;i<WM_PIN_TYPES.length;i++){if(WM_PIN_TYPES[i].id===v)return WM_PIN_TYPES[i].label;}
+return '';
+}
+// 被取消写入的自动关系编号清单：只收字母数字和 : _ -，去重，数量封顶
+function wmCleanKeyList(list){
+var out=[],seen={};
+if(!Array.isArray(list))return out;
+for(var i=0;i<list.length&&out.length<WM_MAX_OFF_REL;i++){
+var k=list[i];
+if(typeof k!=='string'||!/^[A-Za-z0-9:_-]{1,120}$/.test(k)||seen[k])continue;
+seen[k]=true;out.push(k);
+}
+return out;
+}
+// 所有来自存储/备份/预设的地图数据都必须先过这里：不合法的字段会被丢弃或修正，保证后面的渲染代码可以放心使用
+function wmSanitizeMap(raw){
+var out=wmEmptyMap();
+if(!raw||typeof raw!=='object')return out;
+var img=typeof raw.img==='string'?raw.img:'';
+if(!/^data:image\/(jpeg|png|webp);base64,/.test(img)||img.length>WM_LIMIT.img)return out;
+out.img=img;
+out.enabled=raw.enabled===true;
+out.autoSpatial=raw.autoSpatial!==false; // 旧数据没有这个字段，默认开启
+out.offRel=wmCleanKeyList(raw.offRel);
+var seen={};
+var zones=Array.isArray(raw.zones)?raw.zones:[];
+for(var i=0;i<zones.length&&out.zones.length<WM_LIMIT.zones;i++){
+var z=zones[i];
+if(!z||typeof z!=='object'||!Array.isArray(z.pts))continue;
+var zid=wmCleanId(z.id),zname=wmCleanText(z.name,WM_LIMIT.name,true);
+if(!zid||!zname||seen['zone:'+zid])continue;
+var pts=[];
+for(var j=0;j<z.pts.length&&pts.length<WM_LIMIT.vertices;j++){
+var pt=z.pts[j];
+if(!Array.isArray(pt))continue;
+var px=wmCleanRatio(pt[0]),py=wmCleanRatio(pt[1]);
+if(px===null||py===null)continue;
+pts.push([px,py]);
+}
+if(pts.length<3)continue;
+seen['zone:'+zid]=true;
+out.zones.push({id:zid,name:zname,content:wmCleanText(z.content,WM_LIMIT.content,false),color:wmCleanColor(z.color),pts:pts,inPrompt:z.inPrompt!==false,hidden:z.hidden===true,hideName:z.hideName===true}); // inPrompt：是否写入提示词，旧数据没有这个字段，默认写入
+}
+var pins=Array.isArray(raw.pins)?raw.pins:[];
+for(var k=0;k<pins.length&&out.pins.length<WM_LIMIT.pins;k++){
+var p=pins[k];
+if(!p||typeof p!=='object')continue;
+var pid=wmCleanId(p.id),pname=wmCleanText(p.name,WM_LIMIT.name,true);
+var x=wmCleanRatio(p.x),y=wmCleanRatio(p.y);
+if(!pid||!pname||x===null||y===null||seen['pin:'+pid])continue;
+seen['pin:'+pid]=true;
+out.pins.push({id:pid,name:pname,content:wmCleanText(p.content,WM_LIMIT.content,false),color:wmCleanColor(p.color),x:x,y:y,type:wmCleanPinType(p.type),inPrompt:p.inPrompt!==false,hidden:p.hidden===true,hideName:p.hideName===true});
+}
+var links=Array.isArray(raw.links)?raw.links:[];
+for(var m=0;m<links.length&&out.links.length<WM_LIMIT.links;m++){
+var l=links[m];
+if(!l||typeof l!=='object'||!l.a||!l.b)continue;
+var lid=wmCleanId(l.id),lname=wmCleanText(l.name,WM_LIMIT.name,true);
+var ta=l.a.t,tb=l.b.t,ia=wmCleanId(l.a.id),ib=wmCleanId(l.b.id);
+if(!lid||!lname||(ta!=='zone'&&ta!=='pin')||(tb!=='zone'&&tb!=='pin'))continue;
+if(!seen[ta+':'+ia]||!seen[tb+':'+ib]||(ta===tb&&ia===ib))continue; // 端点必须存在且不能连自己
+out.links.push({id:lid,a:{t:ta,id:ia},b:{t:tb,id:ib},name:lname,content:wmCleanText(l.content,WM_LIMIT.content,false),color:wmCleanColor(l.color),inPrompt:l.inPrompt!==false,hidden:l.hidden===true,hideName:l.hideName===true});
+}
+return out;
+}
+// 按绑定名保存的地图表：{绑定名: 地图}，只保留有图片的项
+function wmSanitizeBindings(raw){
+var out={};
+if(!raw||typeof raw!=='object'||Array.isArray(raw))return out;
+Object.keys(raw).forEach(function(key){
+if(key==='__proto__')return;
+var m=wmSanitizeMap(raw[key]);
+if(m.img)out[key]=m;
+});
+return out;
+}
+// 克隆：图片字符串不可变，直接引用；其余部分深拷贝，编辑器改的是副本，不会污染已保存的数据
+function wmCloneMap(m){
+var src=(m&&typeof m==='object')?m:wmEmptyMap();
+return {
+img:typeof src.img==='string'?src.img:'',
+enabled:src.enabled===true,
+autoSpatial:src.autoSpatial!==false,
+offRel:Array.isArray(src.offRel)?src.offRel.slice():[],
+zones:JSON.parse(JSON.stringify(Array.isArray(src.zones)?src.zones:[])),
+pins:JSON.parse(JSON.stringify(Array.isArray(src.pins)?src.pins:[])),
+links:JSON.parse(JSON.stringify(Array.isArray(src.links)?src.links:[]))
+};
+}
+function wmHasContent(m){return !!(m&&(m.zones.length||m.pins.length||m.links.length));}
+function wmMapsEqual(a,b){
+if(!a||!b)return a===b;
+return a.img===b.img&&a.enabled===b.enabled&&a.autoSpatial===b.autoSpatial&&JSON.stringify([a.offRel,a.zones,a.pins,a.links])===JSON.stringify([b.offRel,b.zones,b.pins,b.links]);
+}
+// 读取某个绑定名下的地图；没有则返回空地图（与局部世界观文字「没有就是空」的规则一致）
+function wmBoundMap(name){
+if(!name||!Object.prototype.hasOwnProperty.call(localWorldMapBindings,name))return wmEmptyMap();
+return wmSanitizeMap(localWorldMapBindings[name]);
+}
+// 把当前地图写入存储；已绑定角色预设时同步写进该绑定的地图槽位（与局部世界观文字使用同一个绑定键）
+function wmPersistMap(){
+sv('bj_worldMap',worldMap);
+if(currentWorldBinding){
+if(worldMap.img)localWorldMapBindings[currentWorldBinding]=wmCloneMap(worldMap);
+else delete localWorldMapBindings[currentWorldBinding];
+sv('bj_localWorldMapBindings',localWorldMapBindings);
+}
+}
+// ---- 自动空间关系：几何计算（只给下面的关系计算用；坐标一律换算成 1280×720 的地图像素）----
+function wmGeoPx(pts){return pts.map(function(p){return [p[0]*WM_W,p[1]*WM_H];});}
+// 点是否在多边形内（奇偶规则）
+function wmGeoPointInPoly(x,y,pts){
+var inside=false;
+for(var i=0,j=pts.length-1;i<pts.length;j=i++){
+var xi=pts[i][0],yi=pts[i][1],xj=pts[j][0],yj=pts[j][1];
+if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi))inside=!inside;
+}
+return inside;
+}
+function wmGeoDistToSeg(px,py,ax,ay,bx,by){
+var dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
+var t=len2>0?Math.min(1,Math.max(0,((px-ax)*dx+(py-ay)*dy)/len2)):0;
+return Math.hypot(px-(ax+t*dx),py-(ay+t*dy));
+}
+function wmGeoCross(ax,ay,bx,by,cx,cy){return (bx-ax)*(cy-ay)-(by-ay)*(cx-ax);}
+// 两条线段的最短距离；真正相交时为 0
+function wmGeoSegDist(a,b,c,d){
+var o1=wmGeoCross(a[0],a[1],b[0],b[1],c[0],c[1]),o2=wmGeoCross(a[0],a[1],b[0],b[1],d[0],d[1]);
+var o3=wmGeoCross(c[0],c[1],d[0],d[1],a[0],a[1]),o4=wmGeoCross(c[0],c[1],d[0],d[1],b[0],b[1]);
+if(o1*o2<0&&o3*o4<0)return 0;
+return Math.min(
+wmGeoDistToSeg(a[0],a[1],c[0],c[1],d[0],d[1]),wmGeoDistToSeg(b[0],b[1],c[0],c[1],d[0],d[1]),
+wmGeoDistToSeg(c[0],c[1],a[0],a[1],b[0],b[1]),wmGeoDistToSeg(d[0],d[1],a[0],a[1],b[0],b[1]));
+}
+function wmGeoBoundaryDist(x,y,pts){
+var best=Infinity;
+for(var i=0;i<pts.length;i++){
+var p=pts[i],q=pts[(i+1)%pts.length];
+best=Math.min(best,wmGeoDistToSeg(x,y,p[0],p[1],q[0],q[1]));
+}
+return best;
+}
+// 两个多边形边与边之间的最短距离
+function wmGeoPolyDist(A,B){
+var best=Infinity;
+for(var i=0;i<A.length&&best>0;i++){
+var a1=A[i],a2=A[(i+1)%A.length];
+for(var j=0;j<B.length&&best>0;j++){
+best=Math.min(best,wmGeoSegDist(a1,a2,B[j],B[(j+1)%B.length]));
+}
+}
+return best;
+}
+function wmGeoBBox(pts){
+var b=[Infinity,Infinity,-Infinity,-Infinity];
+pts.forEach(function(p){b[0]=Math.min(b[0],p[0]);b[1]=Math.min(b[1],p[1]);b[2]=Math.max(b[2],p[0]);b[3]=Math.max(b[3],p[1]);});
+return b;
+}
+// 面积重心；面积退化（点共线）时退回顶点平均值
+function wmGeoCentroid(pts){
+var n=pts.length,a=0,cx=0,cy=0,i;
+for(i=0;i<n;i++){
+var p=pts[i],q=pts[(i+1)%n],f=p[0]*q[1]-q[0]*p[1];
+a+=f;cx+=(p[0]+q[0])*f;cy+=(p[1]+q[1])*f;
+}
+a*=0.5;
+if(Math.abs(a)>1e-6)return {x:cx/(6*a),y:cy/(6*a),area:Math.abs(a)};
+var sx=0,sy=0;
+pts.forEach(function(p){sx+=p[0];sy+=p[1];});
+return {x:n?sx/n:0,y:n?sy/n:0,area:0};
+}
+// src 的顶点、边中点、重心里，只要有一个深入 dst 内部（离 dst 边界超过 tol），就认为两个分区重叠。
+// 这是采样判断，不是精确的多边形裁剪：两个分区只有极小面积相交时可能漏判
+function wmGeoSamplesInside(src,dst,tol){
+var samples=[],n=src.length,i;
+for(i=0;i<n;i++){
+var p=src[i],q=src[(i+1)%n];
+samples.push(p);samples.push([(p[0]+q[0])/2,(p[1]+q[1])/2]);
+}
+var c=wmGeoCentroid(src);
+if(wmGeoPointInPoly(c.x,c.y,src))samples.push([c.x,c.y]); // 凹形的重心可能落在自己外面，那样的重心不能代表自己
+for(i=0;i<samples.length;i++){
+var s=samples[i];
+if(wmGeoPointInPoly(s[0],s[1],dst)&&wmGeoBoundaryDist(s[0],s[1],dst)>tol)return true;
+}
+return false;
+}
+function wmGeoOverlap(A,B,tol){return wmGeoSamplesInside(A,B,tol)||wmGeoSamplesInside(B,A,tol);}
+// 以 from 为原点，to 在哪个方位（8 方位，图片上方为正北）
+function wmGeoDirection(fromX,fromY,toX,toY){
+var ang=Math.atan2(-(toY-fromY),toX-fromX)*180/Math.PI;
+return WM_DIR_NAMES[((Math.round(ang/45)%8)+8)%8];
+}
+// 分区之间的关系只取决于分区的名称和形状，而拖动地点或顶点时会反复重算，所以按分区签名缓存
+var _wmZoneGeoCache={sig:'',zs:[],pairs:[]};
+function wmZoneGeo(m){
+var sig=JSON.stringify(m.zones.map(function(z){return [z.id,z.name,z.pts];}));
+if(_wmZoneGeoCache.sig===sig)return _wmZoneGeoCache;
+var zs=m.zones.map(function(z){
+var px=wmGeoPx(z.pts),c=wmGeoCentroid(px);
+return {z:z,px:px,c:c,box:wmGeoBBox(px),r:Math.sqrt(c.area/Math.PI)};
+});
+var pairs=[];
+for(var i=0;i<zs.length;i++){
+for(var j=i+1;j<zs.length;j++){
+var A=zs[i],B=zs[j];
+if(A.box[2]+WM_ADJ_TOL<B.box[0]||B.box[2]+WM_ADJ_TOL<A.box[0]||A.box[3]+WM_ADJ_TOL<B.box[1]||B.box[3]+WM_ADJ_TOL<A.box[1])continue; // 外框都碰不到，不可能相邻
+var ids=A.z.id<B.z.id?A.z.id+':'+B.z.id:B.z.id+':'+A.z.id;
+if(wmGeoOverlap(A.px,B.px,WM_ADJ_TOL)){
+pairs.push({key:'ovl:'+ids,a:{t:'zone',id:A.z.id},b:{t:'zone',id:B.z.id},text:A.z.name+'与'+B.z.name+'的范围有重叠'});
+}else if(wmGeoPolyDist(A.px,B.px)<=WM_ADJ_TOL){
+pairs.push({key:'adj:'+ids,a:{t:'zone',id:A.z.id},b:{t:'zone',id:B.z.id},
+text:A.z.name+'与'+B.z.name+'相邻（'+A.z.name+'在'+B.z.name+'的'+wmGeoDirection(B.c.x,B.c.y,A.c.x,A.c.y)+'方）'});
+}
+}
+}
+_wmZoneGeoCache={sig:sig,zs:zs,pairs:pairs};
+return _wmZoneGeoCache;
+}
+// 由几何自动算出的关系：地点在哪个分区内、离哪个分区很近，以及分区之间的相邻/重叠。
+// 每条有稳定的 key（形如 in:地点id:分区id），用于「勾选写入」
+function wmComputeSpatialFacts(m){
+var geo=wmZoneGeo(m),facts=[];
+m.pins.forEach(function(p){
+var x=p.x*WM_W,y=p.y*WM_H,inside=false,nearest=null;
+geo.zs.forEach(function(zi){
+if(wmGeoPointInPoly(x,y,zi.px)){
+inside=true;
+var d=Math.hypot(x-zi.c.x,y-zi.c.y);
+var where=d<=zi.r*WM_CENTER_RATIO?'中部':wmGeoDirection(zi.c.x,zi.c.y,x,y)+'部';
+facts.push({key:'in:'+p.id+':'+zi.z.id,a:{t:'pin',id:p.id},b:{t:'zone',id:zi.z.id},text:p.name+'位于'+zi.z.name+'分区内（'+where+'）'});
+}else{
+var dist=wmGeoBoundaryDist(x,y,zi.px);
+if(!nearest||dist<nearest.dist)nearest={zi:zi,dist:dist};
+}
+});
+if(!inside&&nearest&&nearest.dist<=WM_NEAR_TOL){
+var nz=nearest.zi;
+facts.push({key:'near:'+p.id+':'+nz.z.id,a:{t:'pin',id:p.id},b:{t:'zone',id:nz.z.id},
+text:p.name+'靠近'+nz.z.name+'分区（在'+nz.z.name+'的'+wmGeoDirection(nz.c.x,nz.c.y,x,y)+'方）'});
+}
+});
+return facts.concat(geo.pairs);
+}
+// 保存前清掉已经不存在的自动关系的「不写入」记录，避免越积越多
+function wmPruneOffRel(m){
+var live={};
+wmComputeSpatialFacts(m).forEach(function(f){live[f.key]=true;});
+return (Array.isArray(m.offRel)?m.offRel:[]).filter(function(k){return live[k]===true;});
+}
+// 哪些分区、地点、关联线现在是「隐藏」的：自己被隐藏，或关联线的任意一端被隐藏。隐藏的不画、不写入提示词。键形如 zone:id
+function wmHiddenMap(m){
+var hid={};
+m.zones.forEach(function(z){if(z.hidden===true)hid['zone:'+z.id]=true;});
+m.pins.forEach(function(p){if(p.hidden===true)hid['pin:'+p.id]=true;});
+m.links.forEach(function(l){
+if(l.hidden===true||hid[l.a.t+':'+l.a.id]===true||hid[l.b.t+':'+l.b.id]===true)hid['link:'+l.id]=true;
+});
+return hid;
+}
+// 提示词方案：把地图拆成「分区 / 地点 / 关系 / 空间关系」四节，每条带
+//   sel（用户自己的勾选）、on（最终是否写入：还要看自动空间关系总开关、以及关系涉及的分区/地点有没有被取消写入）、
+//   blocked（被什么挡住：'hidden' 已隐藏，'auto' 总开关关闭，'entity' 涉及的分区/地点没写入）、dropped（超出字数上限被舍去）。
+// 超限规则：按顺序累计，遇到第一条放不下的就停止，后面所有写入的条目都舍去，保证预览和真正写入的内容完全一致。
+// 开启「去掉所有设定字数限制」(noDescLimit) 时没有上限（limit 为 null）。
+// 编辑器预览也用它（传入编辑中的副本），所以这里不检查 m.enabled
+function wmBuildPromptPlan(m){
+var limit=(typeof noDescLimit!=='undefined'&&noDescLimit===true)?null:WM_LIMIT.prompt;
+var oneLine=function(s){return s?'：'+s.replace(/\s*\n\s*/g,' '):'';};
+var charLen=function(s){return Array.from(s).length;};
+var names={},onMap={},hid=wmHiddenMap(m);
+var sections=[
+{kind:'zone',title:'分区：',items:[]},
+{kind:'pin',title:'地点：',items:[]},
+{kind:'link',title:'关系：',items:[]},
+{kind:'rel',title:'空间关系：',items:[]}
+];
+var add=function(secIdx,kind,id,text,sel,blocked){
+sections[secIdx].items.push({key:kind+':'+id,kind:kind,id:id,text:text,len:charLen(text),sel:sel,on:sel&&!blocked,blocked:blocked,dropped:false});
+};
+m.zones.forEach(function(z){
+names['zone:'+z.id]=z.name;onMap['zone:'+z.id]=z.inPrompt!==false;
+add(0,'zone',z.id,'· '+z.name+oneLine(z.content),z.inPrompt!==false,hid['zone:'+z.id]?'hidden':'');
+});
+m.pins.forEach(function(p){
+names['pin:'+p.id]=p.name;onMap['pin:'+p.id]=p.inPrompt!==false;
+var typeLabel=wmPinTypeLabel(p.type);
+add(1,'pin',p.id,'· '+p.name+(typeLabel?'（'+typeLabel+'）':'')+oneLine(p.content),p.inPrompt!==false,hid['pin:'+p.id]?'hidden':'');
+});
+m.links.forEach(function(l){
+add(2,'link',l.id,'· '+(names[l.a.t+':'+l.a.id]||'?')+' ↔ '+(names[l.b.t+':'+l.b.id]||'?')+'（'+l.name+'）'+oneLine(l.content),l.inPrompt!==false,hid['link:'+l.id]?'hidden':'');
+});
+var off={};
+(Array.isArray(m.offRel)?m.offRel:[]).forEach(function(k){off[k]=true;});
+wmComputeSpatialFacts(m).forEach(function(f){
+var blocked='';
+if(m.autoSpatial===false)blocked='auto';
+else if(hid[f.a.t+':'+f.a.id]===true||hid[f.b.t+':'+f.b.id]===true)blocked='hidden';
+else if(onMap[f.a.t+':'+f.a.id]===false||onMap[f.b.t+':'+f.b.id]===false)blocked='entity';
+add(3,'rel',f.key,'· '+f.text,!off[f.key],blocked);
+});
+var lines=[],used=0,overflow=false,dropped=0;
+sections.forEach(function(sec){
+var started=false;
+sec.items.forEach(function(it){
+if(!it.on)return;
+if(overflow){it.dropped=true;dropped++;return;}
+var pieces=[];
+if(!lines.length)pieces.push('【世界地图设定】');
+if(!started)pieces.push(sec.title);
+pieces.push(it.text);
+var need=0; // 每一行前面都有一个换行，只有整段文字的第一行没有
+pieces.forEach(function(s){need+=charLen(s)+1;});
+if(!lines.length)need-=1;
+if(limit!==null&&used+need>limit){overflow=true;it.dropped=true;dropped++;return;}
+pieces.forEach(function(s){lines.push(s);});
+started=true;
+used+=need;
+});
+});
+return {text:lines.join('\n'),used:used,limit:limit,overflow:overflow,dropped:dropped,sections:sections};
+}
+// 启用地图后追加到世界观设定后面的文字（只有文字，不含图片）；未启用或没有任何内容时返回空串
+function wmPromptText(){
+try{
+var m=worldMap;
+if(!m||m.enabled!==true||!m.img)return '';
+return wmBuildPromptPlan(m).text;
+}catch(e){
+logError('wmPromptText',e);
+return '';
+}
+}
 // ==================== STATE ====================
 let curType='long';
 let wsDisplayCount=30; // 作坊当前显示条数
@@ -315,6 +703,9 @@ let customSysPromptPosition = ld('bj_customSysPromptPosition', 'tail');
 let rdBgImg = ld('bj_rdBgImg', '');
 let homeBgImg = ld('bj_homeBg', '');
 let localWorldBindings=ld('bj_localWorldBindings',{});
+// 世界地图：图片是大体积base64，只存在IndexedDB；这里启动时缓存可能还没加载完，script-5 初始化阶段会重新读取并校验
+let worldMap=wmSanitizeMap(ld('bj_worldMap',null));
+let localWorldMapBindings=wmSanitizeBindings(ld('bj_localWorldMapBindings',{}));
 let localRuleBindings=ld('bj_localRuleBindings',{});
 let localBanWordsBindings=ld('bj_localBanWordsBindings',{});
 let localStyleBindings=ld('bj_localStyleBindings',{});
@@ -922,14 +1313,14 @@ function toggleCtxTokenInfo(){
   var bar=document.getElementById('ctxTokenBar').parentElement;
   var warn=document.getElementById('ctxTokenWarn');
   var btn=document.getElementById('ctxTokenToggleBtn');
-  if(detail.style.display==='none'){
-    detail.style.display='';
-    bar.style.display='';
+  if(!detail.classList.contains('show')){
+    foldSlide(detail,true);
+    foldSlide(bar,true);
     warn.style.display='';
     btn.textContent='收起';
   }else{
-    detail.style.display='none';
-    bar.style.display='none';
+    foldSlide(detail,false);
+    foldSlide(bar,false);
     warn.style.display='none';
     btn.textContent='展开';
   }
@@ -1010,6 +1401,114 @@ if(article.type==='long')return cols.books.some(b=>b.id===article.id);
 return cols.shorts.some(s=>s.id===article.id);
 }
 
+// ==================== 平滑折叠动画 ====================
+// 折叠面板的展开/收起统一走 foldSlide。class（默认 show）就是逻辑状态，调用后立即生效；
+// 动画只是视觉过渡：高度、内外边距、边框、透明度在 0 与自然值之间渐变（Web Animations API）。
+// 浏览器不支持该 API、系统开启"减少动态效果"、或元素当前不在渲染树里（量不到高度）时直接切换，功能不受影响。
+// 动画途中再次调用会从当前高度反向过渡而不是跳变；朝同一目标重复调用则直接忽略。
+const FOLD_OPEN_MS=280;
+const FOLD_CLOSE_MS=220;
+const FOLD_EASING='cubic-bezier(.4,0,.2,1)';
+const FOLD_LENGTH_PROPS=['height','paddingTop','paddingBottom','marginTop','marginBottom','borderTopWidth','borderBottomWidth'];
+const _foldRuns=new WeakMap();
+function _foldCanAnimate(el){
+  if(typeof el.animate!=='function')return false;
+  if(typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return false;
+  return true;
+}
+// 读取元素此刻的真实尺寸；动画进行中读到的是中间值
+function _foldMeasure(el){
+  const cs=window.getComputedStyle(el);
+  const m={opacity:cs.opacity};
+  FOLD_LENGTH_PROPS.forEach(function(p){m[p]=cs[p];});
+  return m;
+}
+function _foldCollapsed(){
+  const z={opacity:'0'};
+  FOLD_LENGTH_PROPS.forEach(function(p){z[p]='0px';});
+  return z;
+}
+// 撤销一次折叠动画，并还原动画期间临时改过的内联样式
+function _foldRestore(el,run){
+  _foldRuns.delete(el);
+  el.style.overflow=run.prevOverflow;
+  if(run.keepVisible)el.style.display=run.prevDisplay;
+  // forwards 的结束帧要等内联样式还原之后再撤掉，否则收起的最后一帧会闪一下
+  run.anim.cancel();
+}
+function _foldCallback(fn){
+  try{fn();}catch(e){logError('折叠动画回调',e);}
+}
+// el：折叠元素；open：目标状态；cls：表示"展开"的 class（默认 show）；
+// instant：为 true 时不播放动画（例如弹窗刚打开时同步初始状态）；onClosed：元素收起完成后调用一次
+function foldSlide(el,open,cls,instant,onClosed){
+  if(!el)return;
+  cls=cls||'show';
+  open=!!open;
+  const callback=(!open&&typeof onClosed==='function')?onClosed:null;
+  const run=_foldRuns.get(el);
+  const isOpen=el.classList.contains(cls);
+  if(run&&run.open===open&&isOpen===open){
+    if(callback)run.onClosed=callback;
+    return;
+  }
+  if(!run&&isOpen===open){
+    if(callback)_foldCallback(callback);
+    return;
+  }
+  // 收起时若焦点还在里面，先让它失焦：display:none 本来就会让焦点消失，这里保持一致
+  if(!open){
+    const active=document.activeElement;
+    if(active&&active!==document.body&&el.contains(active)&&typeof active.blur==='function')active.blur();
+  }
+  const motion=!instant&&_foldCanAnimate(el);
+  // 动画起点必须在撤销旧动画之前量：途中被打断取当前中间值，从展开收起取当前值，从收起展开则从 0 开始
+  const from=(motion&&(run||isOpen))?_foldMeasure(el):null;
+  if(run)_foldRestore(el,run);
+  if(!motion||(from&&!/px$/.test(from.height))){
+    el.classList.toggle(cls,open);
+    if(callback)_foldCallback(callback);
+    return;
+  }
+  const prevOverflow=el.style.overflow;
+  const prevDisplay=el.style.display;
+  let keepVisible=false;
+  if(open){
+    el.classList.add(cls);
+  }else{
+    // 逻辑状态立即变成"已收起"，但动画期间元素还得继续显示，所以临时用内联 display 顶住，动画结束再还原
+    const shownDisplay=window.getComputedStyle(el).display;
+    el.classList.remove(cls);
+    el.style.display=shownDisplay;
+    keepVisible=true;
+  }
+  const to=open?_foldMeasure(el):_foldCollapsed();
+  if(!/px$/.test(to.height)){
+    // 元素不在渲染树里（例如祖先被隐藏），没有可过渡的高度：保持已落地的状态即可
+    if(keepVisible)el.style.display=prevDisplay;
+    if(callback)_foldCallback(callback);
+    return;
+  }
+  el.style.overflow='hidden';
+  let anim=null;
+  try{
+    anim=el.animate([from||_foldCollapsed(),to],{duration:open?FOLD_OPEN_MS:FOLD_CLOSE_MS,easing:FOLD_EASING,fill:'forwards'});
+  }catch(e){
+    el.style.overflow=prevOverflow;
+    if(keepVisible)el.style.display=prevDisplay;
+    logError('折叠动画',e);
+    if(callback)_foldCallback(callback);
+    return;
+  }
+  const newRun={anim:anim,open:open,prevOverflow:prevOverflow,prevDisplay:prevDisplay,keepVisible:keepVisible,onClosed:callback};
+  _foldRuns.set(el,newRun);
+  anim.onfinish=function(){
+    if(_foldRuns.get(el)!==newRun)return;
+    _foldRestore(el,newRun);
+    if(newRun.onClosed)_foldCallback(newRun.onClosed);
+  };
+}
+
 // ==================== NAV ====================
 function _checkFirstVisitHint(pg){
   var key='bj_fv_'+pg;
@@ -1027,6 +1526,8 @@ function _checkFirstVisitHint(pg){
   if(msg)setTimeout(function(){ try{ showToast(msg,4500); }catch(e){} },600);
 }
 function _cleanupPageUI(){
+  // 结束还在进行的新手引导（遮罩和气泡），避免残留到新页面上
+  try{ tutDismiss(); }catch(e){ logError('tutDismiss', e); }
   // 移除所有动态生成的 pop-glass-menu 弹出菜单
   document.querySelectorAll('[id$="MenuPop"]').forEach(function(el){el.remove();});
   // 隐藏复用的长按消息菜单
@@ -1069,6 +1570,7 @@ if(pg==='settings'){renderAllPresets();renderCharCards();updateStats();updateSto
 if(pg==='workshop'&&(isGen||AppState.isGen)){var _sc=document.getElementById('streamCard');if(_sc)_sc.scrollIntoView({block:'nearest'});}
 try{if(xjVisible)document.getElementById('xjGlobalFloat').style.display='';}catch(e){}
 _checkFirstVisitHint(pg);
+try{ tutOnPageEnter(pg); }catch(e){ logError('tutOnPageEnter', e); }
 
 if(needsLoading) hidePageLoading();
 }
@@ -1194,7 +1696,8 @@ function openCompressor(){
 
   // 打开时根据当前勾选状态显示/隐藏 extra 输入框
   const wrap=document.getElementById('cmpExtraWrap');
-  if(wrap) wrap.style.display = cmpParts.extra ? 'block' : 'none';
+  // 弹窗刚打开，同步初始状态即可，不需要动画
+  if(wrap) foldSlide(wrap, !!cmpParts.extra, 'show', true);
 }
 
 function closeCompressor(){
@@ -1214,7 +1717,7 @@ function toggleCmpPart(key, el){
 
   if(key==='extra'){
     const wrap=document.getElementById('cmpExtraWrap');
-    if(wrap) wrap.style.display = cmpParts.extra ? 'block' : 'none';
+    if(wrap) foldSlide(wrap, !!cmpParts.extra);
   }
 
   refreshCmpStats();
@@ -1747,30 +2250,64 @@ function buildChatEndpoint(rawUrl){
 }
 // 拉取模型列表
 // ── 渲染通用模型列表面板 ──
+// 模型名来自远端API的返回内容（不可信），所以这里全程用DOM API + textContent构建，
+// 不把模型名拼进innerHTML或内联onclick——否则名字里带引号/尖括号就能注入脚本
 function _renderModelPanel(listAreaId, inputId, btnId, models){
   var listArea = document.getElementById(listAreaId);
   if(!listArea) return;
   listArea._allModels = models;
+  listArea.innerHTML = '';
 
-  var html =
-    '<div style="position:relative;margin-bottom:6px">' +
-      '<i class="fas fa-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text2);pointer-events:none"></i>' +
-      '<input type="text" id="' + listAreaId + '_search" placeholder="输入关键词筛选模型..." oninput="_filterModelPanel(\''+listAreaId+'\',\''+inputId+'\')" ' +
-        'style="width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px 8px 30px;color:var(--text);font-size:12px;outline:none">' +
-    '</div>' +
-    '<div id="' + listAreaId + '_list" style="max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:var(--card2)">';
+  var searchWrap = document.createElement('div');
+  searchWrap.style.cssText = 'position:relative;margin-bottom:6px';
+  var searchIcon = document.createElement('i');
+  searchIcon.className = 'fas fa-search';
+  searchIcon.style.cssText = 'position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text2);pointer-events:none';
+  var searchInput = document.createElement('input');
+  searchInput.type = 'text';
+  searchInput.id = listAreaId + '_search';
+  searchInput.placeholder = '输入关键词筛选模型...';
+  searchInput.setAttribute('aria-label', '筛选模型');
+  searchInput.style.cssText = 'width:100%;box-sizing:border-box;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:8px 10px 8px 30px;color:var(--text);font-size:12px;outline:none';
+  searchInput.addEventListener('input', function(){ _filterModelPanel(listAreaId, inputId); });
+  searchWrap.appendChild(searchIcon);
+  searchWrap.appendChild(searchInput);
+
+  var listEl = document.createElement('div');
+  listEl.id = listAreaId + '_list';
+  listEl.style.cssText = 'max-height:220px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:var(--card2)';
   models.forEach(function(name){
-    var esc = name.replace(/"/g,'&quot;').replace(/'/g,'&#39;');
-    html += '<div class="bj-model-row" data-model="'+esc+'" onclick="_pickModel(\''+listAreaId+'\',\''+inputId+'\',\''+esc+'\')" ' +
-      'style="padding:9px 14px;font-size:12px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;display:flex;align-items:center;gap:8px" ' +
-      'onmouseover="this.style.background=\'rgba(108,92,231,.09)\'" onmouseout="this.style.background=\'\'">' +
-      '<i class="fas fa-cube" style="color:var(--accent2);font-size:10px;flex-shrink:0"></i>' +
-      '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+name+'</span>' +
-    '</div>';
+    var row = document.createElement('div');
+    row.className = 'bj-model-row';
+    row.setAttribute('data-model', name);
+    row.setAttribute('role', 'button');
+    row.tabIndex = 0;
+    row.style.cssText = 'padding:9px 14px;font-size:12px;color:var(--text);cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;display:flex;align-items:center;gap:8px';
+    row.addEventListener('mouseover', function(){ row.style.background = 'rgba(108,92,231,.09)'; });
+    row.addEventListener('mouseout', function(){ row.style.background = ''; });
+    row.addEventListener('click', function(){ _pickModel(listAreaId, inputId, name); });
+    row.addEventListener('keydown', function(ev){
+      if(ev.key === 'Enter' || ev.key === ' '){ ev.preventDefault(); _pickModel(listAreaId, inputId, name); }
+    });
+    var cube = document.createElement('i');
+    cube.className = 'fas fa-cube';
+    cube.style.cssText = 'color:var(--accent2);font-size:10px;flex-shrink:0';
+    var label = document.createElement('span');
+    label.style.cssText = 'flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap';
+    label.textContent = name;
+    row.appendChild(cube);
+    row.appendChild(label);
+    listEl.appendChild(row);
   });
-  html += '</div>';
-  html += '<div id="'+listAreaId+'_count" style="font-size:10px;color:var(--text2);margin-top:4px;text-align:center">共 '+models.length+' 个模型，点击选择</div>';
-  listArea.innerHTML = html;
+
+  var countEl = document.createElement('div');
+  countEl.id = listAreaId + '_count';
+  countEl.style.cssText = 'font-size:10px;color:var(--text2);margin-top:4px;text-align:center';
+  countEl.textContent = '共 ' + models.length + ' 个模型，点击选择';
+
+  listArea.appendChild(searchWrap);
+  listArea.appendChild(listEl);
+  listArea.appendChild(countEl);
   setTimeout(function(){ var fi=document.getElementById(listAreaId+'_search'); if(fi) fi.focus(); }, 100);
 }
 
@@ -1803,8 +2340,169 @@ function _pickModel(listAreaId, inputId, name){
   var input=document.getElementById(inputId);
   if(input) input.value=name;
   var listArea=document.getElementById(listAreaId);
-  if(listArea) listArea.innerHTML='<div style="font-size:12px;color:var(--success);text-align:center;padding:8px 0"><i class="fas fa-check-circle"></i> 已选择：'+name+'</div>';
+  if(listArea){
+    listArea.innerHTML='';
+    var ok=document.createElement('div');
+    ok.style.cssText='font-size:12px;color:var(--success);text-align:center;padding:8px 0';
+    var okIcon=document.createElement('i');
+    okIcon.className='fas fa-check-circle';
+    ok.appendChild(okIcon);
+    ok.appendChild(document.createTextNode(' 已选择：'+name));
+    listArea.appendChild(ok);
+  }
   showToast('已选择：'+name);
+}
+
+// ── 模型列表实时拉取 ──
+// 每个模型面板同一时刻只允许一个拉取请求在进行：key=面板id，value={ctl,timedOut,cancelled,timer,btnId}
+var _modelFetchJobs = {};
+var MODEL_FETCH_TIMEOUT_MS = 20000;
+var _MODEL_BTN_IDLE_HTML = '<i class="fas fa-cloud-arrow-down"></i> 拉取';
+
+// 把用户填的API地址规整成 .../v1/models；通用API和工具API共用同一套规则，
+// 同时兼容用户直接粘贴了完整的 /chat/completions 或 /models 地址的情况
+function _buildModelsUrl(rawUrl){
+  var url = String(rawUrl||'').trim();
+  if(!url) return '';
+  if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+  url = url.replace(/\/+$/,'').replace(/\/chat\/completions$/i,'').replace(/\/models$/i,'').replace(/\/+$/,'');
+  if(!/\/v\d+$/i.test(url)) url += '/v1';
+  try{ new URL(url); }catch(e){ return ''; }
+  return url + '/models';
+}
+
+function _modelFetchHttpMsg(status){
+  if(status===401) return '认证失败（密钥错误或已失效，HTTP 401）';
+  if(status===403) return '没有权限访问模型列表（HTTP 403）';
+  if(status===404) return '接口路径不存在，该API可能不提供模型列表（HTTP 404）';
+  if(status===429) return '请求太频繁或额度不足（HTTP 429）';
+  if(status>=500) return '服务器暂时出问题（HTTP '+status+'）';
+  return 'HTTP '+status;
+}
+
+// 取消正在进行的拉取（不传参=取消全部）：关闭API设置页时调用，避免旧请求的结果事后又写回已关闭的面板
+function _cancelModelFetch(listAreaId){
+  var ids = listAreaId ? [listAreaId] : Object.keys(_modelFetchJobs);
+  ids.forEach(function(id){
+    var job = _modelFetchJobs[id];
+    if(!job) return;
+    delete _modelFetchJobs[id];
+    job.cancelled = true;
+    if(job.timer) clearTimeout(job.timer);
+    try{ job.ctl.abort(); }catch(e){}
+    var btn = document.getElementById(job.btnId);
+    if(btn){ btn.disabled = false; btn.innerHTML = _MODEL_BTN_IDLE_HTML; }
+  });
+}
+
+// 发请求并解析出模型名数组；任何失败都抛出带中文说明的Error
+async function _requestModelList(modelsUrl, key, job){
+  var timeoutMsg = '请求超时（'+(MODEL_FETCH_TIMEOUT_MS/1000)+'秒），请检查API地址或网络';
+  var resp;
+  try{
+    // cache:'no-store' 让浏览器本身也不使用HTTP缓存；SW层的缓存另外在sw.js里绕过
+    resp = await fetch(modelsUrl, {
+      method:'GET',
+      headers:{'Authorization':'Bearer '+key},
+      cache:'no-store',
+      signal:job.ctl.signal
+    });
+  }catch(err){
+    if(job.timedOut) throw new Error(timeoutMsg);
+    if(err && err.name==='AbortError') throw err;
+    throw new Error('网络请求失败，请检查API地址是否正确、网络是否可用');
+  }
+  if(!resp.ok) throw new Error(_modelFetchHttpMsg(resp.status));
+  var data;
+  try{
+    data = await resp.json();
+  }catch(err){
+    if(job.timedOut) throw new Error(timeoutMsg);
+    if(err && err.name==='AbortError') throw err;
+    throw new Error('返回内容不是有效的JSON，该地址可能不是模型接口');
+  }
+  var raw = null;
+  if(data && Array.isArray(data.data)) raw = data.data;
+  else if(Array.isArray(data)) raw = data;
+  if(!raw) throw new Error('返回格式无法识别，没有找到模型列表');
+  var seen = new Set();
+  var models = [];
+  raw.forEach(function(m){
+    var name = (typeof m==='string') ? m : ((m && typeof m==='object') ? (m.id||m.name||'') : '');
+    if(typeof name!=='string') return;
+    name = name.trim();
+    if(!name || seen.has(name)) return;
+    seen.add(name);
+    models.push(name);
+  });
+  models.sort();
+  return models;
+}
+
+// 当前输入框里的模型如果不在最新列表里（比如已下架），在列表下方给出提示，但不改动输入框
+function _hintMissingModel(listAreaId, inputId, models){
+  var input = document.getElementById(inputId);
+  var cur = input ? String(input.value||'').trim() : '';
+  if(!cur || models.indexOf(cur)!==-1) return;
+  var countEl = document.getElementById(listAreaId+'_count');
+  if(!countEl || !countEl.parentNode) return;
+  var tip = document.createElement('div');
+  tip.style.cssText = 'font-size:10px;color:var(--danger);margin-top:4px;text-align:center;line-height:1.5';
+  tip.textContent = '当前填写的模型「'+cur+'」不在本次拉取的列表中，可能已下架或名称有误，请从上方选择';
+  countEl.parentNode.insertBefore(tip, countEl.nextSibling);
+}
+
+function _showModelPanelError(listArea, msg){
+  if(!listArea) return;
+  listArea.innerHTML = '';
+  var box = document.createElement('div');
+  box.style.cssText = 'font-size:12px;color:var(--danger);text-align:center;padding:8px';
+  var icon = document.createElement('i');
+  icon.className = 'fas fa-circle-xmark';
+  box.appendChild(icon);
+  box.appendChild(document.createTextNode(' '+msg));
+  listArea.appendChild(box);
+}
+
+// 通用拉取流程：fetchModels（通用API）和fetchToolModels（工具API）共用
+async function _runModelFetch(opts){
+  var listArea = document.getElementById(opts.listAreaId);
+  var btn = document.getElementById(opts.btnId);
+  if(_modelFetchJobs[opts.listAreaId]){ showToast('正在拉取中，请稍候'); return; }
+  var modelsUrl = _buildModelsUrl(opts.url);
+  if(!modelsUrl){ showToastForce('API地址格式不正确'); return; }
+  // HTTP请求头只能是Latin-1字符，密钥里混进中文/全角符号会让fetch直接抛出莫名其妙的错误，这里提前说清楚
+  if(/[^\x00-\xFF]/.test(opts.key)){ showToastForce('密钥中包含无法使用的字符（可能复制时带入了中文或全角符号）',4000); return; }
+
+  var job = {ctl:new AbortController(), timedOut:false, cancelled:false, timer:null, btnId:opts.btnId};
+  _modelFetchJobs[opts.listAreaId] = job;
+  job.timer = setTimeout(function(){ job.timedOut = true; try{ job.ctl.abort(); }catch(e){} }, MODEL_FETCH_TIMEOUT_MS);
+  if(btn){ btn.disabled = true; btn.innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>'; }
+  if(listArea) listArea.innerHTML = '';
+  try{
+    var models = await _requestModelList(modelsUrl, opts.key, job);
+    if(job.cancelled) return;
+    if(models.length===0){
+      showToastForce('未获取到模型');
+      _showModelPanelError(listArea, '接口返回的模型列表为空');
+      return;
+    }
+    _renderModelPanel(opts.listAreaId, opts.inputId, opts.btnId, models);
+    _hintMissingModel(opts.listAreaId, opts.inputId, models);
+    showToastForce('已拉取 '+models.length+' 个模型');
+  }catch(e){
+    if(job.cancelled) return;
+    var msg = (e && e.name==='AbortError') ? '请求已取消' : ((e && e.message) || '未知错误');
+    showToastForce('拉取失败: '+msg, 3000);
+    _showModelPanelError(listArea, msg);
+  }finally{
+    if(job.timer) clearTimeout(job.timer);
+    // 只有"自己仍是当前这次拉取"才负责还原按钮；被取消或被新请求取代的旧请求不能动按钮状态
+    if(_modelFetchJobs[opts.listAreaId]===job){
+      delete _modelFetchJobs[opts.listAreaId];
+      if(btn){ btn.disabled = false; btn.innerHTML = _MODEL_BTN_IDLE_HTML; }
+    }
+  }
 }
 
 async function fetchModels(){
@@ -1813,59 +2511,20 @@ async function fetchModels(){
     showToastForce('请先填写API地址和密钥');
     return;
   }
-  const btn=document.getElementById('fetchModelsBtn');
-  const listArea=document.getElementById('modelListArea');
-  if(btn){btn.disabled=true;btn.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div>';}
-  if(listArea)listArea.innerHTML='';
-  let baseUrl=cfg.url.replace(/\/+$/,'');
-  if(!/\/v\d+$/i.test(baseUrl)&&!/\/chat\/completions/i.test(baseUrl)){baseUrl=baseUrl+'/v1';}
-  try{
-    const resp=await fetch(baseUrl+'/models',{headers:{'Authorization':'Bearer '+cfg.key}});
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    const data=await resp.json();
-    let models=[];
-    if(data.data&&Array.isArray(data.data)){models=data.data.map(m=>m.id||m.name||'').filter(Boolean).sort();}
-    else if(Array.isArray(data)){models=data.map(m=>typeof m==='string'?m:(m.id||m.name||'')).filter(Boolean).sort();}
-    if(models.length===0){showToastForce('未获取到模型');return;}
-    _renderModelPanel('modelListArea','apiModel','fetchModelsBtn',models);
-    showToastForce('已拉取 '+models.length+' 个模型');
-  }catch(e){
-    showToastForce('拉取失败: '+e.message,3000);
-    if(listArea)listArea.innerHTML='<div style="font-size:12px;color:var(--danger);text-align:center;padding:8px"><i class="fas fa-circle-xmark"></i> '+e.message+'</div>';
-  }finally{
-    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-cloud-arrow-down"></i> 拉取';}
-  }
+  await _runModelFetch({listAreaId:'modelListArea',inputId:'apiModel',btnId:'fetchModelsBtn',url:cfg.url,key:cfg.key});
 }
 async function fetchToolModels(){
-  var toolUrl=(document.getElementById('toolApiUrl').value||'').trim();
-  var toolKey=(document.getElementById('toolApiKey').value||'').trim();
+  var urlEl=document.getElementById('toolApiUrl');
+  var keyEl=document.getElementById('toolApiKey');
+  var toolUrl=((urlEl&&urlEl.value)||'').trim();
+  var toolKey=((keyEl&&keyEl.value)||'').trim();
   if(!toolUrl||!toolKey){
     var base=getCurApi();
     toolUrl=toolUrl||base.url;
     toolKey=toolKey||base.key;
   }
   if(!toolUrl||!toolKey){showToastForce('请填写工具API地址和密钥');return;}
-  const btn=document.getElementById('fetchToolModelsBtn');
-  const listArea=document.getElementById('toolModelListArea');
-  if(btn){btn.disabled=true;btn.innerHTML='<div class="loading-dots"><span></span><span></span><span></span></div>';}
-  if(listArea)listArea.innerHTML='';
-  var baseUrl=toolUrl.replace(/\/+$/,'');
-  try{
-    var resp=await fetch(baseUrl+'/models',{headers:{'Authorization':'Bearer '+toolKey}});
-    if(!resp.ok)throw new Error('HTTP '+resp.status);
-    var data=await resp.json();
-    var models=[];
-    if(data.data&&Array.isArray(data.data)){models=data.data.map(function(m){return m.id||m.name||'';}).filter(Boolean).sort();}
-    else if(Array.isArray(data)){models=data.map(function(m){return typeof m==='string'?m:(m.id||m.name||'');}).filter(Boolean).sort();}
-    if(models.length===0){showToastForce('未获取到模型');return;}
-    _renderModelPanel('toolModelListArea','toolApiModel','fetchToolModelsBtn',models);
-    showToastForce('已拉取 '+models.length+' 个模型');
-  }catch(e){
-    showToastForce('拉取失败: '+e.message,3000);
-    if(listArea)listArea.innerHTML='<div style="font-size:12px;color:var(--danger);text-align:center;padding:8px"><i class="fas fa-circle-xmark"></i> '+e.message+'</div>';
-  }finally{
-    if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-cloud-arrow-down"></i> 拉取';}
-  }
+  await _runModelFetch({listAreaId:'toolModelListArea',inputId:'toolApiModel',btnId:'fetchToolModelsBtn',url:toolUrl,key:toolKey});
 }
 // 测试API连接
 async function testApiConnection(){
@@ -1964,6 +2623,8 @@ async function testApiConnection(){
     } else {
       // 完全正常
       showToastForce('测试通过！模型「'+cfg.model+'」响应正常 · 延迟'+_ms+'ms（'+latencyLabel+'）',4000);
+      // 只有这一路才算真正测试通过：空内容/非中文都不触发。教程内部出错不能被外层 catch 误报成"测试失败"
+      try{ tutOfferAfterApiTest(); }catch(e){ logError('tutOfferAfterApiTest', e); }
     }
     saveCurSettings();
 
@@ -2016,25 +2677,60 @@ sv('bj_toolApi',{url:(document.getElementById('toolApiUrl').value||'').trim(),ke
 }
 
 // ==================== CHARACTER MANAGEMENT ====================
+// 肖像只接受本应用自己生成的 data:image（jpeg/png/webp）。备份导入、预设切换带来的 portrait 字段来源不可控，
+// 通过字符集校验后才允许当作图片地址使用，防止异常字符串混入页面
+function isValidPortraitSrc(src){
+if(typeof src!=='string'||src.length<30||src.length>2000000)return false;
+return /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+\/]+={0,2}$/.test(src);
+}
+// 各角色卡片当前是否翻到肖像面（按卡片序号记录，仅存内存：重绘时保持朝向，刷新页面后默认回到设定面）
+let _charFlipped=[];
+// 各角色卡片的性格标签栏是否展开（同样仅存内存，默认折叠）
+let _charTraitOpen=[];
+// 人物设定页搜索关键词（已转小写），三个页面共用
+let _charSearchKw='';
+// 折叠状态下只展示已选标签；一个都没选时给出淡色提示
+function charTraitSummaryHtml(traits){
+const list=Array.isArray(traits)?traits:[];
+if(list.length===0)return '<span class="char-trait-none">未选择</span>';
+return list.map(t=>'<span class="tag act">'+esc(String(t))+'</span>').join('');
+}
+// 背面右下角的人物名：与正面名称输入框同步，空名字时显示淡色占位
+function setCharBackName(el,name){
+const nm=(name||'').trim();
+el.textContent=nm||'未命名';
+el.classList.toggle('empty',!nm);
+}
 function renderCharCards(){
 const wrap=document.getElementById('charCards');
+if(!wrap)return;
 wrap.innerHTML='';
+if(_charFlipped.length>characters.length)_charFlipped.length=characters.length;
 characters.forEach((c,i)=>{
 const card=document.createElement('div');
-card.className='char-card';
+const flipped=!!_charFlipped[i];
+card.className='char-card'+(flipped?' flipped':'');
+card.dataset.idx=i;
 const traits=c.traits||[];
 const defaultTraits=['内向','外向','冷静','冲动','善良','腹黑','傲娇','温柔','毒舌','天然呆'];
 const allTraits=[...defaultTraits,...customTraits];
 const curPri=c.priority||'普通';
+const traitOpen=!!_charTraitOpen[i];
 const traitBtnsHtml=allTraits.map(t=>
 '<span class="tag'+(traits.includes(t)?' act':'')+'" style="font-size:10px;padding:3px 8px" onclick="toggleCharTrait('+i+',\''+t+'\',this)">'+t+'</span>'
 ).join('');
+// 正反两面的操作区完全一致，保证翻转图标始终停在原位
+const actsHtml=
+(characters.length>1?'<button type="button" class="char-icon-btn char-del-btn" aria-label="删除角色'+(i+1)+'" title="删除" onclick="removeChar('+i+')"><i class="fas fa-trash-can"></i></button>':'')+
+'<button type="button" class="char-icon-btn char-flip-btn" aria-label="翻转角色卡片" aria-pressed="'+(flipped?'true':'false')+'" title="翻转" onclick="toggleCharFlip('+i+')"><i class="fas fa-rotate"></i></button>';
 card.innerHTML=
-'<div class="char-card-hdr"><span>角色 '+(i+1)+'</span>'+
-(characters.length>1?'<button class="char-card-del" onclick="removeChar('+i+')">删除</button>':'')+'</div>'+
+'<div class="char-card-inner">'+
+'<div class="char-face char-front">'+
+'<div class="char-card-hdr"><span>角色 '+(i+1)+'</span><div class="char-card-acts">'+actsHtml+'</div></div>'+
 '<div class="fg"><label class="fl">名称</label><input class="fi char-name" data-idx="'+i+'" value="'+esc(c.name||'')+'" placeholder="角色名" oninput="saveCharactersFromUI()"></div>'+
-'<div class="fg"><label class="fl">性格标签（点击选择）</label>'+
-'<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px" id="traitWrap'+i+'">'+
+'<div class="fg"><div class="char-trait-bar" role="button" tabindex="0" aria-expanded="'+(traitOpen?'true':'false')+'" aria-controls="traitWrap'+i+'" onclick="toggleCharTraitFold('+i+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleCharTraitFold('+i+');}"><span class="fl" style="margin:0">性格标签（点击选择）</span><i class="fas fa-chevron-down char-trait-chev"></i></div>'+
+'<div class="char-trait-sel fold-box fold-flex'+(traitOpen?'':' show')+'" id="traitSel'+i+'">'+charTraitSummaryHtml(traits)+'</div>'+
+'<div class="fold-box fold-flex'+(traitOpen?' show':'')+'" style="flex-wrap:wrap;gap:4px;margin-top:4px" id="traitWrap'+i+'">'+
 traitBtnsHtml+
 '<span class="tag" style="font-size:10px;padding:3px 8px;border-style:dashed;color:var(--accent2)" onclick="addCustomTrait('+i+')">+ 自定义</span>'+
 '</div></div>'+
@@ -2044,16 +2740,90 @@ traitBtnsHtml+
 '<span class="tag'+(curPri==='普通'?' act':'')+'" onclick="setCharPriority('+i+',\'普通\',this)" style="font-size:10px;padding:3px 8px"><i class="fas fa-circle" style="font-size:7px;color:#f0a030"></i> 普通</span>'+
 '<span class="tag'+(curPri==='参考'?' act':'')+'" onclick="setCharPriority('+i+',\'参考\',this)" style="font-size:10px;padding:3px 8px"><i class="fas fa-circle" style="font-size:7px;color:var(--success)"></i> 参考</span>'+
 '</div></div>'+
-'<div class="fg"><label class="fl">详细设定</label>'+
+'<div class="fg char-desc-fg"><label class="fl">详细设定</label>'+
 '<textarea class="fta char-desc" data-idx="'+i+'" placeholder="外貌、背景、说话方式、口头禅..." oninput="onCharDescInput('+i+',this)">'+esc(c.desc||'')+'</textarea>'+
 '<div style="font-size:10px;color:var(--text2);text-align:right;margin-top:6px" id="charDescCount'+i+'">0/0</div>'+
+'</div>'+
+'</div>'+
+'<div class="char-face char-back">'+
+'<img class="char-portrait-img" alt="" hidden>'+
+'<div class="char-back-hit" role="button" tabindex="0" aria-label="上传或更换肖像" onclick="uploadCharPortrait('+i+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();uploadCharPortrait('+i+');}"><span class="char-back-hint"><i class="fas fa-image"></i><span>点击上传肖像</span></span></div>'+
+'<div class="char-back-acts">'+actsHtml+'</div>'+
+'<button type="button" class="char-icon-btn char-portrait-clear" aria-label="移除肖像" title="移除肖像" onclick="clearCharPortrait('+i+')" hidden><i class="fas fa-xmark"></i></button>'+
+'<div class="char-back-name" data-idx="'+i+'"></div>'+
+'</div>'+
 '</div>';
+// 肖像和名字通过DOM属性写入而不是拼进HTML字符串，避免异常内容破坏结构
+setCharBackName(card.querySelector('.char-back-name'),c.name);
+if(isValidPortraitSrc(c.portrait)){
+const img=card.querySelector('.char-portrait-img');
+const hint=card.querySelector('.char-back-hint');
+const clearBtn=card.querySelector('.char-portrait-clear');
+img.onerror=function(){
+img.hidden=true;hint.hidden=false;clearBtn.hidden=true;card.classList.remove('has-portrait');
+};
+img.alt=(c.name||('角色'+(i+1)))+'的肖像';
+img.src=c.portrait;
+img.hidden=false;
+hint.hidden=true;
+clearBtn.hidden=false;
+card.classList.add('has-portrait');
+}
 wrap.appendChild(card);
 });
+applyCharSearchFilter();
 // 渲染后刷新计数（按优先级自动上限）
 setTimeout(()=>{
   characters.forEach((_,idx)=>updateCharDescCounter(idx));
 },0);
+}
+// 展开/收起性格标签栏：只改当前卡片的DOM，不重绘整页，避免打断正在输入的内容
+function toggleCharTraitFold(idx){
+const c=characters[idx];
+if(!c)return;
+const open=!_charTraitOpen[idx];
+const bar=document.querySelector('#charCards .char-trait-bar[aria-controls="traitWrap'+idx+'"]');
+const wrap=document.getElementById('traitWrap'+idx);
+const sel=document.getElementById('traitSel'+idx);
+if(!bar||!wrap||!sel)return;
+_charTraitOpen[idx]=open;
+if(!open)sel.innerHTML=charTraitSummaryHtml(c.traits);
+bar.setAttribute('aria-expanded',open?'true':'false');
+// 全部标签与已选摘要此消彼长：一个展开的同时另一个收起，整体高度平滑过渡
+foldSlide(wrap,open);
+foldSlide(sel,!open);
+}
+// 翻转角色卡片：翻到肖像面时先收起键盘、把被拉长的输入框恢复默认高度，卡片才能回到 3:4
+function toggleCharFlip(idx){
+const card=document.querySelector('#charCards .char-card[data-idx="'+idx+'"]');
+if(!card||!characters[idx])return;
+const toFlipped=!card.classList.contains('flipped');
+const flipBtns=card.querySelectorAll('.char-flip-btn');
+// 动画期间禁用翻转按钮，避免连点把动画打断成半翻状态
+flipBtns.forEach(b=>{b.disabled=true;});
+if(toFlipped){
+const ae=document.activeElement;
+if(ae&&card.contains(ae)&&typeof ae.blur==='function')ae.blur();
+card.querySelectorAll('textarea').forEach(t=>{t.style.height='';t.style.minHeight='';});
+}
+card.classList.toggle('flipped',toFlipped);
+_charFlipped[idx]=toFlipped;
+flipBtns.forEach(b=>{b.setAttribute('aria-pressed',toFlipped?'true':'false');});
+setTimeout(()=>{
+if(card.isConnected)flipBtns.forEach(b=>{b.disabled=false;});
+},550);
+}
+// 移除角色肖像（带确认，避免误触后找不回）
+function clearCharPortrait(idx){
+const ch=characters[idx];
+if(!ch||!ch.portrait)return;
+showDlg('移除肖像','确定要移除「'+((ch.name||'').trim()||('角色'+(idx+1)))+'」的肖像吗？',()=>{
+if(characters.indexOf(ch)===-1)return;
+delete ch.portrait;
+sv(K.curChars,characters);
+renderCharCards();
+showToast('肖像已移除');
+},true);
 }
 // ==================== 人物关系图 ====================
 let charRelations=ld('bj_charRelations',[]);
@@ -2076,28 +2846,36 @@ const container=document.getElementById('relList');
 if(!container)return;
 if(charRelations.length===0){
 container.innerHTML='<div class="rel-empty">还没有人物关系<br>添加角色后点击「添加关系」建立联系</div>';
+applyCharSearchFilter();
 return;
 }
 container.innerHTML='';
 charRelations.forEach((rel,i)=>{
 const item=document.createElement('div');
 item.className='rel-item';
+item.dataset.idx=i;
 const typeClass=getRelTypeClass(rel.type);
 const dirSymbol=rel.direction==='A→B'?'→':rel.direction==='B→A'?'←':'↔';
+// 描述放在第二行，第一行只留名字和关系类型，给右侧操作图标让出空间
 item.innerHTML=
+'<div class="rel-item-main">'+
+'<div class="rel-item-top">'+
 '<div class="rel-item-names">'+
 '<span class="rel-item-name">'+esc(rel.charA||'?')+'</span>'+
 '<span class="rel-item-arrow">'+dirSymbol+'</span>'+
 '<span class="rel-item-name">'+esc(rel.charB||'?')+'</span>'+
 '</div>'+
 '<span class="rel-item-type rel-type-'+typeClass+'">'+esc(rel.type||'未知')+'</span>'+
-(rel.desc?'<span class="rel-item-desc" title="'+esc(rel.desc)+'">'+esc(rel.desc)+'</span>':'')+
+'</div>'+
+(rel.desc?'<div class="rel-item-desc" title="'+esc(rel.desc)+'">'+esc(rel.desc)+'</div>':'')+
+'</div>'+
 '<div class="rel-item-acts">'+
-'<button onclick="editRelation('+i+')"><i class="fas fa-pencil"></i></button>'+
-'<button class="del" onclick="deleteRelation('+i+')"><i class="fas fa-times"></i></button>'+
+'<button type="button" class="char-icon-btn" aria-label="编辑关系" title="编辑" onclick="editRelation('+i+')"><i class="fas fa-pencil"></i></button>'+
+'<button type="button" class="char-icon-btn char-del-btn" aria-label="删除关系" title="删除" onclick="deleteRelation('+i+')"><i class="fas fa-times"></i></button>'+
 '</div>';
 container.appendChild(item);
 });
+applyCharSearchFilter();
 }
 
 // 获取所有角色名（主角+NPC）
@@ -2175,6 +2953,7 @@ function toggleCustomSelect(id){
 }
 
 function addRelation(){
+clearCharSearch();
 editingRelIdx=-1;
 document.getElementById('addRelTitle').textContent='添加人物关系';
 fillRelCharSelects();
@@ -2326,32 +3105,73 @@ showToast('AI生成了'+addCount+'条关系');
 }
 
 // ==================== NPC设定 ====================
+// NPC编辑弹窗里暂存的肖像：点“保存”才写入NPC，点取消/关闭则丢弃
+let _npcPendingPortrait='';
+function refreshNpcPortraitPreview(){
+const img=document.getElementById('npcPortraitPreview');
+const hint=document.getElementById('npcPortraitHint');
+const clearBtn=document.getElementById('npcPortraitClear');
+if(!img||!hint||!clearBtn)return;
+if(isValidPortraitSrc(_npcPendingPortrait)){
+img.src=_npcPendingPortrait;
+img.hidden=false;
+hint.hidden=true;
+clearBtn.hidden=false;
+}else{
+img.removeAttribute('src');
+img.hidden=true;
+hint.hidden=false;
+clearBtn.hidden=true;
+}
+}
+function clearNpcPortrait(){
+_npcPendingPortrait='';
+refreshNpcPortraitPreview();
+}
 function renderNpcCards(){
 const container=document.getElementById('npcCards');
 if(!container)return;
 if(npcList.length===0){
 container.innerHTML='<div class="rel-empty">还没有NPC<br>点击上方按钮添加配角和路人</div>';
+applyCharSearchFilter();
 return;
 }
 container.innerHTML='';
 npcList.forEach((npc,i)=>{
 const card=document.createElement('div');
 card.className='npc-card';
+card.dataset.idx=i;
 const traitsHtml=(npc.traits||[]).map(t=>'<span style="font-size:9px;padding:2px 6px;border-radius:6px;background:rgba(81,207,102,.1);color:var(--success)">'+esc(t)+'</span>').join(' ');
+const initial=esc((npc.name||'').trim().substring(0,1)||'?');
 card.innerHTML=
-'<div class="npc-card-hdr">'+
-'<span>'+esc(npc.name||'未命名')+'<span class="npc-badge">'+esc(npc.role||'NPC')+'</span></span>'+
-'<div style="display:flex;gap:4px">'+
-'<button style="padding:3px 8px;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:9px;cursor:pointer" onclick="editNpc('+i+')">编辑</button>'+
-'<button style="padding:3px 8px;border-radius:6px;border:1px solid rgba(255,107,107,.3);background:transparent;color:var(--danger);font-size:9px;cursor:pointer" onclick="deleteNpc('+i+')">删除</button>'+
+'<div class="npc-card-row">'+
+'<div class="npc-thumb"><span class="npc-thumb-ph">'+initial+'</span></div>'+
+'<div class="npc-card-main">'+
+'<div class="npc-card-top">'+
+'<span class="npc-card-name">'+esc(npc.name||'未命名')+'</span>'+
+'<div class="npc-card-acts">'+
+'<button type="button" class="char-icon-btn" aria-label="编辑NPC" title="编辑" onclick="editNpc('+i+')"><i class="fas fa-pencil"></i></button>'+
+'<button type="button" class="char-icon-btn char-del-btn" aria-label="删除NPC" title="删除" onclick="deleteNpc('+i+')"><i class="fas fa-trash-can"></i></button>'+
 '</div>'+
 '</div>'+
-(npc.appearance?'<div style="font-size:10px;color:var(--text2);margin-bottom:4px"><i class="fas fa-user"></i> '+esc(npc.appearance)+'</div>':'')+
-(traitsHtml?'<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:6px">'+traitsHtml+'</div>':'')+
-(npc.desc?'<div style="font-size:11px;color:var(--text);line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">'+esc(npc.desc)+'</div>':'')+
-(npc.chapter?'<div style="font-size:9px;color:var(--text2);margin-top:6px"><i class="fas fa-map-pin"></i> '+esc(npc.chapter)+'</div>':'');
+'<div><span class="npc-badge" style="margin-left:0">'+esc(npc.role||'NPC')+'</span></div>'+
+(traitsHtml?'<div style="display:flex;flex-wrap:wrap;gap:3px">'+traitsHtml+'</div>':'')+
+'</div>'+
+'</div>';
+if(isValidPortraitSrc(npc.portrait)){
+const thumb=card.querySelector('.npc-thumb');
+const ph=thumb.querySelector('.npc-thumb-ph');
+const img=document.createElement('img');
+img.alt=(npc.name||'NPC')+'的肖像';
+// 图片损坏时退回首字占位，不留空白缩略图
+img.onerror=function(){img.remove();ph.hidden=false;};
+img.src=npc.portrait;
+ph.hidden=true;
+thumb.appendChild(img);
+}
 container.appendChild(card);
 });
+applyCharSearchFilter();
 }
 
 // ==================== 万能输入框 ====================
@@ -2445,7 +3265,7 @@ async function doUniversalCharInput(){
           else if(action.field==='priority') ch.priority=action.value;
           else if(action.field==='traits') ch.traits=String(action.value).split(/[,，、\s]+/).filter(function(t){return t;});
           else if(action.field==='desc') ch.desc=action.value;
-          sv('bj_characters',characters);
+          sv(K.curChars,characters);
           var eKey='char:'+ch.name;
           _siTrackEntity(entityFields,eKey,fieldLabel,'<i class="fas fa-user"></i>','角色「'+ch.name+'」','');
         } else {
@@ -2917,6 +3737,91 @@ function openDwCustomPrompts(){
 }
 // ==================== 自定义灵感管理 END ====================
 
+// ==================== 人物设定页搜索 ====================
+function normSearchText(v){
+return String(v==null?'':v).toLowerCase();
+}
+function findPersonByName(name){
+if(!name)return null;
+return characters.find(c=>c&&c.name===name)||npcList.find(n=>n&&n.name===name)||null;
+}
+// 人物自身的名称、角色定位（NPC才有）、性格标签是否包含关键词
+function personDirectMatch(p,kw){
+if(!p)return false;
+if(normSearchText(p.name).includes(kw))return true;
+if(normSearchText(p.role).includes(kw))return true;
+return (Array.isArray(p.traits)?p.traits:[]).some(t=>normSearchText(t).includes(kw));
+}
+// 在直接命中之外，再看这个人参与的关系类型（搜“敌对”能找到有敌对关系的人）
+function personMatchesKw(p,kw){
+if(personDirectMatch(p,kw))return true;
+const nm=p&&p.name;
+if(!nm)return false;
+return charRelations.some(r=>r&&(r.charA===nm||r.charB===nm)&&normSearchText(r.type).includes(kw));
+}
+// 关系页：关系类型命中，或任意一端人物（名字/定位/标签）命中
+function relationMatchesKw(rel,kw){
+if(normSearchText(rel.type).includes(kw))return true;
+return [rel.charA,rel.charB].some(n=>normSearchText(n).includes(kw)||personDirectMatch(findPersonByName(n),kw));
+}
+function setCharSearchEmpty(id,show){
+const el=document.getElementById(id);
+if(el)el.hidden=!show;
+}
+// 同时过滤三个页面的列表，切换页面时无需再处理
+function applyCharSearchFilter(){
+const kw=_charSearchKw;
+let roleShown=0,npcShown=0,relShown=0;
+document.querySelectorAll('#charCards .char-card').forEach(card=>{
+const c=characters[parseInt(card.dataset.idx,10)];
+const hit=!kw||(!!c&&personMatchesKw(c,kw));
+card.hidden=!hit;
+if(hit)roleShown++;
+});
+document.querySelectorAll('#npcCards .npc-card').forEach(card=>{
+const n=npcList[parseInt(card.dataset.idx,10)];
+const hit=!kw||(!!n&&personMatchesKw(n,kw));
+card.hidden=!hit;
+if(hit)npcShown++;
+});
+document.querySelectorAll('#relList .rel-item').forEach(item=>{
+const r=charRelations[parseInt(item.dataset.idx,10)];
+const hit=!kw||(!!r&&relationMatchesKw(r,kw));
+item.hidden=!hit;
+if(hit)relShown++;
+});
+setCharSearchEmpty('charSearchEmptyRole',!!kw&&characters.length>0&&roleShown===0);
+setCharSearchEmpty('charSearchEmptyNpc',!!kw&&npcList.length>0&&npcShown===0);
+setCharSearchEmpty('charSearchEmptyRel',!!kw&&charRelations.length>0&&relShown===0);
+}
+function onCharSearchInput(e){
+// 中文输入法拼音组合期间不过滤，等 compositionend 再处理，避免拼音字母造成空结果闪烁
+if(e&&e.isComposing)return;
+const input=document.getElementById('charSearchInput');
+if(!input)return;
+_charSearchKw=normSearchText(input.value.trim());
+const clr=document.getElementById('charSearchClear');
+if(clr)clr.hidden=!input.value;
+applyCharSearchFilter();
+}
+// 浏览器没有 oncompositionend 属性，只能用事件监听；输入法确认选词后才按最终文字过滤
+function bindCharSearchComposition(){
+const input=document.getElementById('charSearchInput');
+if(!input||input.dataset.imeBound)return;
+input.dataset.imeBound='1';
+input.addEventListener('compositionend',onCharSearchInput);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindCharSearchComposition);
+else bindCharSearchComposition();
+function clearCharSearch(refocus){
+const input=document.getElementById('charSearchInput');
+if(input)input.value='';
+_charSearchKw='';
+const clr=document.getElementById('charSearchClear');
+if(clr)clr.hidden=true;
+applyCharSearchFilter();
+if(refocus&&input)input.focus();
+}
 // ==================== 人物设定页 Tab 切换 ====================
 function switchCharTab(tab,el){
   document.querySelectorAll('#charTabsNav .cr-tab').forEach(function(t){t.classList.remove('act');});
@@ -2937,7 +3842,7 @@ function toggleQuick3(){
   var arrow=document.getElementById('quick3Arrow');
   if(!body) return;
   var isOpen=body.classList.contains('open');
-  body.classList.toggle('open',!isOpen);
+  foldSlide(body,!isOpen,'open');
   if(arrow) arrow.style.transform=isOpen?'':'rotate(180deg)';
 }
 async function doQuick3Char(){
@@ -3059,13 +3964,13 @@ function toggleSiExamples(e){
   var panel=document.getElementById('siExamples');
   var arrow=document.getElementById('siExArrow');
   if(!panel) return;
-  var isOpen=panel.style.display!=='none';
+  var isOpen=panel.classList.contains('show');
   if(isOpen){
-    panel.style.display='none';
+    foldSlide(panel,false);
     if(arrow) arrow.style.transform='';
     document.removeEventListener('click',_siExOutsideHandler);
   } else {
-    panel.style.display='block';
+    foldSlide(panel,true);
     if(arrow) arrow.style.transform='rotate(180deg)';
     // 注册点击外部关闭
     setTimeout(function(){
@@ -3078,7 +3983,7 @@ function _siExOutsideHandler(e){
   if(bar&&!bar.contains(e.target)){
     var panel=document.getElementById('siExamples');
     var arrow=document.getElementById('siExArrow');
-    if(panel) panel.style.display='none';
+    if(panel) foldSlide(panel,false);
     if(arrow) arrow.style.transform='';
     document.removeEventListener('click',_siExOutsideHandler);
   }
@@ -3086,7 +3991,7 @@ function _siExOutsideHandler(e){
 function _closeSiExamples(){
   var panel=document.getElementById('siExamples');
   var arrow=document.getElementById('siExArrow');
-  if(panel) panel.style.display='none';
+  if(panel) foldSlide(panel,false);
   if(arrow) arrow.style.transform='';
   document.removeEventListener('click',_siExOutsideHandler);
 }
@@ -3294,7 +4199,7 @@ function _applyCharNpcAction(action){
   if(idx===-1&&action.isNew){
     if(isChar){
       characters.push({name:action.name||'新角色',desc:'',traits:[],priority:'普通'});
-      sv('bj_characters',characters);
+      sv(K.curChars,characters);
       idx=characters.length-1;
     } else {
       npcList.push({id:uid(),name:action.name||'新NPC',role:action.role||'配角',traits:[],appearance:'',desc:'',chapter:''});
@@ -3320,7 +4225,7 @@ function _applyCharNpcAction(action){
   } else if(f==='chapter'&&!isChar){
     item.chapter=val;
   }
-  isChar?sv('bj_characters',characters):sv('bj_npcList',npcList);
+  isChar?sv(K.curChars,characters):sv('bj_npcList',npcList);
   return {ok:true,name:item.name};
 }
 // ==================== 万能输入框 全屏页 END ====================
@@ -3363,7 +4268,7 @@ async function aiAutoArchive(){
         msgs.push('更新角色「'+c.name+'」');
       }
     });
-    sv('bj_characters',characters);
+    sv(K.curChars,characters);
 
     (d.npcs||[]).forEach(function(n){
       if(!n.name) return;
@@ -3523,6 +4428,7 @@ async function doLazyFirstChapter(){
 // ==================== 懒人通道 END ====================
 
 function addNpc(){
+clearCharSearch();
 editingNpcIdx=-1;
 document.getElementById('addNpcTitle').textContent='添加NPC';
 document.getElementById('npcName').value='';
@@ -3532,6 +4438,8 @@ document.getElementById('npcAppearance').value='';
 document.getElementById('npcDesc').value='';
 document.getElementById('npcChapter').value='';
 currentNpcRole='';
+_npcPendingPortrait='';
+refreshNpcPortraitPreview();
 document.querySelectorAll('#addNpcOv .tag').forEach(t=>t.classList.remove('act'));
 document.getElementById('addNpcBtn').textContent='保存';
 document.getElementById('addNpcOv').classList.add('show');
@@ -3550,6 +4458,8 @@ document.getElementById('npcAppearance').value=npc.appearance||'';
 document.getElementById('npcDesc').value=npc.desc||'';
 document.getElementById('npcChapter').value=npc.chapter||'';
 currentNpcRole=npc.role||'';
+_npcPendingPortrait=isValidPortraitSrc(npc.portrait)?npc.portrait:'';
+refreshNpcPortraitPreview();
 document.querySelectorAll('#addNpcOv .tag').forEach(t=>{
 t.classList.toggle('act',t.textContent===npc.role);
 });
@@ -3561,6 +4471,7 @@ function closeAddNpc(){
   navPop('addNpcOv');
 document.getElementById('addNpcOv').classList.remove('show');
 editingNpcIdx=-1;
+_npcPendingPortrait='';
 }
 
 function setNpcRole(role,el){
@@ -3585,6 +4496,7 @@ appearance:document.getElementById('npcAppearance').value.trim(),
 desc:document.getElementById('npcDesc').value.trim(),
 chapter:document.getElementById('npcChapter').value.trim()
 };
+if(_npcPendingPortrait)npc.portrait=_npcPendingPortrait;
 if(editingNpcIdx>=0&&editingNpcIdx<npcList.length){
 npcList[editingNpcIdx]=npc;
 showToast('NPC已更新');
@@ -3627,16 +4539,20 @@ const wrap=document.getElementById('customTraitList');
 if(!wrap)return;
 _updateCustomTraitCount();
 if(!_customTraitExpanded){
-wrap.innerHTML='';
+// 先播放收起动画，动画结束后才清空内容；一收起就清空的话，高度会瞬间塌掉
+foldSlide(wrap,false,'show',false,function(){
+if(!_customTraitExpanded)wrap.innerHTML='';
+});
 return;
 }
 if(customTraits.length===0){
 wrap.innerHTML='<span style="font-size:11px;color:var(--text2)">暂无自定义标签</span>';
-return;
-}
+}else{
 wrap.innerHTML=customTraits.map(t=>
 '<span class="tag act" style="font-size:10px;padding:3px 8px">'+esc(t)+' <span style="margin-left:4px;cursor:pointer" onclick="event.stopPropagation();deleteCustomTrait(\''+t+'\')"><i class="fas fa-times"></i></span></span>'
 ).join('');
+}
+foldSlide(wrap,true);
 }
 // 切换自定义标签管理折叠栏展开/收起状态（点击标题栏触发）
 function toggleCustomTraitList(){
@@ -3701,6 +4617,8 @@ sv(K.curChars,characters);
 function clearAllChars(){
 showDlg('清空人物设定','将清空所有角色、关系、NPC（预设不受影响）\n\n确定继续吗？',function(){
 characters=[{name:'',desc:'',traits:[]}];
+_charFlipped=[];
+_charTraitOpen=[];
 sv(K.curChars,characters);
 charRelations=[];
 sv('bj_charRelations',charRelations);
@@ -3713,6 +4631,7 @@ showToast('已清空所有人物设定');
 },true);
 }
 function addCharacter(){
+clearCharSearch();
 characters.push({name:'',desc:'',traits:[]});
 sv(K.curChars,characters);
 renderCharCards();
@@ -3720,9 +4639,21 @@ showToast('已添加新角色');
 }
 function removeChar(i){
 if(characters.length<=1){showToast('至少保留一个角色');return;}
-characters.splice(i,1);
+const target=characters[i];
+if(!target)return;
+const label=(target.name&&target.name.trim())?'「'+target.name.trim()+'」':'角色 '+(i+1);
+showDlg('删除角色','确定要删除'+label+'吗？'+(isValidPortraitSrc(target.portrait)?'\n\n该角色的肖像也会一并删除。':''),()=>{
+// 确认期间列表可能已变化，按对象引用重新定位而不是沿用旧序号
+const idx=characters.indexOf(target);
+if(idx===-1)return;
+if(characters.length<=1){showToast('至少保留一个角色');return;}
+characters.splice(idx,1);
+_charFlipped.splice(idx,1);
+_charTraitOpen.splice(idx,1);
 sv(K.curChars,characters);
 renderCharCards();
+showToast('角色已删除');
+},true);
 }
 
 function saveCharactersFromUI(){
@@ -3733,6 +4664,10 @@ if(characters[idx])characters[idx].name=el.value;
 document.querySelectorAll('.char-desc').forEach(el=>{
 const idx=parseInt(el.dataset.idx);
 if(characters[idx])characters[idx].desc=el.value;
+});
+document.querySelectorAll('.char-back-name').forEach(el=>{
+const idx=parseInt(el.dataset.idx);
+if(characters[idx])setCharBackName(el,characters[idx].name);
 });
 sv(K.curChars,characters);
 }
@@ -3904,11 +4839,13 @@ p+='• 关系是动态的，但变化必须有事件驱动，不能突然转变
 }
 return p;
 }
-function _spWorldSectionContent(wD){
+function _spWorldSectionContent(wD,mapD){
 let p='';
-if(wD){
+if(wD||mapD){
 p+='【故事发生的世界】\n';
-p+=(noDescLimit?wD:wD.substring(0,3000)+(wD.length>3000?'...':''))+'\n';
+if(wD)p+=(noDescLimit?wD:wD.substring(0,3000)+(wD.length>3000?'...':''))+'\n';
+// 地图文字单独追加，不参与上面的3000字截断，否则世界观写得长的人启用地图后看不到任何效果
+if(mapD)p+=(wD?'\n':'')+mapD+'\n';
 p+='※ 世界观是背景，不是说明书，通过人物的日常自然呈现\n\n';
 }
 return p;
@@ -4052,6 +4989,7 @@ function buildSysPrompt(){
 const globalWD=(document.getElementById('globalWorldDesc')&&document.getElementById('globalWorldDesc').value||globalWorld||'').trim();
 const localWD=(document.getElementById('worldDesc').value||'').trim();
 const wD=[globalWD,localWD].filter(Boolean).join('\n\n');
+const mapD=wmPromptText();
 const mW=parseInt(document.getElementById('minWords').value)||800;
 const styleD=(document.getElementById('styleDesc')&&document.getElementById('styleDesc').value||ap.curStyle||'').trim();
 const globalRD=(document.getElementById('globalRuleDesc')&&document.getElementById('globalRuleDesc').value||globalRule||'').trim();
@@ -4082,7 +5020,7 @@ sysPromptEntries.forEach(function(en){
       p+=(en.content!=null?en.content:_spAuxTemplateText());
     }
   }else if(en.type==='context'){
-    if(en.id==='world')p+=_spWorldSectionContent(wD);
+    if(en.id==='world')p+=_spWorldSectionContent(wD,mapD);
     else if(en.id==='style')p+=_spStyleSectionContent(styleD);
     else if(en.id==='char')p+=_spCharSectionContent();
     else if(en.id==='rule')p+=_spRuleSectionContent(ruleD);

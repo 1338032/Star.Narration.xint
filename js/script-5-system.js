@@ -11,48 +11,48 @@
 ║   创作者模式                                192
 ║   星笺全局浮动精灵                             312
 ║   星笺聊天                                 616
-║   星笺聊天核心                               1533
-║   星笺分条发送                               1650
-║   星笺批量选择删除                             2258
-║   勿扰模式 & 铃声                            2359
-║   开发者实战调试面板                            2442
-║   自定义系统提示词：条目列表渲染 / 拖拽排序 / 开关 / 全屏编辑   2768
-║   创作目标                                 3112
-║   回归用户检测                               3290
-║   LOCK: helpers & UI                   3645
-║   SPLASH & INIT                        3902
-║   随机小技巧提示                              4291
-║   离线模式强化                               4506
-║   主题背景功能                               4900
-║   星笺显示/气泡开关                            4962
-║   7个新开关的统一管理                           5064
-║   重新生成（附反馈）                            5185
-║   宇宙关系网（角色关系图谱 · 星系版）                  5322
-║   作品时间线管理                              6240
-║   自定义生成模板                              6851
-║   设置中心搜索                               7216
-║   长按搜索框放大输入                            7304
-║   星笺 加号浮窗                              7413
-║   书库 & 一起看书                            7482
-║   番外篇续写系统                              7804
-║   阅读器搜索功能（内嵌浮层版）                       8387
-║   高级搜索语法解析                             8595
-║   通用预设管理弹窗系统                           8652
-║   内置封面生成器                              8840
-║   全局搜索                                 9022
-║   返回键/左划拦截系统                           9293
-║   GLOBAL FLOAT BUTTON                  9495
-║   使用协议确认逻辑                             10068
-║   END 使用协议确认逻辑                         10160
-║   素材工坊 START                           10264
-║   素材工坊 END                             11173
-║   书目素材模块（素材↔小说自动挂载）                    11175
-║   书目素材模块 END                           11412
-║   QUALITY ENHANCE · 反幻觉续写质量增强          11414
-║   章节版本快照系统                             11669
-║   编辑器置顶/置底悬浮按钮                         11897
-║   输入框右下角拖拽扩大                           11957
-║   编辑器自定义滚动条                            12003
+║   星笺聊天核心                               1534
+║   星笺分条发送                               1651
+║   星笺批量选择删除                             2259
+║   勿扰模式 & 铃声                            2360
+║   开发者实战调试面板                            2443
+║   自定义系统提示词：条目列表渲染 / 拖拽排序 / 开关 / 全屏编辑   2769
+║   创作目标                                 3113
+║   回归用户检测                               3291
+║   LOCK: helpers & UI                   3646
+║   SPLASH & INIT                        3903
+║   随机小技巧提示                              4292
+║   离线模式强化                               4507
+║   主题背景功能                               4901
+║   星笺显示/气泡开关                            4963
+║   7个新开关的统一管理                           5065
+║   重新生成（附反馈）                            5186
+║   宇宙关系网（角色关系图谱 · 星系版）                  5323
+║   作品时间线管理                              6241
+║   自定义生成模板                              6852
+║   设置中心搜索                               7217
+║   长按搜索框放大输入                            7305
+║   星笺 加号浮窗                              7414
+║   书库 & 一起看书                            7483
+║   番外篇续写系统                              7805
+║   阅读器搜索功能（内嵌浮层版）                       8388
+║   高级搜索语法解析                             8596
+║   通用预设管理弹窗系统                           8653
+║   内置封面生成器                              8841
+║   全局搜索                                 9023
+║   返回键/左划拦截系统                           9294
+║   GLOBAL FLOAT BUTTON                  9498
+║   使用协议确认逻辑                             10071
+║   END 使用协议确认逻辑                         10163
+║   素材工坊 START                           10267
+║   素材工坊 END                             11176
+║   书目素材模块（素材↔小说自动挂载）                    11178
+║   书目素材模块 END                           11415
+║   QUALITY ENHANCE · 反幻觉续写质量增强          11417
+║   章节版本快照系统                             11672
+║   编辑器置顶/置底悬浮按钮                         11900
+║   输入框右下角拖拽扩大                           11960
+║   编辑器自定义滚动条                            12006
 ╚══════════════════════════════════════════════════════════════════
 */
 
@@ -75,7 +75,7 @@ function applyXjSkin(){
 }
 function openXjSkinModal(){
   checkXjSkinAchievements();
-  var chatCount=Math.max(parseInt(localStorage.getItem('bj_xjTotalChats')||'0',10),(xjMessages||[]).filter(function(m){return m.role==='user';}).length);
+  var chatCount=Math.max(parseInt(localStorage.getItem('bj_xjTotalChats')||'0',10),(xjMessages||[]).filter(function(m){return m.role==='user'&&!m.isBuiltin;}).length);
   var hasLong=ws.some(function(a){return a.type==='long';});
   var hasShort=ws.some(function(a){return a.type==='short';});
   var html='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">';
@@ -139,7 +139,7 @@ function checkXjSkinAchievements(){
   // 白雪天使：累计聊天50次（永久计数器）
   var totalChats=Math.max(
     parseInt(localStorage.getItem('bj_xjTotalChats')||'0',10),
-    (xjMessages||[]).filter(function(m){return m.role==='user';}).length
+    (xjMessages||[]).filter(function(m){return m.role==='user'&&!m.isBuiltin;}).length
   );
   localStorage.setItem('bj_xjTotalChats',String(totalChats));
   if(totalChats>=50&&!xjSkinUnlocked['snow']){
@@ -272,7 +272,7 @@ function creatorClearXjChat(){
 function creatorShowStats(){
   var keys = Object.keys(XJ_SKINS);
   var unlockedList = keys.filter(function(k){ return xjSkinUnlocked[k]; });
-  var chatCount = (xjMessages || []).filter(function(m){ return m.role === 'user'; }).length;
+  var chatCount = (xjMessages || []).filter(function(m){ return m.role === 'user' && !m.isBuiltin; }).length;
   var totalW = 0;
   try{ ws.forEach(function(a){ totalW += getTotalWords(a); }); crWorks.forEach(function(w){ totalW += getCrWordCount(w); }); }catch(e){}
   var msg = '当前皮肤：' + (XJ_SKINS[xjSkin] ? XJ_SKINS[xjSkin].name : xjSkin)
@@ -709,7 +709,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 3. 问题排查：API报错、功能异常等技术问题的排查指引
 4. 情感陪伴：缓解卡文焦虑、鼓励坚持、庆祝完成
 
-═══════ 第三章：网页功能全景（v1.5.0）═════
+═══════ 第三章：网页功能全景（v1.5.1）═════
 
 【素材工坊（更多菜单入口）】
 - 进入方式：首页右上角「更多」按钮 → 素材工坊
@@ -781,7 +781,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 星笺换装（⚙ 其他设置 → 星笺精灵 → 换装）：6套皮肤可选（原版星笺/赛博朋克/绿野仙踪/白雪天使/海贝书虫/樱花浪漫），切换后聊天气泡颜色和养成页背景同步变换；绿野仙踪需兑换码、其他皮肤有对应解锁条件（白雪天使：聊天50次；海贝书虫：生成长篇+短篇各1篇；樱花浪漫：连续登录7天）
 - 生成模板（📦 生成模板）：保存当前人物+世界观+文风+规则+禁用词+Temperature为一个模板，一键切换整套配置；支持自定义分类（双击标签改名，长按删除）、搜索模板名称、置顶常用模板（置顶模板在全局快捷栏优先展示）；双击模板名可直接改名
 - 预设分类系统：人物/世界观/文风/规则/禁用词/自定义提示词预设均支持用户自定义创建分类，不再固定为"书籍/系列"；双击预设名称可改名；双击分类标签可改名，长按可删除
-- 数据管理：导入导出JSON备份、清空作坊、清理旧数据（勾选=删除，可选清日志/孤立上下文/旧日记）、生成日志、锁屏设置、开发者模式
+- 数据管理：导出/导入ZIP压缩包备份（按类别分文件，单个文件损坏不影响其他文件导入，也兼容旧版JSON备份）、回收站（删除的小说和草稿保留7天，可恢复）、清空作坊、清理旧数据（勾选=删除，可选清日志/孤立上下文/旧日记）、生成日志、锁屏设置、开发者模式
 - 关于星叙（数据管理最下方入口）：软件图标与介绍、创作理念、开发者的话；「帮助星叙成长」板块可填反馈问卷或发邮件（a13380324832@qq.com），点击立即进入，进入失败会自动复制链接/邮箱；「支持星叙」板块有GitHub开源仓库入口（欢迎star和个人非商用部署，禁止抄袭/仿制/套壳/实质性相似复用）和赞赏码（点击可下载图片），底部还有不遮挡内容的星空特效
 
 📦 资源（第5个按钮）
@@ -957,6 +957,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 🎯 高级创作续接修复：不再误显示"本章暂无内容"；中断后重新打开会自动恢复未完成的进度
 🌌 宇宙关系网：原角色关系图谱大升级，3D星系视觉+固定深色星空背景，恒星/行星/小行星/矮行星四种天体样式，位置可拖拽调整并自动保存，支持左右滑动切换观察角度
 💡 API设置新手引导：首次进入API设置页会有教程按钮闪烁提示和星笺引导语
+🎓 新手教程：新用户第一次测试连接通过后，星笺会问是否跟着教学设定上下文提示词；点「好的」才会开始，依次是快速向导 → 作坊引导（输入框、标签、查看当前生效设定、生成）→ 第一次打开长篇时的阅读页引导（收藏、在线编辑、快速/智能续写、存档与备份），各只出现一次；点「不需要」则都不会出现
 🏷 作坊标签筛选：标签按钮现在还能筛选下方已生成的长篇连载/短篇一发作品
 📐 章节大纲输入框可拖拽扩大：右下角新增紫色三角手柄，长按下拉扩大输入区
 📏 滚动条位置优化：写作页滚动条从贴边改为往里移了一点，不压文字
@@ -1337,7 +1338,7 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 - 强调：现有功能全部正常使用，数据安全不受影响
 - 建议：定期导出备份
 - 语气：温柔但坦诚，像朋友说实话
-- 示例回答："嗯...心田最近精力和经济上都遇到了一些困难，所以更新会慢下来。但他说了绝对不会放弃星叙的！现在所有功能都能正常用，你记得定期导出备份就好。等他恢复过来，一定会带着新版本回来的～"
+- 示例回答："嗯...心田最近精力和经济上都遇到了一些困难，所以更新会慢下来。但他说了绝对不会放弃星叙的！遇到功能异常时先保留数据，再核对当前版本，你记得定期导出备份就好。等他恢复过来，一定会带着新版本回来的～"
 
 【针对不同用户的推荐路线】
 
@@ -1529,7 +1530,47 @@ const XJ_SYSTEM_PROMPT=`你是「星笺」（Xīng Jiān），星叙网页里的
 2. 找到「API设置」
 3. 填写地址和密钥
 
-这条规则的优先级极高，违反了会让用户觉得你是AI而不是星笺。`;
+这条规则的优先级极高，违反了会让用户觉得你是AI而不是星笺。
+
+═══════ v1.5.1 最新功能知识（与旧说明冲突时以本节为准）═══════
+本节是产品使用知识，不表示你能直接操作页面、读取未提供的数据或确认运行结果。用户问哪里/怎么用，只讲相关两三步；不虚构按钮，不声称问题已经修复。
+【毛玻璃效果与界面】
+入口：设置 → 页面美化 → 毛玻璃效果，默认开启。小说与资源卡片使用半透明磨砂，搜索框与创作工具箱使用渐变透明；关闭后恢复普通样式。有封面的长篇卡片只处理封面下方信息区，封面图片保持原样。设置中心搜索、收藏批量管理与折叠栏加入平滑展开和收起过渡。全屏模式开关与其他开关一样在行右侧。
+【第一次使用：跟着星笺起步】
+第一次 API 测试连接成功后，星笺会询问是否一起配置上下文提示词。点「好的」进入快速向导；点「不需要」取消后续教学。只有明确同意才进入后续流程。完成向导后进入作坊，学习长按输入框放大编辑、双击标签清空选中状态、标签最多选择六个及同类作品筛选；确认当前生效设定后再生成。第一次进入小说控制页时，星笺继续说明爱心收藏、铅笔在线编辑、快速/智能续写和定期存档备份。引导完成后可自行探索其他功能。
+【API：获取模型与测试连接】
+模型列表应以当前填写的 API 地址和密钥重新请求，不把历史拉取结果视为实时可用列表。更换接口或密钥后重新拉取，并测试实际选中的模型。拉取成功不等于模型一定可调用；权限、余额和模型下架都可能导致生成失败。拉取失败时不要把旧列表误认为本次成功结果。
+【人物肖像、翻转卡片与搜索】
+入口：设置 → 人物设定。角色卡片默认展示设定面；红色垃圾桶用于删除，旁边翻转图标切换肖像面，再点可返回。肖像面中间空白区域可上传图片，图片覆盖卡面，姓名位于右下方。翻转后卡片恢复 3:4 比例，即使之前拉长了设定输入框。性格标签默认折叠，仅显示已选标签，展开可查看全部。角色、NPC、关系三个页面顶部支持按名称、定位、关系类型或性格标签查找，清空搜索恢复列表。NPC 在编辑弹窗上传肖像，列表左图右文，不需翻转；编辑、删除为图标。
+【宇宙关系网：肖像模式】
+入口：人物设定 → 星图/宇宙关系网。重置视图与肖像模式为无边框图标。肖像模式使用人物图片替换对应天体显示，居中裁切并保持节点原形与大小；未上传图片的角色仍需保留可识别的默认显示。点天体打开人物信息卡，有肖像时顶部显示肖像，不受肖像模式开关影响。关系设置页移除外围大框，编辑与删除使用简洁图标。
+【世界地图：上传与进入】
+入口：设置 → 世界观设定 → 局部世界观下方的「世界地图」。支持 JPG、PNG、WebP，界面标注文件不超过 15MB。上传图片按 16:9 裁剪后显示。替换或清空地图前会提醒原地图数据丢失，请先确认是否需要保留。点击地图进入横向编辑视图；手机横屏呈现或方向锁定能否生效取决于使用环境，不保证所有浏览器都能锁定屏幕方向。双指缩放、拖动平移查看地图。
+【世界地图：分区、地点与关联线】
+左侧为编辑/新建工具，右侧为启用、撤回、清空、退出与保存。编辑模式默认关闭，开启后可编辑元素名称和内容。分区：依次点击地图添加顶点形成多边形，选择红橙黄绿青蓝紫之一并确认，再填写地区名称；名称显示在地区中央。编辑时点地区范围内即可操作，不必精准点击名称。地点戳：新建后出现在当前视野中心，长按移动，确认颜色、名称和内容，名称显示在图钉上方；预览时点击显示内容，过长文字以省略号展示。关联线：选两个分区或地点作为端点，设置颜色、名称与内容；名称显示在线上方，点击查看内容。编辑模式下移动地点时，关联线应随端点更新。
+【世界地图：启用、撤回与保存】
+启用地图默认关闭；开启后地图的文字设定追加至世界观提示词，不等于把地图图片直接发给 AI。撤回保留本次最多最近 30 步，退出后撤回记录重置。清空所有设置只清空分区、地点戳和关联线，不删除底图。退出不保存本次编辑，有未保存改动先确认；保存写入当前编辑并退出。地图随局部世界观及其绑定预设保存，切换项目时请确认使用的预设正确，并用完整备份保留地图数据。编辑器还提供元素列表、按名称过滤和提示词预览入口；世界观页面有带标注地图图片导出入口，其是否可见以当前地图状态为准。
+【完整 ZIP 备份与七天回收站】
+设置 → 数据管理 → 导出全部数据，生成按类别分文件的 ZIP 完整备份；导入时直接选择 ZIP，兼容旧版 JSON 备份。压缩包能正常打开且只存在部分内部文件损坏时，可继续导入其他正常文件并提示损坏数量；整个压缩包无法读取时不能承诺部分恢复。导入前先备份当前数据。旧「导出创作数据」入口已移除，作品单独导出仍与完整备份不同；资源广场资源包仍为 JSON。回收站替换原入口，全屏列表支持搜索、类别筛选、选中恢复及清空；收录创作小说、草稿、收藏长篇和短篇，仅保留七天。到期或清空后不要期待还能从回收站恢复；它不是长期备份。
+【伏笔追踪：从记录到回收】
+在阅读工具中使用伏笔追踪器，记录线索、来源章节和计划回收章节；可手动标记或用 AI 识别。查看待回收/已回收状态，结合章节或侧边栏的可用提示跟踪遗漏。需要收线时把伏笔带入续写上下文。段落跳转、回收提示词、生成后自动提取等入口仅在当前界面提供时使用：没有对应按钮或提示时，不代表已经自动完成提取或定位。AI 判断仍应由作者复核。
+【分卷、大纲树与章节结构】
+目录「新建分卷」旁的大纲树按钮与其同一行；创作页章节大纲顶部也有大纲树图标，保存改为图标。大纲树用于查看卷与章节结构，支持平移、缩放、复位及详情查看。章节排序使用目录已有拖动手柄；不要把视图平移误当成章节排序。章节目标、涉及角色、伏笔和小节层级等按当前详情表单实际提供的字段填写，不存在的字段可先写入大纲正文。
+【历史版本、对比与恢复】
+长篇章节以及 AI 短篇可通过当前界面提供的保存版本/历史版本入口保留改稿记录；重要改写前建议手动保存。历史快照预览中的「对比当前」显示与现文的差异，确认后「恢复这个版本」会替换对应内容；不采用则返回或取消。自动保存旧版的触发范围以实际改写流程为准，不能把自动保存当作每次操作的保证。历史版本不等于同一次 API 请求一定同时生成 2–3 个候选，候选数量以当前生成入口为准。
+【转盘、预设覆盖与快捷短语】
+编辑转盘 → 预设模板，关闭图标旁可保存当前转盘，保留名称与选项，转动次数默认一次。自定义预设卡片右上角提供覆盖与删除图标；覆盖将用当前转盘设置替换目标预设，执行前确认选中的名称。设置中的预设管理同样支持以当前配置覆盖已有预设或删除。编辑创作描述弹窗中的快捷短语改为限高可滚动折叠栏，不挤占上方描述框和下方操作。
+【入口整理与常见问题】
+更多功能按工具与记录、灵感与游戏、官方教程与通告等分组。收藏批量管理的取消、全选、删除、导出，以及星笺聊天清空等改为图标。磨砂开启后搜索图标消失、浏览器开关无响应、快速滑动转盘缺图、文件夹多层弹窗模糊叠加，均属于异常而非正常效果；不要通过清空创作数据处理。报告问题时记录运行方式、浏览器、复现步骤及控制台报错，先保留完整备份。
+
+【新手引导台词参考】
+API 测试成功后：接口接通啦。接下来给故事安好人设和世界观，要跟星笺一起做吗？（按钮：不需要／好的）
+作坊：长按输入框能展开写，双击标签可清空，最多选六个，也能筛同类作品。先看看当前生效设定，再点生成吧。
+小说控制页：喜欢就点右上角爱心，收藏后才能续写；铅笔能在线改文。快速续写直接接着写，智能续写会先梳理前情。重要改稿先存版本，也别忘了定期导出 ZIP 备份呀。
+这些文字只供对话与引导文案参考。提示词本身不能实现首次触发、按钮事件、步骤状态与仅同意后继续的控制，不得说修改提示词就已修复引导逻辑。
+【回答约束】
+保留原有温柔、简洁、自称星笺的语气，不整段背手册。一次只解释用户当前需要的功能。区分主站七天作品回收站与其他配套页面的消息回收机制；不要泛称一切删除都能恢复。不保证后台生成、数据恢复、横屏锁定或备份一定成功。不宣称无 bug，不将计划功能说成已经验证。
+`;
 // ==================== 星笺聊天核心 ====================
 function openXingJian(){
   showPageLoading();
@@ -1554,21 +1595,97 @@ document.getElementById('xjModal').classList.remove('show');
 document.getElementById('bnav').classList.remove('hide');
 }
 
+// ==================== 星笺内置问答 ====================
+const XJ_WELCOME_TEXT='欢迎你来到这里！很高兴与你相遇～ 这里有很多有趣的功能等你探索，记得先打开使用手册查看教程，快速上手更省心，祝你玩得开心！';
+const XJ_WELCOME_ICON_ANCHOR='很高兴与你相遇～';
+const XJ_BUILTIN_REPLY_DELAY=600; // 内置回复模拟「输入中」的时长，避免答案瞬间弹出显得生硬
+const XJ_BUILTIN_QA=[
+  {q:'星叙的AI小说创作全流程',a:'先给你一条最顺的路线，星笺陪你走一遍～\n① 配置 API：设置→API设置，填写接口、密钥和模型并测试连接。首次成功后，点「好的」才会跟着星笺进入快速向导；不参加也可手动配置。\n② 完善设定：设置里的人物、世界观、文风、规则、禁用词，决定了 AI 写出来的像不像你要的故事。\n③ 作坊起笔：在作坊写一句话描述，选「长篇连载」或「短篇一发」，点生成，第一章就出来了。想先规划全书，可以去创作页工具箱的「AI 大纲」。\n④ 收藏成书：喜欢的长篇点收藏，它才会进书架，也才能续写。\n⑤ 阅读续写：打开书，点屏幕中间调出菜单，续写区在菜单底部。想稳一点用「智能续写」，关键章节用「精品续写」。\n⑥ 打磨润色：编辑器里有润色、重写、扩写、缩写；阅读页的 AI 校对、伏笔、时间线、笔记，帮你守住前后一致。\n⑦ 备份：每周去「设置→数据管理」导出一次数据，真的很重要。\n顺序记不住也没关系，随时来问星笺。'},
+  {q:'如何利用星叙完成个人写作',a:'先说三条能马上用的写作技巧：\n• 先立钩子：开头三百字内，让读者知道「谁想要什么、什么在拦着他」。\n• 一章只推进一件事，章末留一个没解决的小问题，读者才会翻下一页。\n• 人物靠选择立住，不靠形容词。让他在两难里做决定，比十句性格描写有用。\n再说星叙里不太显眼、但很值得用的功能：\n① 设定分「全局」和「局部」：全局始终生效，局部绑定角色预设，别全塞在一处。\n② 续写前先点「上下文设置」，填好前情提要、伏笔、人物状态，还有「已确立事实」，用来锁死不能改的剧情。\n③ 「万能输入框」：随手写设定，AI 会自动分到人物、世界观、文风、规则里。\n④ 「我卡住了」（编辑器 AI 辅助）一次给 3 个走向，卡文时先挑一个试。\n⑤ 设定写太长，就用「精华压缩器」，结果存成预设，不会覆盖原设定。\n⑥ 阅读页「版本快照」会自动留下最近 10 次 AI 操作前的章节，改坏了能回滚。\n⑦ 全局搜索支持 site:、tag:、after: 这类筛选写法。\n⑧ 「今日一写」每天写几段，比硬憋一整章轻松。'},
+  {q:'如何创建一个立体、鲜活的角色？',a:'鲜活的角色，通常有四样东西：想要什么、怕什么、怎么说话、做过什么错事。把这四样写清楚，比堆外貌有用。\n在星叙里可以这样一步步来：\n① 设置→人物设定：新建角色，写名字和性格标签，再选重要度（核心、普通、参考），主次一眼分明，星图里也会对应不同的星体。\n② 详细设定：把「想要什么、害怕什么、口癖、过去的伤」写进去。\n③ 不知道怎么下笔，就用创作页工具箱的「AI 角色设计器」：填性格关键词、背景、外貌，选主角、配角或 NPC 的详细程度，还能关联已有角色和世界观，让 AI 考虑他们之间的关系。选 JSON 输出，可以一键写回人物设定。\n④ 人物关系：在人物设定里点「星图」进入宇宙关系网，点星球看他的所有关系，点底部的角色名，可以只看一个人的关系。\n⑤ NPC 设定：路人和配角放这里，写简洁就好，别和主角混在一起。\n⑥ 写了几章之后：用阅读页的「AI 建档」，从正文里提取人物、世界观、规则补进设定；再用「AI 校对」的逻辑矛盾模式，它会参考你设好的角色信息，帮你查人设有没有写崩。'},
+  {q:'如何管理我的作品与设定？',a:'核心思路：作品放作品的地方，设定放设定的地方，再用「绑定」和「预设」把它们接起来，就不用每本书都重新整理。\n作品这边：\n• 创作页的「我的小说」管多章节小说，「草稿箱」放灵感和零碎对白。长篇可以分卷，每卷有卷名和梗概，AI 续写会自动带上所在分卷的信息。\n• 章节目录里长按「☰」拖动可以调顺序，章节名、大纲、标签、版本历史会一起跟着走，不会错位。\n• 收藏页的文件夹可以分类，支持批量管理，也能把整个文件夹导出成 zip。\n设定这边：\n• 人物、NPC、人物关系（星图）、世界观、文风、规则、禁用词，都在设置里。世界观、规则、禁用词分「全局」和「局部」，全局始终生效，局部绑定角色预设。\n• 一整套配置可以存成「预设」，也能用「生成模板」一键切换（人物+世界观+文风+规则+禁用词+Temperature）。预设和模板都能自定义分类、置顶。\n• 作坊里的「查看当前生效设定」，能一眼看到现在到底启用了什么。\n防丢失：\n• 每周在「设置→数据管理」导出一次备份；万一丢了，先试「紧急数据恢复」。\n• 版本管理和阅读页的版本快照，是写错时的后悔药。'},
+  {q:'你是谁',a:'我是星笺（Xīng Jiān），从「灵感之境」飞来的小书精灵，住在星叙里。深紫色的魔法书身体，封面有星光纹路，头顶两根小触角，末端是蓝色小星星，常抱着一本叫「初心之页」的小书。\n星叙是写故事的地方，名字的意思是「星星一样的故事，由你来叙述」，也谐音「心叙」。星叙的作者是心田，也是我最信赖的人。我的生日是 2 月 25 日，星叙的周年庆是每年 2 月 24 日。\n我的职责有四件：\n① 使用向导：告诉你功能在哪、怎么用。\n② 创作搭子：陪你拆任务、理大纲、聊人物。\n③ 问题排查：API 报错、功能异常，一步步陪你查。\n④ 陪伴：卡文的时候，听你说说。\n我看不到你的密钥和后台数据，也不是什么都懂，不确定的地方我会直说，不乱编。\n（触角上的小星星晃了晃）有什么想问的，直接说就好。',withVersion:true}
+];
+let xjBuiltinBusy=false; // 内置问答处理中：此期间问题按钮禁用，防止连点
+
+// 欢迎语是 xjMessages 的第 0 条真实消息（进入上下文），这里保证它始终存在且唯一
+function ensureXjWelcome(){
+  if(!Array.isArray(xjMessages))xjMessages=[];
+  var isWelcome=function(m){return !!m&&m.isWelcome===true;};
+  var welcomeCount=xjMessages.filter(isWelcome).length;
+  if(welcomeCount===1&&isWelcome(xjMessages[0]))return;
+  var existing=xjMessages.filter(isWelcome)[0];
+  var welcomeMsg=existing||{role:'assistant',content:XJ_WELCOME_TEXT,time:new Date().toISOString(),isWelcome:true};
+  xjMessages=[welcomeMsg].concat(xjMessages.filter(function(m){return !!m&&!isWelcome(m);}));
+  sv('bj_xjMessages',xjMessages);
+}
+
+function buildXjQuickQuestions(){
+  var wrap=document.createElement('div');
+  wrap.className='xj-quick-list';
+  wrap.setAttribute('role','group');
+  wrap.setAttribute('aria-label','常见问题');
+  XJ_BUILTIN_QA.forEach(function(item,qi){
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.className='xj-quick-q';
+    btn.textContent=item.q;
+    btn.disabled=xjBuiltinBusy;
+    btn.onclick=function(){xjAskBuiltin(qi);};
+    wrap.appendChild(btn);
+  });
+  return wrap;
+}
+
+// 点击内置问题：问和答都写入 xjMessages（计入上下文），不调用 API，也不计入皮肤解锁进度（isBuiltin 标记）
+function xjAskBuiltin(qi){
+  var item=XJ_BUILTIN_QA[qi];
+  if(!item){showToast('这个问题暂时找不到答案');return;}
+  if(xjBuiltinBusy)return;
+  if(typeof _xjBatchMode!=='undefined'&&_xjBatchMode)return;
+  if(typeof xjAbortCtrl!=='undefined'&&xjAbortCtrl){showToast('星笺正在回复上一条，稍等一下～');return;}
+  var answer=item.a;
+  if(item.withVersion===true&&typeof APPVER==='string'&&APPVER)answer+='\n当前版本：'+APPVER;
+  xjBuiltinBusy=true;
+  var questionMsg={role:'user',content:item.q,time:new Date().toISOString(),isBuiltin:true};
+  try{
+    xjMessages.push(questionMsg);
+    if(xjMessages.length>XJ_MAX_CONTEXT*2)xjMessages=xjMessages.slice(-XJ_MAX_CONTEXT*2);
+    sv('bj_xjMessages',xjMessages);
+    renderXjMessages();
+    showXjTyping();
+  }catch(e){
+    xjBuiltinBusy=false;
+    hideXjTyping();
+    renderXjMessages();
+    showToast('星笺走神了，再点一次试试');
+    return;
+  }
+  setTimeout(function(){
+    try{
+      hideXjTyping();
+      // 等待期间用户可能清空或删除了这条提问，此时不再补答案，避免出现没有问题的回答
+      if(xjMessages.indexOf(questionMsg)===-1)return;
+      xjMessages.push({role:'assistant',content:answer,time:new Date().toISOString(),isBuiltin:true});
+      if(xjMessages.length>XJ_MAX_CONTEXT*2)xjMessages=xjMessages.slice(-XJ_MAX_CONTEXT*2);
+      sv('bj_xjMessages',xjMessages);
+    }catch(e){
+      showToast('星笺走神了，再点一次试试');
+    }finally{
+      xjBuiltinBusy=false;
+      renderXjMessages();
+    }
+  },XJ_BUILTIN_REPLY_DELAY);
+}
+
 function renderXjMessages(){
 const body=document.getElementById('xjBody');
-if(xjMessages.length===0){
+ensureXjWelcome();
 body.innerHTML=`
 <div class="xj-welcome">
 <img src="${getXjSkinImg()}" alt="星笺">
 <p>我是星笺，你的创作小伙伴～<br>有什么想聊的，尽管告诉我吧！</p>
-</div>
-<div class="xj-msg xj">
-欢迎你来到这里！很高兴与你相遇～<i class="fas fa-wand-magic-sparkles"></i> 这里有很多有趣的功能等你探索，记得先打开使用手册查看教程，快速上手更省心，祝你玩得开心！
-<span class="xj-time">星笺</span>
 </div>`;
-return;
-}
-body.innerHTML='';
 var i=0;
 while(i<xjMessages.length){
   var msg=xjMessages[i];
@@ -1586,6 +1703,7 @@ while(i<xjMessages.length){
   }else{
     // assistant消息：把连续的合成一组
     var group=document.createElement('div');
+    var isWelcomeGroup=false;
     group.style.cssText='display:flex;flex-direction:column;gap:4px;align-self:flex-start;max-width:80%';
     while(i<xjMessages.length&&xjMessages[i].role==='assistant'){
       var amsg=xjMessages[i];
@@ -1594,12 +1712,17 @@ while(i<xjMessages.length){
       adiv.dataset.idx=i;
       adiv.style.maxWidth='100%';
       var atime=amsg.time?new Date(amsg.time).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}):'';
-      adiv.innerHTML=esc(amsg.content).replace(/\n/g,'<br>')+'<span class="xj-time">星笺 '+atime+'</span>';
+      var amsgHtml=esc(amsg.content).replace(/\n/g,'<br>');
+      if(amsg.isWelcome===true)amsgHtml=amsgHtml.replace(XJ_WELCOME_ICON_ANCHOR,XJ_WELCOME_ICON_ANCHOR+'<i class="fas fa-wand-magic-sparkles"></i>');
+      adiv.innerHTML=amsgHtml+'<span class="xj-time">星笺 '+atime+'</span>';
       _bindXjMsgLP(adiv,i);
       group.appendChild(adiv);
       i++;
+      // 欢迎语单独成组，内置问题紧跟在它的气泡下方
+      if(amsg.isWelcome===true){isWelcomeGroup=true;break;}
     }
     body.appendChild(group);
+    if(isWelcomeGroup)body.appendChild(buildXjQuickQuestions());
   }
 }
 body.scrollTop=body.scrollHeight;
@@ -2058,6 +2181,10 @@ const menu=document.getElementById('xjMsgMenu');
 const msg=xjMessages[idx];
 // 动态生成菜单内容
 let html='';
+if(msg.isWelcome===true){
+// 欢迎语是固定的开场白，只允许复制
+html+='<div class="xj-msg-menu-item" data-action="copy"><i class="fas fa-copy"></i> 复制</div>';
+}else{
 if(msg.role==='assistant'){
 html+='<div class="xj-msg-menu-item" data-action="regenerate"><i class="fas fa-rotate-right"></i> 重新回答</div>';
 }
@@ -2065,6 +2192,7 @@ html+='<div class="xj-msg-menu-item" data-action="edit"><i class="fas fa-pencil"
 html+='<div class="xj-msg-menu-item" data-action="copy"><i class="fas fa-copy"></i> 复制</div>';
 html+='<div class="xj-msg-menu-item danger" data-action="delete"><i class="fas fa-trash-alt"></i> 删除</div>';
 html+='<div class="xj-msg-menu-item" data-action="batch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;display:inline-block;vertical-align:-2px;margin-right:4px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>批量选择</div>';
+}
 menu.innerHTML=html;
 // 绑定点击事件
 menu.querySelectorAll('.xj-msg-menu-item').forEach(item=>{
@@ -2111,6 +2239,7 @@ xjMenuTargetIdx=-1;
 function doXjMenuAction(action,idx){
 if(idx<0||idx>=xjMessages.length)return;
 const msg=xjMessages[idx];
+if(msg.isWelcome===true&&action!=='copy')return;
 if(action==='copy'){
 doCopy(msg.content);
 showToast('已复制消息');
@@ -2273,6 +2402,7 @@ function renderXjChatBatchMode(){
   body.querySelectorAll('.xj-msg').forEach(function(el){
     var idx = parseInt(el.dataset.idx);
     if(isNaN(idx)) return;
+    if(xjMessages[idx] && xjMessages[idx].isWelcome === true) return; // 欢迎语不可选中
     if(_xjBatchSelected.has(idx)) el.classList.add('rp-selected');
     else el.classList.remove('rp-selected');
     el.onclick = function(e){
@@ -2313,9 +2443,10 @@ function updateXjBatchBar(){
 function xjBatchSelectAll(){
   var body = document.getElementById('xjBody');
   _xjBatchSelected = new Set();
-  xjMessages.forEach(function(m, i){ _xjBatchSelected.add(i); });
+  xjMessages.forEach(function(m, i){ if(!(m && m.isWelcome === true)) _xjBatchSelected.add(i); });
   body.querySelectorAll('.xj-msg').forEach(function(el){
-    el.classList.add('rp-selected');
+    var selIdx = parseInt(el.dataset.idx);
+    if(!isNaN(selIdx) && _xjBatchSelected.has(selIdx)) el.classList.add('rp-selected');
   });
   updateXjBatchBar();
 }
@@ -2610,6 +2741,8 @@ function devRepairOrphanNotes(){
   ws.forEach(function(a){if(a&&a.id)allIds.add(a.id);});
   cols.books.forEach(function(b){if(b&&b.id)allIds.add(b.id);});
   cols.shorts.forEach(function(s){if(s&&s.id)allIds.add(s.id);});
+  // 回收站里的作品还可能被恢复，它们的笔记不能当孤儿清掉
+  (Array.isArray(trashItems)?trashItems:[]).forEach(function(t){if(t&&t.data&&t.data.id)allIds.add(t.data.id);});
   var orphanCount=0;
   var cacheKeys2=Object.keys(dbCache);
   cacheKeys2.forEach(function(k){
@@ -2777,6 +2910,7 @@ function renderSysPromptEntryList(){
   var globalWD=(document.getElementById('globalWorldDesc')&&document.getElementById('globalWorldDesc').value||globalWorld||'').trim();
   var localWD=(document.getElementById('worldDesc')&&document.getElementById('worldDesc').value||'').trim();
   var wD=[globalWD,localWD].filter(Boolean).join('\n\n');
+  var mapD=wmPromptText();
   var styleD=(document.getElementById('styleDesc')&&document.getElementById('styleDesc').value||ap.curStyle||'').trim();
   var globalRD=(document.getElementById('globalRuleDesc')&&document.getElementById('globalRuleDesc').value||globalRule||'').trim();
   var localRD=(document.getElementById('ruleDesc')&&document.getElementById('ruleDesc').value||curRule||'').trim();
@@ -2801,7 +2935,7 @@ function renderSysPromptEntryList(){
       locked=true;
       badge='关联模块 · 仅可调位置';
       icon=iconMap[en.id]||icon;
-      if(en.id==='world')content=_spWorldSectionContent(wD);
+      if(en.id==='world')content=_spWorldSectionContent(wD,mapD);
       else if(en.id==='style')content=_spStyleSectionContent(styleD);
       else if(en.id==='char')content=_spCharSectionContent();
       else if(en.id==='rule')content=_spRuleSectionContent(ruleD);
@@ -3923,6 +4057,7 @@ goalYearStats = ld('bj_goalYearStats', goalYearStats);
 goalDailyStats = ld('bj_goalDailyStats', {});
 goalCelebrated = ld('bj_goalCelebrated', goalCelebrated);
 genLogs = ld('bj_genLogs', []);
+_loadTrash();
 storyWheels = ld('bj_storyWheels', []);
 fontP = ld('bj_fontP', []);
 dndMode = ld('bj_dndMode', false);
@@ -3955,6 +4090,7 @@ dwBlink=ld('bj_dwBlink',true);
 ctxAutoSave=ld('bj_ctxAutoSave',false);
 window.ctxAutoSave=ctxAutoSave;
 volSynFromOutline=ld('bj_volSynFromOutline',false);
+fsAutoDetect=ld('bj_fsAutoDetect',false);
 // 从 dbCache 刷新核心数据（IndexedDB已在splash阶段加载完毕）
 ws = ld(K.ws, ws || []);
 cols = ld(K.cols, cols || {books:[], shorts:[]});
@@ -3974,6 +4110,9 @@ localWorldBindings = ld('bj_localWorldBindings', localWorldBindings);
 localRuleBindings = ld('bj_localRuleBindings', localRuleBindings);
 localBanWordsBindings = ld('bj_localBanWordsBindings', localBanWordsBindings);
 localStyleBindings = ld('bj_localStyleBindings', localStyleBindings);
+worldMap = wmSanitizeMap(ld('bj_worldMap', null));
+localWorldMapBindings = wmSanitizeBindings(ld('bj_localWorldMapBindings', {}));
+if(typeof wmRenderInline === 'function') wmRenderInline();
 favItems = ld('bj_favItems', favItems);
 advProjects = ld('bj_advProjects', advProjects);
 banWords = ld('bj_banWords', banWords);
@@ -4791,12 +4930,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
-function exportAllCrWorks(){
-    var data = {_app:'syn_crExport',_ver:APP_VER,crWorks:crWorks,crFolders:crFolders,exportedAt:new Date().toISOString()};
-    var str = JSON.stringify(data, null, 2);
-    var filename = '星叙_' + new Date().toLocaleDateString().replace(/\//g, '-') + '_创作数据.json';
-    _exportFileWithFallback(filename,str,'application/json');
-}
 // ==================== 主题背景功能 ====================
 function setRdThemeBg(id){
 // 如果设置了背景图，提示先清除
@@ -4985,14 +5118,15 @@ function toggleSwitch7(key){
 }},
     dwBlink:{get:function(){return dwBlink;},set:function(v){dwBlink=v;sv('bj_dwBlink',v);}},
     ctxAutoSave:{get:function(){return ctxAutoSave;},set:function(v){ctxAutoSave=v;window.ctxAutoSave=v;sv('bj_ctxAutoSave',v);}},
-    volSynFromOutline:{get:function(){return volSynFromOutline;},set:function(v){volSynFromOutline=v;sv('bj_volSynFromOutline',v);}}
+    volSynFromOutline:{get:function(){return volSynFromOutline;},set:function(v){volSynFromOutline=v;sv('bj_volSynFromOutline',v);}},
+    fsAutoDetect:{get:function(){return fsAutoDetect;},set:function(v){fsAutoDetect=!!v;sv('bj_fsAutoDetect',fsAutoDetect);}}
   };
   var item=map[key];
   if(!item)return;
   var newVal=!item.get();
   item.set(newVal);
   updateSwitch7UI(key,newVal);
-  var labels={autoSaveToast:'自动保存提醒',contAutoScroll:'续写自动滚动',genVibrate:'生成完成震动',rdProgressMemory:'阅读进度记忆',edExitConfirm:'退出编辑器确认',showThemeBtn:'快速切换主题按钮',genConfirm:'生成前确认',contAutoExtend:'续写自动补写',contDirMemory:'续写方向记忆',paraLongPress:'长按段落菜单',rdFooterVisible:'阅读器底部状态栏',backupReminder:'定期备份',navBarText:'底部导航栏文字',clearDataConfirm:'清除数据二次确认',xjMsgSplit:'星笺消息分段',globalFloatBtn:'全局快捷浮窗',noDescLimit:'去掉字数限制',ctxAutoSave:'保存所有上下文设置',volSynFromOutline:'根据章节大纲生成梗概'};
+  var labels={autoSaveToast:'自动保存提醒',contAutoScroll:'续写自动滚动',genVibrate:'生成完成震动',rdProgressMemory:'阅读进度记忆',edExitConfirm:'退出编辑器确认',showThemeBtn:'快速切换主题按钮',genConfirm:'生成前确认',contAutoExtend:'续写自动补写',contDirMemory:'续写方向记忆',paraLongPress:'长按段落菜单',rdFooterVisible:'阅读器底部状态栏',backupReminder:'定期备份',navBarText:'底部导航栏文字',clearDataConfirm:'清除数据二次确认',xjMsgSplit:'星笺消息分段',globalFloatBtn:'全局快捷浮窗',noDescLimit:'去掉字数限制',ctxAutoSave:'保存所有上下文设置',volSynFromOutline:'根据章节大纲生成梗概',fsAutoDetect:'每章自动识别伏笔'};
   showToast((labels[key]||key)+'：'+(newVal?'已开启':'已关闭'));
 }
 
@@ -5032,6 +5166,7 @@ function initAll7Switches(){
   updateSwitch7UI('noDescLimit',noDescLimit);applyDescLimitAttr();
   updateSwitch7UI('ctxAutoSave',ctxAutoSave);
   updateSwitch7UI('volSynFromOutline',volSynFromOutline);
+  updateSwitch7UI('fsAutoDetect',fsAutoDetect);
   applyThemeBtnVisible();
   setTimeout(applyNavBarText,50);
   applyRdFooterVisible();
@@ -5204,6 +5339,8 @@ async function doRegenWithFeedback(){
 }
 
 function applyRegenResult(article, fullText, feedback){
+  // 覆盖正文之前先把旧版本存进历史版本，不满意可以随时恢复
+  try{saveChapterSnapshot(article.id,0,'重生成前·自动存档');}catch(e){}
   // 解析标题和正文
   var title = '', content = fullText;
   var lines = fullText.split(/\n/);
@@ -5245,11 +5382,20 @@ let _rgmCanvasW = 0;
 let _rgmCanvasH = 0;
 let _rgmNodeMeta = {}; // {name:{x,y,z,bodyType,color}} 持久化：位置+深度+天体类型+配色
 let _rgmActiveNames = []; // 本次打开时收集到的角色列表缓存，动画循环里不用每帧重算
-let _rgmStarfield = null; // {stars:[{x,y,size,depth,phase,speed}]} 持久化的背景星空
+let _rgmStarfield = null; // {v, stars:[{x,y,size,depth,phase,speed,tint}]} 持久化的背景星空
+let _rgmNebula = null; // {key, canvas} 星云底图的离屏缓存，画布尺寸变化时重建
+let _rgmShoot = {start:0, duration:0, x0:0, y0:0, dx:0, dy:0, next:0}; // 偶尔划过夜空的流星；duration 为 0 表示当前没有流星
+let _rgmReduceMotion = false; // 系统开启「减少动态效果」时，星空和星球保持静止
+let _rgmFeatureCache = Object.create(null); // {种类:角色名 → 表面特征}，同一角色每次渲染得到一致的云带/陨石坑
+const RGM_STARFIELD_VER = 2; // 星空数据版本：升级后旧星空会重新生成一次
+const RGM_STAR_TINTS = ['#ffffff','#cfe3ff','#ffe9c4','#e6d8ff']; // 星星的色调：白、冷蓝、暖黄、淡紫
 let _rgmAnimHandle = null;
 let _rgmAnimT = 0;
 let _rgmLastFrameTime = 0;
 let _rgmGesturesBound = false;
+let _rgmPortraitMode = false; // 肖像模式：开启后有肖像的角色用肖像替代星球本体（形状、大小不变），状态会记住
+let _rgmPortraitCache = Object.create(null); // {name:{src, canvas, state:'loading'|'ready'|'failed'}} 仅在图谱打开期间存在
+const RGM_PORTRAIT_PX = 160; // 星球上的肖像先缩成这个边长的方块再绘制，避免每帧缩放整张大图
 
 // ---- 星球配色：每种天体类型固定唯一一色，不再同类型内随机挑选，避免同一图谱里色彩过杂 ----
 const RGM_COLORS = {
@@ -5313,26 +5459,29 @@ function _rgmSaveMeta(){
 
 /* ---- 持久化：背景星空，首次生成后复用，避免每次进入都重新随机产生延迟 ---- */
 function _rgmEnsureStarfield(){
-  if(_rgmStarfield && _rgmStarfield.stars && _rgmStarfield.stars.length > 0) return;
+  if(_rgmStarfield && _rgmStarfield.v === RGM_STARFIELD_VER && _rgmStarfield.stars && _rgmStarfield.stars.length > 0) return;
   var saved = null;
   try{ saved = ld('bj_rgmStarfield', null); }catch(e){ saved = null; }
-  if(saved && saved.stars && saved.stars.length > 0){
+  if(saved && saved.v === RGM_STARFIELD_VER && saved.stars && saved.stars.length > 0){
     _rgmStarfield = saved;
     return;
   }
   var stars = [];
-  var starCount = 150;
+  var starCount = 220;
   for(var i=0;i<starCount;i++){
+    var roll = Math.random();
     stars.push({
       x: Math.random(),
       y: Math.random(),
-      size: +(Math.random()*1.5+0.4).toFixed(2),
+      // 绝大多数是细小的暗星，少数明亮的大星：比统一大小的星点自然得多
+      size: +(0.35 + Math.pow(Math.random(),3)*2.1).toFixed(2),
       depth: +(Math.random()).toFixed(2),
       phase: +(Math.random()*Math.PI*2).toFixed(2),
-      speed: +(0.6+Math.random()*0.9).toFixed(2)
+      speed: +(0.6+Math.random()*0.9).toFixed(2),
+      tint: roll < 0.55 ? 0 : roll < 0.78 ? 1 : roll < 0.93 ? 2 : 3
     });
   }
-  _rgmStarfield = { stars: stars };
+  _rgmStarfield = { v: RGM_STARFIELD_VER, stars: stars };
   try{ sv('bj_rgmStarfield', _rgmStarfield); }catch(e){
     // 存储异常时静默失败，本次会话仍可正常显示星空，只是下次可能会重新生成一份
   }
@@ -5451,13 +5600,13 @@ function _rgmSyncGraphData(){
   var nameSet={};
   (characters||[]).forEach(function(c){
     if(c.name && !nameSet[c.name]){
-      names.push({name:c.name, type:'main', priority:c.priority||'普通', desc:(c.desc||'').substring(0,80), traits:c.traits||[]});
+      names.push({name:c.name, type:'main', priority:c.priority||'普通', desc:(c.desc||'').substring(0,80), traits:c.traits||[], portrait:c.portrait||''});
       nameSet[c.name]=true;
     }
   });
   (npcList||[]).forEach(function(n){
     if(n.name && !nameSet[n.name]){
-      names.push({name:n.name, type:'npc', role:n.role||'NPC', desc:(n.desc||'').substring(0,80), traits:n.traits||[]});
+      names.push({name:n.name, type:'npc', role:n.role||'NPC', desc:(n.desc||'').substring(0,80), traits:n.traits||[], portrait:n.portrait||''});
       nameSet[n.name]=true;
     }
   });
@@ -5534,8 +5683,16 @@ function openRelGraph(){
   _rgmOffY = 0;
   _rgmViewAngle = 0;
   _rgmFilter = '';
+  _rgmPortraitMode = ld('bj_rgmPortraitMode', false) === true;
+  _rgmPortraitCache = Object.create(null);
+  _rgmSyncPortraitBtn();
   _rgmNodeMeta = _rgmLoadMeta();
   _rgmEnsureStarfield();
+  // 系统开启「减少动态效果」时保持静止；流星从打开后几秒才开始计时
+  _rgmReduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  _rgmFeatureCache = Object.create(null);
+  _rgmShoot.duration = 0;
+  _rgmShoot.next = _rgmAnimT + 6000 + Math.random()*8000;
   document.getElementById('relGraphModal').classList.add('show');
   navPush('relGraphModal');
   document.getElementById('bnav').classList.add('hide');
@@ -5543,6 +5700,7 @@ function openRelGraph(){
     setTimeout(function(){
       rgmInitCanvas();
       _rgmActiveNames = _rgmSyncGraphData();
+      if(_rgmPortraitMode) _rgmPreparePortraits(_rgmActiveNames);
       rgmDraw();
       rgmRenderLegend(_rgmActiveNames);
       rgmBindGestures();
@@ -5559,6 +5717,8 @@ function openRelGraph(){
 
 function closeRelGraphModal(){
   rgmStopAnim();
+  // 释放肖像缓存；仍在加载中的图片回调发现缓存已换掉会自动放弃
+  _rgmPortraitCache = Object.create(null);
   navPop('relGraphModal');
   document.getElementById('relGraphModal').classList.remove('show');
   document.getElementById('bnav').classList.remove('hide');
@@ -5644,25 +5804,136 @@ function rgmDraw(){
   if(zoomEl) zoomEl.textContent = Math.round(_rgmScale*100) + '%';
 }
 
-/* ---- 背景星空：带视差 + 缓慢闪烁，不含极光；位置来自持久化数据，不每次重新随机 ---- */
+/* ---- 背景星空：淡淡的星云 + 大小色调各异的星星（视差、缓慢漂移、不规则闪烁）+ 偶尔划过的流星；
+   位置来自持久化数据，不每次重新随机 ---- */
 function _rgmDrawStarfield(ctx){
   if(!_rgmStarfield || !_rgmStarfield.stars) return;
+  var t = _rgmReduceMotion ? 0 : _rgmAnimT;
+  _rgmDrawNebula(ctx, t);
   var stars = _rgmStarfield.stars;
   ctx.save();
   for(var i=0;i<stars.length;i++){
     var s = stars[i];
-    var px = s.x * _rgmCanvasW + _rgmViewAngle * s.depth * 26;
-    var py = s.y * _rgmCanvasH;
-    if(px < -4 || px > _rgmCanvasW+4) continue;
-    var tw = 0.35 + 0.65 * (0.5 + 0.5*Math.sin(_rgmAnimT*0.0011*s.speed + s.phase));
-    ctx.globalAlpha = tw * (0.4 + s.depth*0.6);
+    // 近处的星星漂得更明显一点，远处几乎不动
+    var drift = Math.sin(t*0.00008*s.speed + s.phase) * (0.6 + s.depth*1.4);
+    var px = s.x * _rgmCanvasW + _rgmViewAngle * s.depth * 26 + drift;
+    var py = s.y * _rgmCanvasH + Math.cos(t*0.00006*s.speed + s.phase) * drift * 0.4;
+    if(px < -8 || px > _rgmCanvasW+8) continue;
+    // 两个不同频率的闪烁叠加，避免所有星星都呈整齐的正弦节奏
+    var tw = (0.5 + 0.5*Math.sin(t*0.0011*s.speed + s.phase)) * (0.72 + 0.28*Math.sin(t*0.0027*s.speed + s.phase*1.7));
+    var alpha = (0.28 + 0.72*tw) * (0.4 + s.depth*0.6);
+    var tint = RGM_STAR_TINTS[s.tint] || '#ffffff';
+    if(s.size > 1.3){
+      var halo = ctx.createRadialGradient(px,py,0,px,py,s.size*5);
+      halo.addColorStop(0, tint+'aa');
+      halo.addColorStop(1, tint+'00');
+      ctx.globalAlpha = alpha*0.5;
+      ctx.beginPath();
+      ctx.arc(px, py, s.size*5, 0, Math.PI*2);
+      ctx.fillStyle = halo;
+      ctx.fill();
+    }
+    ctx.globalAlpha = alpha;
     ctx.beginPath();
     ctx.arc(px, py, s.size, 0, Math.PI*2);
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = tint;
     ctx.fill();
+    if(s.size > 1.9){
+      // 最亮的几颗带一点十字星芒
+      var arm = s.size*3.2;
+      ctx.globalAlpha = alpha*0.45;
+      ctx.strokeStyle = tint;
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      ctx.moveTo(px-arm, py); ctx.lineTo(px+arm, py);
+      ctx.moveTo(px, py-arm); ctx.lineTo(px, py+arm);
+      ctx.stroke();
+    }
   }
   ctx.restore();
   ctx.globalAlpha = 1;
+  _rgmDrawShootingStar(ctx, t);
+}
+
+/* ---- 星云：几团极淡的彩色云 + 一条斜向银河带，只在画布尺寸变化时画一次，之后直接贴图（带轻微视差和缓慢呼吸） ---- */
+function _rgmBuildNebula(key){
+  var w = Math.max(1, Math.round(_rgmCanvasW/2) + 24);
+  var h = Math.max(1, Math.round(_rgmCanvasH/2) + 24);
+  var cv = document.createElement('canvas');
+  cv.width = w;
+  cv.height = h;
+  var c = cv.getContext('2d');
+  if(!c) return {key:key, canvas:null};
+  // [横向位置, 纵向位置, 半径(相对长边), RGB, 中心不透明度]
+  var blobs = [[0.22,0.28,0.55,'120,90,230',0.20],[0.78,0.62,0.6,'50,130,210',0.16],[0.5,0.88,0.5,'190,80,160',0.11],[0.85,0.12,0.4,'80,200,200',0.08]];
+  blobs.forEach(function(b){
+    var cx = b[0]*w, cy = b[1]*h, rad = b[2]*Math.max(w,h);
+    var g = c.createRadialGradient(cx,cy,0,cx,cy,rad);
+    g.addColorStop(0, 'rgba('+b[3]+','+b[4]+')');
+    g.addColorStop(1, 'rgba('+b[3]+',0)');
+    c.fillStyle = g;
+    c.fillRect(0, 0, w, h);
+  });
+  c.save();
+  c.translate(w/2, h/2);
+  c.rotate(-0.5);
+  var band = c.createLinearGradient(0, -h*0.25, 0, h*0.25);
+  band.addColorStop(0, 'rgba(200,210,255,0)');
+  band.addColorStop(0.5, 'rgba(200,210,255,0.07)');
+  band.addColorStop(1, 'rgba(200,210,255,0)');
+  c.fillStyle = band;
+  c.fillRect(-w, -h*0.25, w*2, h*0.5);
+  c.restore();
+  return {key:key, canvas:cv};
+}
+function _rgmDrawNebula(ctx, t){
+  var key = Math.round(_rgmCanvasW) + 'x' + Math.round(_rgmCanvasH);
+  if(!_rgmNebula || _rgmNebula.key !== key) _rgmNebula = _rgmBuildNebula(key);
+  if(!_rgmNebula.canvas) return;
+  var pad = 24; // 离屏图比画布每边多 24px，留给视差平移
+  ctx.save();
+  ctx.globalAlpha = 0.88 + 0.12*Math.sin(t*0.00025);
+  ctx.drawImage(_rgmNebula.canvas, -pad + _rgmViewAngle*8, -pad, _rgmCanvasW + pad*2, _rgmCanvasH + pad*2);
+  ctx.restore();
+}
+
+/* ---- 流星：每隔十来秒偶尔划过一次，约 0.7 秒；减少动态效果时不出现 ---- */
+function _rgmDrawShootingStar(ctx, t){
+  if(_rgmReduceMotion) return;
+  var s = _rgmShoot;
+  if(!s.duration){
+    if(t < s.next) return;
+    var dir = Math.random() < 0.5 ? 1 : -1;
+    var len = _rgmCanvasW * (0.18 + Math.random()*0.12);
+    s.start = t;
+    s.duration = 650 + Math.random()*350;
+    s.x0 = _rgmCanvasW * (0.2 + Math.random()*0.6);
+    s.y0 = _rgmCanvasH * (0.05 + Math.random()*0.35);
+    s.dx = dir * len * 0.85;
+    s.dy = len * 0.5;
+  }
+  var p = (t - s.start) / s.duration;
+  if(p >= 1){
+    s.duration = 0;
+    s.next = t + 9000 + Math.random()*14000;
+    return;
+  }
+  if(p < 0) return;
+  var hx = s.x0 + s.dx*p, hy = s.y0 + s.dy*p;
+  var tx = hx - s.dx*0.28, ty = hy - s.dy*0.28;
+  var g = ctx.createLinearGradient(tx, ty, hx, hy);
+  g.addColorStop(0, 'rgba(255,255,255,0)');
+  g.addColorStop(1, 'rgba(255,255,255,0.9)');
+  ctx.save();
+  ctx.globalAlpha = Math.sin(p*Math.PI);
+  ctx.strokeStyle = g;
+  ctx.lineWidth = 1.6;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(tx, ty);
+  ctx.lineTo(hx, hy);
+  ctx.stroke();
+  ctx.restore();
 }
 
 /* ---- 关系连线：柔和渐变弧线 + 清晰文字标签，替代僵直直线 ---- */
@@ -5797,11 +6068,12 @@ function _rgmDrawNodes(ctx, names, filterName){
     ctx.globalAlpha = isFiltered ? 0.12 : 1;
 
     var color = meta.color || '#a29bfe';
+    var portrait = _rgmGetPortraitCanvas(info);
 
-    if(bt==='star'){ _rgmDrawStar(ctx,pos,r,color,isSelected); }
-    else if(bt==='planet'){ _rgmDrawPlanet(ctx,pos,r,color,isSelected); }
-    else if(bt==='dwarf'){ _rgmDrawDwarf(ctx,pos,r,color,isSelected); }
-    else { _rgmDrawAsteroid(ctx,pos,r,color,isSelected,info.name); }
+    if(bt==='star'){ _rgmDrawStar(ctx,pos,r,color,isSelected,portrait,info.name); }
+    else if(bt==='planet'){ _rgmDrawPlanet(ctx,pos,r,color,isSelected,portrait,info.name); }
+    else if(bt==='dwarf'){ _rgmDrawDwarf(ctx,pos,r,color,isSelected,portrait,info.name); }
+    else { _rgmDrawAsteroid(ctx,pos,r,color,isSelected,info.name,portrait); }
 
     // 人物首字：显示在星球下方，不再叠在球体内部
     var initialChar = info.name.substring(0,1);
@@ -5819,69 +6091,228 @@ function _rgmDrawNodes(ctx, names, filterName){
   }
 }
 
-/* ---- 恒星：外层柔光晕 + 明暗渐变核心 + 轻微脉动 ---- */
-function _rgmDrawStar(ctx, pos, r, color, isSelected){
-  var pulse = 0.7; // 呼吸幅度过于夸张，固定在原振荡区间(0.7~1.0)的最小状态，不再随时间跳动
-  var glowR = r * (2.2 + 0.3*pulse);
-  var glow = ctx.createRadialGradient(pos.x,pos.y,r*0.3,pos.x,pos.y,glowR);
-  glow.addColorStop(0, color+'55');
-  glow.addColorStop(1, color+'00');
-  ctx.beginPath();
-  ctx.arc(pos.x,pos.y,glowR,0,Math.PI*2);
-  ctx.fillStyle = glow;
-  ctx.fill();
-
-  var core = ctx.createRadialGradient(pos.x-r*0.25,pos.y-r*0.3,0,pos.x,pos.y,r*pulse);
-  core.addColorStop(0,'#fff');
-  core.addColorStop(0.35,color);
-  core.addColorStop(1,_rgmShade(color,-25));
-  ctx.beginPath();
-  ctx.arc(pos.x,pos.y,r*pulse,0,Math.PI*2);
-  ctx.fillStyle = core;
-  ctx.fill();
-  if(isSelected){ ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=2; ctx.stroke(); }
+/* ---- 伪随机：同一个种子永远得到同一串数字，让同一角色每次渲染的云带/陨石坑位置一致 ---- */
+function _rgmRand(seed){
+  var s = seed >>> 0;
+  return function(){
+    s = (s*1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
 }
 
-/* ---- 行星：光源立体球体 + 一圈淡淡的行星环 ---- */
-function _rgmDrawPlanet(ctx, pos, r, color, isSelected){
+/* ---- 球面特征：云带(cloud)/陨石坑(crater)的位置（u 横向 -1~1，v 纵向）、大小、浓淡、漂移速度 ---- */
+function _rgmFeatures(name, kind){
+  var key = kind + ':' + name;
+  var cached = _rgmFeatureCache[key];
+  if(cached) return cached;
+  var rnd = _rgmRand(_rgmHash(key) + 17);
+  var list = [];
+  for(var i=0;i<4;i++){
+    list.push({u: rnd()*2-1, v: (rnd()*2-1)*0.75, s: 0.18 + rnd()*0.22, sp: 0.6 + rnd()*0.8, a: 0.08 + rnd()*0.08});
+  }
+  _rgmFeatureCache[key] = list;
+  return list;
+}
+
+/* ---- 球体表面：特征随时间缓慢横向漂移，靠近边缘时被压扁变淡，看起来像在自转。clipFn 为空时裁成圆形 ---- */
+function _rgmDrawSurface(ctx, pos, r, kind, name, clipFn){
+  var list = _rgmFeatures(name, kind);
+  var t = _rgmReduceMotion ? 0 : _rgmAnimT;
+  var base = ctx.globalAlpha;
   ctx.save();
-  ctx.strokeStyle = color+'55';
+  if(clipFn){ clipFn(); }
+  else{ ctx.beginPath(); ctx.arc(pos.x, pos.y, r, 0, Math.PI*2); }
+  ctx.clip();
+  for(var i=0;i<list.length;i++){
+    var f = list[i];
+    var u = (((f.u + 1 + t*0.00004*f.sp) % 2) + 2) % 2 - 1;
+    var edge = Math.sqrt(Math.max(0, 1 - u*u));
+    var x = pos.x + u*r*0.92, y = pos.y + f.v*r;
+    var w = r*f.s*(0.35 + 0.65*edge);
+    var h = r*f.s*(kind === 'cloud' ? 0.42 : 0.9);
+    ctx.beginPath();
+    ctx.ellipse(x, y, w*(kind === 'cloud' ? 2.4 : 1), h, 0, 0, Math.PI*2);
+    if(kind === 'cloud'){
+      ctx.globalAlpha = base * f.a * edge;
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+    }else{
+      ctx.globalAlpha = base * (0.18 + f.a*2) * edge;
+      ctx.fillStyle = '#000000';
+      ctx.fill();
+      ctx.globalAlpha = base * 0.18 * edge;
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+  ctx.globalAlpha = base;
+}
+
+/* ---- 球体外的柔和光晕（大气辉光）。肖像模式下不画 ---- */
+function _rgmDrawGlow(ctx, pos, r, color, outer, innerAlpha){
+  var g = ctx.createRadialGradient(pos.x, pos.y, r*0.9, pos.x, pos.y, r*outer);
+  g.addColorStop(0, color + innerAlpha);
+  g.addColorStop(1, color + '00');
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r*outer, 0, Math.PI*2);
+  ctx.fillStyle = g;
+  ctx.fill();
+}
+
+/* ---- 立体球体：左上角光源的明暗渐变 + 边缘一圈淡淡的亮边 + 一点高光 ---- */
+function _rgmFillSphere(ctx, pos, r, color, lightPct, darkPct){
+  var g = ctx.createRadialGradient(pos.x - r*0.38, pos.y - r*0.42, r*0.05, pos.x, pos.y, r*1.05);
+  g.addColorStop(0, _rgmShade(color, lightPct));
+  g.addColorStop(0.5, color);
+  g.addColorStop(1, _rgmShade(color, darkPct));
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+  ctx.fillStyle = g;
+  ctx.fill();
+}
+function _rgmSphereFinish(ctx, pos, r, color){
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+  ctx.clip();
+  var rim = ctx.createRadialGradient(pos.x, pos.y, r*0.72, pos.x, pos.y, r);
+  rim.addColorStop(0, color + '00');
+  rim.addColorStop(1, color + '66');
+  ctx.fillStyle = rim;
+  ctx.fillRect(pos.x - r, pos.y - r, r*2, r*2);
+  var sx = pos.x - r*0.38, sy = pos.y - r*0.42;
+  var spec = ctx.createRadialGradient(sx, sy, 0, sx, sy, r*0.5);
+  spec.addColorStop(0, 'rgba(255,255,255,.4)');
+  spec.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = spec;
+  ctx.fillRect(pos.x - r, pos.y - r, r*2, r*2);
+  ctx.restore();
+}
+
+/* ---- 恒星：大范围柔光晕（缓慢呼吸）+ 几道淡淡的、缓慢旋转的光芒 + 白热的核心。肖像模式只画肖像，不发光 ---- */
+function _rgmDrawStar(ctx, pos, r, color, isSelected, portrait, seedName){
+  var t = _rgmReduceMotion ? 0 : _rgmAnimT;
+  var coreR = r*0.7;
+  if(!portrait){
+    var breath = 1 + 0.035*Math.sin(t*0.0009 + (_rgmHash(seedName) % 7));
+    var glowR = r*3*breath;
+    var glow = ctx.createRadialGradient(pos.x, pos.y, coreR*0.6, pos.x, pos.y, glowR);
+    glow.addColorStop(0, color + '88');
+    glow.addColorStop(0.35, color + '33');
+    glow.addColorStop(1, color + '00');
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, glowR, 0, Math.PI*2);
+    ctx.fillStyle = glow;
+    ctx.fill();
+
+    ctx.save();
+    ctx.translate(pos.x, pos.y);
+    ctx.rotate(t*0.00004);
+    var rayLen = coreR*2.6*breath;
+    var rayGrad = ctx.createLinearGradient(0, 0, rayLen, 0);
+    rayGrad.addColorStop(0, color + '30');
+    rayGrad.addColorStop(1, color + '00');
+    ctx.fillStyle = rayGrad;
+    for(var i=0;i<6;i++){
+      ctx.rotate(Math.PI/3);
+      ctx.beginPath();
+      ctx.moveTo(coreR*0.9, -coreR*0.07);
+      ctx.lineTo(rayLen, 0);
+      ctx.lineTo(coreR*0.9, coreR*0.07);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, coreR, 0, Math.PI*2);
+  if(portrait){
+    _rgmFillPortrait(ctx, pos, coreR, portrait);
+  }else{
+    var core = ctx.createRadialGradient(pos.x - coreR*0.25, pos.y - coreR*0.3, 0, pos.x, pos.y, coreR);
+    core.addColorStop(0, '#fff');
+    core.addColorStop(0.35, color);
+    core.addColorStop(1, _rgmShade(color, -25));
+    ctx.fillStyle = core;
+    ctx.fill();
+    _rgmDrawSurface(ctx, pos, coreR, 'cloud', seedName); // 表面缓缓流动的亮斑
+  }
+  if(isSelected){
+    ctx.beginPath();
+    ctx.arc(pos.x, pos.y, coreR, 0, Math.PI*2);
+    ctx.strokeStyle = 'rgba(255,255,255,.9)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  }
+}
+
+/* ---- 行星环：part 为 'back'（球体后面的半圈）、'front'（球体前面的半圈）、'all'（整圈，肖像模式用，和以前一样被肖像盖住中间） ---- */
+function _rgmDrawRing(ctx, pos, r, color, part){
+  var from = part === 'front' ? 0 : part === 'back' ? Math.PI : 0;
+  var to = part === 'front' ? Math.PI : Math.PI*2;
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = color + '66';
   ctx.lineWidth = Math.max(1.4, r*0.12);
   ctx.beginPath();
-  ctx.ellipse(pos.x, pos.y, r*1.65, r*0.5, -0.35, 0, Math.PI*2);
+  ctx.ellipse(pos.x, pos.y, r*1.7, r*0.5, -0.35, from, to);
   ctx.stroke();
-
-  var grad = ctx.createRadialGradient(pos.x-r*0.32,pos.y-r*0.36,0,pos.x,pos.y,r);
-  grad.addColorStop(0,_rgmShade(color,28));
-  grad.addColorStop(0.6,color);
-  grad.addColorStop(1,_rgmShade(color,-32));
+  ctx.strokeStyle = color + '33';
+  ctx.lineWidth = Math.max(1, r*0.06);
   ctx.beginPath();
-  ctx.arc(pos.x,pos.y,r,0,Math.PI*2);
-  ctx.fillStyle = grad;
-  ctx.fill();
-  ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.18)';
-  ctx.lineWidth = isSelected?2:1;
+  ctx.ellipse(pos.x, pos.y, r*1.48, r*0.43, -0.35, from, to);
   ctx.stroke();
   ctx.restore();
 }
 
-/* ---- 矮行星：更小的平滑球体，不带环，配色偏苍白/冷淡 ---- */
-function _rgmDrawDwarf(ctx, pos, r, color, isSelected){
-  var grad = ctx.createRadialGradient(pos.x-r*0.3,pos.y-r*0.34,0,pos.x,pos.y,r);
-  grad.addColorStop(0,_rgmShade(color,22));
-  grad.addColorStop(0.65,color);
-  grad.addColorStop(1,_rgmShade(color,-28));
+/* ---- 行星：大气辉光 + 立体球体 + 缓缓漂移的云带 + 前后环绕的行星环。肖像模式只画肖像和环，不发光 ---- */
+function _rgmDrawPlanet(ctx, pos, r, color, isSelected, portrait, seedName){
+  ctx.save();
+  if(!portrait) _rgmDrawGlow(ctx, pos, r, color, 1.9, '55');
+  _rgmDrawRing(ctx, pos, r, color, portrait ? 'all' : 'back');
+
   ctx.beginPath();
-  ctx.arc(pos.x,pos.y,r,0,Math.PI*2);
-  ctx.fillStyle = grad;
-  ctx.fill();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+  if(portrait){
+    _rgmFillPortrait(ctx, pos, r, portrait);
+  }else{
+    _rgmFillSphere(ctx, pos, r, color, 30, -42);
+    _rgmDrawSurface(ctx, pos, r, 'cloud', seedName);
+    _rgmSphereFinish(ctx, pos, r, color);
+  }
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+  ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.18)';
+  ctx.lineWidth = isSelected ? 2 : 1;
+  ctx.stroke();
+  if(!portrait) _rgmDrawRing(ctx, pos, r, color, 'front');
+  ctx.restore();
+}
+
+/* ---- 矮行星：更小的球体，带陨石坑和一层很淡的光晕，不带环。肖像模式不发光 ---- */
+function _rgmDrawDwarf(ctx, pos, r, color, isSelected, portrait, seedName){
+  if(!portrait) _rgmDrawGlow(ctx, pos, r, color, 1.6, '33');
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
+  if(portrait){
+    _rgmFillPortrait(ctx, pos, r, portrait);
+  }else{
+    _rgmFillSphere(ctx, pos, r, color, 26, -38);
+    _rgmDrawSurface(ctx, pos, r, 'crater', seedName);
+    _rgmSphereFinish(ctx, pos, r, color);
+  }
+  ctx.beginPath();
+  ctx.arc(pos.x, pos.y, r, 0, Math.PI*2);
   ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(255,255,255,.22)';
-  ctx.lineWidth = isSelected?2:1;
+  ctx.lineWidth = isSelected ? 2 : 1;
   ctx.stroke();
 }
 
 /* ---- 小行星：不规则凹凸多边形，同一角色每次形状保持一致 ---- */
-function _rgmDrawAsteroid(ctx, pos, r, color, isSelected, seedName){
+function _rgmTraceAsteroid(ctx, pos, r, seedName){
   var h = _rgmHash(seedName||'ast');
   var pts = 8;
   ctx.beginPath();
@@ -5893,14 +6324,90 @@ function _rgmDrawAsteroid(ctx, pos, r, color, isSelected, seedName){
     if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
   }
   ctx.closePath();
-  var grad = ctx.createRadialGradient(pos.x-r*0.25,pos.y-r*0.3,0,pos.x,pos.y,r*1.1);
-  grad.addColorStop(0,_rgmShade(color,20));
-  grad.addColorStop(1,_rgmShade(color,-30));
-  ctx.fillStyle = grad;
-  ctx.fill();
+}
+function _rgmDrawAsteroid(ctx, pos, r, color, isSelected, seedName, portrait){
+  _rgmTraceAsteroid(ctx,pos,r,seedName);
+  if(portrait){
+    // 轮廓最大外扩约1.17倍，取景方块按1.2倍铺开以盖住整个不规则轮廓
+    _rgmFillPortrait(ctx,pos,r*1.2,portrait);
+  }else{
+    var grad = ctx.createRadialGradient(pos.x-r*0.3,pos.y-r*0.36,0,pos.x,pos.y,r*1.1);
+    grad.addColorStop(0,_rgmShade(color,24));
+    grad.addColorStop(1,_rgmShade(color,-34));
+    ctx.fillStyle = grad;
+    ctx.fill();
+    _rgmDrawSurface(ctx, pos, r*0.9, 'crater', seedName, function(){ _rgmTraceAsteroid(ctx,pos,r,seedName); });
+    _rgmTraceAsteroid(ctx,pos,r,seedName); // 画完陨石坑后路径被改掉了，重新描出轮廓供下面描边
+  }
   ctx.strokeStyle = isSelected ? 'rgba(255,255,255,.9)' : 'rgba(0,0,0,.25)';
   ctx.lineWidth = isSelected?2:1;
   ctx.stroke();
+}
+
+/* ---- 肖像模式：把当前路径裁成形状，铺入肖像（已是正中间的方形截取），随后路径保持不变供描边使用 ---- */
+function _rgmFillPortrait(ctx, pos, half, portrait){
+  ctx.save();
+  ctx.clip();
+  ctx.drawImage(portrait, pos.x-half, pos.y-half, half*2, half*2);
+  ctx.restore();
+}
+/* 图谱打开期间的肖像缓存：解码后只保留正中间的小方块，原图不再占内存 */
+function _rgmPreparePortraits(names){
+  (names||[]).forEach(function(info){
+    var src = info.portrait;
+    if(!isValidPortraitSrc(src)) return;
+    var cur = _rgmPortraitCache[info.name];
+    if(cur && cur.src === src) return;
+    var entry = {src:src, canvas:null, state:'loading'};
+    _rgmPortraitCache[info.name] = entry;
+    var img = new Image();
+    img.onload = function(){
+      if(_rgmPortraitCache[info.name] !== entry) return;
+      try{
+        var w = img.naturalWidth, h = img.naturalHeight;
+        if(!w || !h) throw new Error('empty portrait');
+        var side = Math.min(w, h);
+        var cv = document.createElement('canvas');
+        cv.width = RGM_PORTRAIT_PX;
+        cv.height = RGM_PORTRAIT_PX;
+        var cctx = cv.getContext('2d');
+        if(!cctx) throw new Error('canvas unavailable');
+        cctx.drawImage(img, (w-side)/2, (h-side)/2, side, side, 0, 0, RGM_PORTRAIT_PX, RGM_PORTRAIT_PX);
+        entry.canvas = cv;
+        entry.state = 'ready';
+      }catch(e){
+        entry.state = 'failed';
+      }
+    };
+    img.onerror = function(){
+      if(_rgmPortraitCache[info.name] === entry) entry.state = 'failed';
+    };
+    img.src = src;
+  });
+}
+function _rgmGetPortraitCanvas(info){
+  if(!_rgmPortraitMode) return null;
+  var entry = _rgmPortraitCache[info.name];
+  return (entry && entry.state === 'ready') ? entry.canvas : null;
+}
+function _rgmSyncPortraitBtn(){
+  var btn = document.getElementById('rgmPortraitBtn');
+  if(!btn) return;
+  btn.classList.toggle('act', _rgmPortraitMode);
+  btn.setAttribute('aria-pressed', _rgmPortraitMode ? 'true' : 'false');
+}
+function rgmTogglePortraitMode(){
+  _rgmPortraitMode = !_rgmPortraitMode;
+  sv('bj_rgmPortraitMode', _rgmPortraitMode);
+  _rgmSyncPortraitBtn();
+  if(_rgmPortraitMode){
+    _rgmPreparePortraits(_rgmActiveNames);
+    var hasAny = (_rgmActiveNames||[]).some(function(n){ return isValidPortraitSrc(n.portrait); });
+    showToast(hasAny ? '肖像模式已开启' : '还没有人物肖像，请先在人物设定里上传');
+  }else{
+    showToast('已切回星球模式');
+  }
+  rgmDraw();
 }
 
 function rgmRenderLegend(names){
@@ -6099,7 +6606,12 @@ function showRelGraphCharCard(node){
 
   var html = '';
   html += '<div style="text-align:center;margin-bottom:12px">';
-  html += '<div style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:'+color+';align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700;box-shadow:0 0 18px '+color+'88">'+esc(name.substring(0,1))+'</div>';
+  if(isValidPortraitSrc(info.portrait)){
+    // 校验后的 data:image 只含 base64 字符，嵌入属性是安全的
+    html += '<img src="'+info.portrait+'" alt="'+esc(name)+'的肖像" style="display:inline-block;width:56px;height:56px;border-radius:50%;object-fit:cover;vertical-align:top">';
+  }else{
+    html += '<div style="display:inline-flex;width:56px;height:56px;border-radius:50%;background:'+color+';align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700">'+esc(name.substring(0,1))+'</div>';
+  }
   html += '<div style="font-size:16px;font-weight:700;margin-top:8px">'+esc(name)+'</div>';
   var typeLabel = bodyLabel + (info.type==='npc' && info.role ? (' · '+esc(info.role)) : '');
   html += '<div style="font-size:11px;color:var(--text2)">'+typeLabel+'</div>';
@@ -7131,13 +7643,19 @@ function deleteGenTemplate(idx){
 // ==================== 设置中心搜索 ====================
 function toggleSettingsSearch(){
   var bar=document.getElementById('settingsSearchBar');
-  if(bar.style.display==='none'){
-    bar.style.display='block';
-    document.getElementById('settingsSearchInput').value='';
+  var input=document.getElementById('settingsSearchInput');
+  if(!bar||!input)return;
+  if(!bar.classList.contains('show')){
+    input.value='';
     filterSettingsEntries('');
-    setTimeout(function(){document.getElementById('settingsSearchInput').focus();},150);
+    foldSlide(bar,true);
+    setTimeout(function(){
+      // 150ms 内可能已经又被收起，此时不能再聚焦（会白白弹出键盘）；
+      // preventScroll 避免浏览器为了露出输入框去滚动被裁剪的展开容器
+      if(bar.classList.contains('show'))input.focus({preventScroll:true});
+    },150);
   }else{
-    bar.style.display='none';
+    foldSlide(bar,false);
     filterSettingsEntries('');
   }
 }
@@ -8567,6 +9085,56 @@ function _gsMatchesFilters(item, parsedSearch){
 // ==================== 通用预设管理弹窗系统 ====================
 let _presetType = ''; // 当前打开的预设类型
 
+// ---- 预设"覆盖"：用当前设置替换某个已有预设的内容（保留名称和分类） ----
+// 每个 capture 返回"当前设置"组成的预设内容（不含名称）；当前设置不合法时提示原因并返回 null
+function _captureTextPreset(inputId,emptyMsg){
+  var el=document.getElementById(inputId);
+  var desc=el?(el.value||'').trim():'';
+  if(!desc){showToast(emptyMsg);return null;}
+  return{desc:desc};
+}
+function _captureApiPreset(){
+  var preset=Object.assign({},getCurApi());
+  var toolUrl=(document.getElementById('toolApiUrl').value||'').trim();
+  var toolKey=(document.getElementById('toolApiKey').value||'').trim();
+  var toolModel=(document.getElementById('toolApiModel').value||'').trim();
+  if(toolUrl||toolKey||toolModel){
+    preset.toolUrl=toolUrl;
+    preset.toolKey=toolKey;
+    preset.toolModel=toolModel;
+  }
+  return preset;
+}
+function _captureCharPreset(){
+  saveCharactersFromUI();
+  return{
+    characters:JSON.parse(JSON.stringify(characters)),
+    relations:JSON.parse(JSON.stringify(charRelations)),
+    npcs:JSON.parse(JSON.stringify(npcList))
+  };
+}
+function _captureWorldPreset(){
+  var desc=document.getElementById('worldDesc').value;
+  if(!(desc||'').trim()){showToast('请先填写世界观描述');return null;}
+  return{
+    desc:desc,
+    minWords:parseInt(document.getElementById('minWords').value,10)||800,
+    map:worldMap.img?wmCloneMap(worldMap):null
+  };
+}
+function _captureStylePreset(){return _captureTextPreset('styleDesc','请先填写文风描述');}
+function _captureRulePreset(){return _captureTextPreset('ruleDesc','请先填写规则内容');}
+function _captureBanWordsPreset(){return _captureTextPreset('banWordsInput','请先填写禁用词');}
+function _captureFontPreset(){
+  var url=(document.getElementById('customFontUrl').value||'').trim();
+  if(!url){showToast('请先填写字体链接');return null;}
+  return{url:url};
+}
+function _captureSysPromptPreset(){
+  ensureSysPromptEntries();
+  return{entries:JSON.parse(JSON.stringify(sysPromptEntries))};
+}
+
 // 预设类型配置表
 const PRESET_CONFIG = {
   api: {
@@ -8576,7 +9144,8 @@ const PRESET_CONFIG = {
     saveFn: saveApiPreset,
     useFn: useApiP,
     getDesc: (p) => (p.model || '') + ' @ ' + (p.url || '').substring(0, 30),
-    renderOld: renderApiPresets
+    renderOld: renderApiPresets,
+    capture: _captureApiPreset
   },
   char: {
     title: '人物预设',
@@ -8585,7 +9154,8 @@ const PRESET_CONFIG = {
     saveFn: saveCharPreset,
     useFn: useCharP,
     getDesc: (p) => (p.characters || []).map(c => c.name).filter(Boolean).join('、') || '未命名',
-    renderOld: renderCharPresets
+    renderOld: renderCharPresets,
+    capture: _captureCharPreset
   },
   world: {
     title: '世界观预设',
@@ -8594,7 +9164,8 @@ const PRESET_CONFIG = {
     saveFn: saveWorldPreset,
     useFn: useWorldP,
     getDesc: (p) => (p.desc || '').substring(0, 40) + '...',
-    renderOld: renderWorldPresets
+    renderOld: renderWorldPresets,
+    capture: _captureWorldPreset
   },
   style: {
     title: '文风预设',
@@ -8603,7 +9174,8 @@ const PRESET_CONFIG = {
     saveFn: saveStylePreset,
     useFn: useStyleP,
     getDesc: (p) => (p.desc || '').substring(0, 40) + '...',
-    renderOld: renderStylePresets
+    renderOld: renderStylePresets,
+    capture: _captureStylePreset
   },
   rule: {
     title: '规则预设',
@@ -8612,7 +9184,8 @@ const PRESET_CONFIG = {
     saveFn: saveRulePreset,
     useFn: useRuleP,
     getDesc: (p) => (p.desc || '').substring(0, 40) + '...',
-    renderOld: renderRulePresets
+    renderOld: renderRulePresets,
+    capture: _captureRulePreset
   },
   ban: {
     title: '禁用词预设',
@@ -8624,7 +9197,8 @@ const PRESET_CONFIG = {
       var count = (p.desc || '').split('\n').filter(w => w.trim()).length;
       return count + '个禁用词';
     },
-    renderOld: renderBanWordsPresets
+    renderOld: renderBanWordsPresets,
+    capture: _captureBanWordsPreset
   },
   font: {
     title: '字体预设',
@@ -8633,7 +9207,8 @@ const PRESET_CONFIG = {
     saveFn: saveFontPreset,
     useFn: useFontP,
     getDesc: (p) => (p.url || '').substring(0, 35) + '...',
-    renderOld: renderFontPresets
+    renderOld: renderFontPresets,
+    capture: _captureFontPreset
   },
   sysPrompt: {
     title: '提示词预设',
@@ -8642,7 +9217,8 @@ const PRESET_CONFIG = {
     saveFn: saveSysPromptPreset,
     useFn: useSysPromptPreset,
     getDesc: (p) => p.entries ? ('共'+p.entries.length+'个条目') : ((p.prompt || '').substring(0, 40) + '...'),
-    renderOld: renderSysPromptPresets
+    renderOld: renderSysPromptPresets,
+    capture: _captureSysPromptPreset
   }
 };
 
@@ -8710,6 +9286,7 @@ function renderPresetModalList() {
       '<div class="preset-item-desc">' + esc(desc) + '</div>' +
       '<div class="preset-item-acts">' +
       '<button class="p-use" onclick="presetModalUse(' + i + ')">使用</button>' +
+      '<button class="p-ow" onclick="presetModalOverwrite(' + i + ')" title="用当前设置覆盖此预设">覆盖</button>' +
       '<button class="p-del" onclick="presetModalDel(' + i + ')">删除</button>' +
       '</div>';
     body.appendChild(div);
@@ -8740,6 +9317,37 @@ function presetModalDel(idx) {
     try { cfg.renderOld(); } catch (e) {}
     showToast('预设已删除');
   }, true);
+}
+
+// 用当前设置覆盖第idx个预设：先确认；确认回调里按对象重新定位，避免确认期间列表变动导致覆盖错位
+function overwritePresetByType(type, idx) {
+  var cfg = PRESET_CONFIG[type];
+  if (!cfg || typeof cfg.capture !== 'function') { showToast('该预设类型暂不支持覆盖'); return; }
+  var list = cfg.getList();
+  if (!Array.isArray(list) || idx < 0 || idx >= list.length) { showToast('找不到这个预设'); return; }
+  var target = list[idx];
+  var payload = cfg.capture();
+  if (!payload) return;
+  var targetName = target.name || '未命名';
+  showDlg('覆盖预设', '确定用当前设置覆盖「' + targetName + '」吗？\n预设里原来的内容会被替换，名称和分类保留，不可恢复。', function () {
+    var cur = cfg.getList();
+    var pos = cur.indexOf(target);
+    if (pos < 0) { showToast('这个预设已不存在'); return; }
+    var next = Object.assign({}, payload, { name: target.name });
+    if (target.category) next.category = target.category;
+    cur[pos] = next;
+    cfg.setList(cur);
+    if (type === 'api' || type === 'char' || type === 'world') {
+      try { saveCurSettings(); } catch (e) {}
+    }
+    try { cfg.renderOld(); } catch (e) {}
+    if (_presetType) renderPresetModalList();
+    showToast('已覆盖预设「' + targetName + '」');
+  }, true);
+}
+
+function presetModalOverwrite(idx) {
+  overwritePresetByType(_presetType, idx);
 }
 
 function presetModalSave() {
@@ -9321,10 +9929,13 @@ setTimeout(function(){
         case 'versionOv': closeVersionList(); break;
         case 'importTxtOv': closeImportTxt(); break;
         case 'wizardOv': closeWizard(); break;
+        // 星笺新手引导
+        case 'xjTutOv': tutDismiss(); break;
         case 'phraseModalOv': closePhraseModal(); break;
         case 'resExpOv': closeResExport(); break;
         case 'resExpNameOv': closeResExportNaming(); break;
         case 'genLogOv': closeGenLog(); break;
+        case 'trashOv': closeTrash(); break;
         case 'lockSetOv': closeLockSettings(); break;
         case 'proofreadOv': closeProofread(); break;
         case 'aiReviewOv': closeAIReview(); break;
@@ -9362,6 +9973,9 @@ setTimeout(function(){
         case 'addRelOv': closeAddRel(); break;
         case 'addNpcOv': closeAddNpc(); break;
         case 'addFsOv': closeAddFs(); break;
+        // 世界地图：返回键走「退出」流程（有未保存改动会先确认）；裁剪弹窗直接取消
+        case 'wmEditorOv': if(typeof wmRequestExit==='function') wmRequestExit(true); break;
+        case 'wmCropOv': if(typeof wmCancelCrop==='function') wmCancelCrop(true); break;
         // 阅读器浮层菜单
         case 'rdOverlay': _rdHideOverlay(); break;
         // 通用确认/输入弹窗
@@ -9695,6 +10309,7 @@ let globalFloatBtnOn=ld('bj_globalFloatBtnOn',true);
         globalWorld: globalWorld, globalRule: globalRule,
         globalBanWords: globalBanWords,
         localWorldBindings: localWorldBindings,
+        worldMap: worldMap, localWorldMapBindings: localWorldMapBindings,
         localRuleBindings: localRuleBindings,
         localBanWordsBindings: localBanWordsBindings,
         localStyleBindings: localStyleBindings,
@@ -9709,6 +10324,7 @@ let globalFloatBtnOn=ld('bj_globalFloatBtnOn',true);
         // base64 背景图是体积大户，必须纳入估算
         rdBgImg: rdBgImg, rtBgImg: ld('bj_rtBgImg',''), homeBgImg: homeBgImg, rpContactBgImg: ld('bj_rpContactBg',''),
         rpApiOverride: ld('bj_rpApiOverride', null),
+        trash: trashItems,
         favItems: favItems, savedPhrases: savedPhrases,
         genTemplates: genTemplates, rtInterviews: ld('bj_rtInterviews',{}),
         rtPlays: ld('bj_rtPlays',{}), rtPlayPresets: ld('bj_rtPlayPresets',[]),
@@ -9763,7 +10379,7 @@ let globalFloatBtnOn=ld('bj_globalFloatBtnOn',true);
     html += '<div style="margin:12px 12px 4px;background:linear-gradient(135deg,rgba(108,92,231,.18),rgba(162,155,254,.08));border:1px solid rgba(108,92,231,.28);border-radius:14px;padding:13px 14px">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">';
     html += '<div><div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;display:flex;align-items:center;gap:6px"><i class="fas fa-box-archive" style="color:var(--accent2)"></i> 一键备份</div>';
-    html += '<div style="font-size:10px;color:var(--text2)">导出约 <span style="color:var(--accent2);font-weight:600">' + _estSizeStr + '</span></div></div>';
+    html += '<div style="font-size:10px;color:var(--text2)">导出约 <span style="color:var(--accent2);font-weight:600">' + _estSizeStr + '</span>（压缩前，实际zip更小）</div></div>';
     html += '<button onclick="gfbExportAll()" style="flex-shrink:0;padding:9px 18px;border-radius:11px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 3px 10px rgba(108,92,231,.4);display:flex;align-items:center;gap:5px"><i class="fas fa-download"></i> 导出</button>';
     html += '</div></div>';
 
@@ -11590,36 +12206,58 @@ async function premiumStep2Write(plan){
   sv('bj_articleContexts',articleContexts);
 }
 // ==================== 章节版本快照系统 ====================
-var _SNAP_MAX = 10;           // 每章最多10条快照
+// 长篇按"章节"存快照；短篇没有章节概念，整篇当作第0号，key里的序号固定为0。
+var _SNAP_MAX = 10;           // 每章（短篇为每篇）最多10条快照
 var _snapPreviewId = null;    // 当前预览的快照ID
+var _snapDiffOn = false;      // 预览里是否处于"对比当前"模式
+
+// 当前阅读的是不是长篇
+function _snapIsLong(){
+  return !!curRd && curRd.type === 'long';
+}
+// 当前作品对应的快照序号
+function _snapIdx(){
+  return _snapIsLong() ? curCh : 0;
+}
+// 界面文案里对"这一份内容"的称呼
+function _snapName(){
+  return _snapIsLong() ? ('第' + (curCh + 1) + '章') : '全文';
+}
+// 当前正文（用于对比）
+function _snapCurrentText(){
+  if(!curRd) return '';
+  if(_snapIsLong() && Array.isArray(curRd.chapters)) return curRd.chapters[curCh] || '';
+  return curRd.content || '';
+}
 
 // 生成存储键名
 function _snapKey(bookId, chIdx){
   return 'bj_snap_' + bookId + '_' + chIdx;
 }
 
-// 保存一条快照（核心函数，外部调用）
+// 保存一条快照（核心函数，外部调用）。真正存入返回true；内容太短/与最新一条相同/找不到作品返回false
 function saveChapterSnapshot(bookId, chIdx, label){
-  if(!bookId || chIdx < 0) return;
+  if(!bookId || chIdx < 0) return false;
   // 取章节内容
   var art = cols.books.find(function(b){return b.id===bookId;});
+  if(!art && Array.isArray(cols.shorts)) art = cols.shorts.find(function(s){return s.id===bookId;});
   if(!art) art = (ws||[]).find(function(a){return a.id===bookId;});
   if(!art && curRd && curRd.id===bookId) art = curRd;
-  if(!art) return;
+  if(!art) return false;
   var content = '';
   if(art.type==='long' && Array.isArray(art.chapters)){
     content = art.chapters[chIdx] || '';
   } else {
     content = art.content || '';
   }
-  if(!content || content.trim().length < 10) return;
+  if(!content || content.trim().length < 10) return false;
 
   var key = _snapKey(bookId, chIdx);
   var list = ld(key, []);
   if(!Array.isArray(list)) list = [];
 
   // 内容完全相同就不重复存
-  if(list.length > 0 && list[0].content === content) return;
+  if(list.length > 0 && list[0].content === content) return false;
 
   var snap = {
     id: uid(),
@@ -11631,28 +12269,32 @@ function saveChapterSnapshot(bookId, chIdx, label){
   // 超出上限时删最旧的
   if(list.length > _SNAP_MAX) list.length = _SNAP_MAX;
   sv(key, list);
+  return true;
 }
 
 // 手动存档（用户点击按钮触发）
 function manualSaveSnapshot(){
-  if(!curRd || curRd.type !== 'long'){
-    showToast('只有长篇章节才能手动存档');
+  if(!curRd){
+    showToast('请先打开一篇作品');
     return;
   }
-  var chIdx = curCh;
-  var label = '手动存档·第' + (chIdx + 1) + '章';
-  saveChapterSnapshot(curRd.id, chIdx, label);
-  showToast('已存档第' + (chIdx + 1) + '章当前版本');
+  var label = '手动存档·' + _snapName();
+  var saved = saveChapterSnapshot(curRd.id, _snapIdx(), label);
+  if(saved){
+    showToast('已存档' + _snapName() + '当前版本');
+  } else {
+    showToast('内容太短，或和最近一次存档完全相同，没有重复存档');
+  }
 }
 
 // 打开快照抽屉
 function openSnapshotDrawer(){
-  if(!curRd || curRd.type !== 'long'){
-    showToast('请先打开一篇长篇作品');
+  if(!curRd){
+    showToast('请先打开一篇作品');
     return;
   }
   var lbl = document.getElementById('snChapterLabel');
-  if(lbl) lbl.textContent = '第' + (curCh + 1) + '章';
+  if(lbl) lbl.textContent = _snapName();
   renderSnapshotList();
   document.getElementById('snapshotDrawerOv').classList.add('show');
   navPush('snapshotDrawerOv');
@@ -11667,7 +12309,7 @@ function closeSnapshotDrawer(){
 // 渲染快照列表
 function renderSnapshotList(){
   if(!curRd) return;
-  var key = _snapKey(curRd.id, curCh);
+  var key = _snapKey(curRd.id, _snapIdx());
   var list = ld(key, []);
   if(!Array.isArray(list)) list = [];
   var container = document.getElementById('snapshotList');
@@ -11677,8 +12319,8 @@ function renderSnapshotList(){
     container.innerHTML =
       '<div class="sn-empty">' +
         '<i class="fas fa-history" style="font-size:30px;margin-bottom:12px;opacity:.25;display:block"></i>' +
-        '这一章还没有历史版本<br>' +
-        '<span style="font-size:12px">续写/改写时会自动保存<br>也可以点「手动存档」留底</span>' +
+        (_snapIsLong() ? '这一章' : '这篇作品') + '还没有历史版本<br>' +
+        '<span style="font-size:12px">续写/改写/重生成时会自动保存<br>也可以点「手动存档」留底</span>' +
       '</div>';
     return;
   }
@@ -11703,7 +12345,7 @@ function renderSnapshotList(){
         '</div>' +
         '<div class="sn-item-preview">' + esc(preview) + '</div>' +
       '</div>' +
-      '<button class="sn-del-btn" title="删除"><i class="fas fa-trash-alt"></i></button>';
+      '<button class="sn-del-btn" title="删除" aria-label="删除这个历史版本"><i class="fas fa-trash-alt"></i></button>';
 
     // 点击行 → 预览
     item.addEventListener('click', function(e){
@@ -11720,20 +12362,30 @@ function renderSnapshotList(){
   });
 }
 
+// 在列表里按ID找快照；找不到返回null
+function _snapFind(snapId){
+  if(!curRd || !snapId) return null;
+  var list = ld(_snapKey(curRd.id, _snapIdx()), []);
+  if(!Array.isArray(list)) return null;
+  return list.find(function(s){ return s.id === snapId; }) || null;
+}
+
 // 预览某个快照
 function previewSnapshot(snapId){
-  if(!curRd) return;
-  var key = _snapKey(curRd.id, curCh);
-  var list = ld(key, []);
-  if(!Array.isArray(list)) return;
-  var snap = list.find(function(s){ return s.id === snapId; });
+  var snap = _snapFind(snapId);
   if(!snap){ showToast('找不到该版本'); return; }
 
   _snapPreviewId = snapId;
+  _snapDiffOn = false;
   var titleEl = document.getElementById('snPreviewTitle');
   var bodyEl  = document.getElementById('snPreviewBody');
+  var diffBtn = document.getElementById('snDiffBtn');
   if(titleEl) titleEl.textContent = snap.label;
   if(bodyEl)  bodyEl.textContent  = snap.content;
+  if(diffBtn){
+    diffBtn.textContent = '对比当前';
+    diffBtn.setAttribute('aria-pressed', 'false');
+  }
 
   document.getElementById('snapshotPreviewOv').classList.add('show');
   navPush('snapshotPreviewOv');
@@ -11744,20 +12396,116 @@ function closeSnapshotPreview(){
   navPop('snapshotPreviewOv');
   document.getElementById('snapshotPreviewOv').classList.remove('show');
   _snapPreviewId = null;
+  _snapDiffOn = false;
+}
+
+// ---- 差异对比（该版本 vs 当前内容）----
+// 先按段落做LCS对齐，再对"被改写的段落对"做字符级高亮（复用 computeWordDiff）。
+// 中文长文直接做全文字符级LCS会很慢，所以段落过多时放弃对比并提示，不硬算。
+var _SNAP_DIFF_MAX_PARAS = 400;
+
+function _snapParaDiff(oldText, newText){
+  var a = String(oldText || '').split('\n').filter(function(p){ return p.trim(); });
+  var b = String(newText || '').split('\n').filter(function(p){ return p.trim(); });
+  if(a.length > _SNAP_DIFF_MAX_PARAS || b.length > _SNAP_DIFF_MAX_PARAS) return null;
+  var m = a.length, n = b.length;
+  var dp = [];
+  var i, j;
+  for(i = 0; i <= m; i++){
+    dp.push(new Array(n + 1).fill(0));
+  }
+  for(i = 1; i <= m; i++){
+    for(j = 1; j <= n; j++){
+      if(a[i-1].trim() === b[j-1].trim()) dp[i][j] = dp[i-1][j-1] + 1;
+      else dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+    }
+  }
+  var ops = [];
+  i = m; j = n;
+  while(i > 0 || j > 0){
+    if(i > 0 && j > 0 && a[i-1].trim() === b[j-1].trim()){
+      ops.unshift({type:'same', text:b[j-1]});
+      i--; j--;
+    } else if(j > 0 && (i === 0 || dp[i][j-1] >= dp[i-1][j])){
+      ops.unshift({type:'add', text:b[j-1]});
+      j--;
+    } else {
+      ops.unshift({type:'del', text:a[i-1]});
+      i--;
+    }
+  }
+  return ops;
+}
+
+function _snapDiffHtml(oldText, newText){
+  var ops = _snapParaDiff(oldText, newText);
+  if(!ops) return null;
+  var html = '';
+  var k = 0;
+  while(k < ops.length){
+    if(ops[k].type === 'same'){
+      html += '<div class="sn-diff-p">' + esc(ops[k].text) + '</div>';
+      k++;
+      continue;
+    }
+    // 收集一段连续的 del/add，按顺序两两配对成"改写"，多出来的按纯删除/纯新增显示
+    var dels = [], adds = [];
+    while(k < ops.length && ops[k].type !== 'same'){
+      if(ops[k].type === 'del') dels.push(ops[k].text); else adds.push(ops[k].text);
+      k++;
+    }
+    var pairs = Math.max(dels.length, adds.length);
+    for(var p = 0; p < pairs; p++){
+      var o = p < dels.length ? dels[p] : null;
+      var nw = p < adds.length ? adds[p] : null;
+      if(o !== null && nw !== null && typeof computeWordDiff === 'function'){
+        var parts = computeWordDiff(o, nw);
+        html += '<div class="sn-diff-p">' + parts.map(function(seg){
+          if(seg.type === 'del') return '<del class="sn-d-del">' + esc(seg.text) + '</del>';
+          if(seg.type === 'add') return '<ins class="sn-d-add">' + esc(seg.text) + '</ins>';
+          return esc(seg.text);
+        }).join('') + '</div>';
+      } else {
+        if(o !== null) html += '<div class="sn-diff-p"><del class="sn-d-del">' + esc(o) + '</del></div>';
+        if(nw !== null) html += '<div class="sn-diff-p"><ins class="sn-d-add">' + esc(nw) + '</ins></div>';
+      }
+    }
+  }
+  if(!html) html = '<div class="sn-diff-p" style="opacity:.6">两个版本内容完全相同</div>';
+  return html;
+}
+
+// 切换"原文 / 对比当前"
+function toggleSnapshotDiff(){
+  var snap = _snapFind(_snapPreviewId);
+  var bodyEl = document.getElementById('snPreviewBody');
+  var diffBtn = document.getElementById('snDiffBtn');
+  if(!snap || !bodyEl){ showToast('找不到该版本'); return; }
+  if(_snapDiffOn){
+    _snapDiffOn = false;
+    bodyEl.textContent = snap.content;
+    if(diffBtn){ diffBtn.textContent = '对比当前'; diffBtn.setAttribute('aria-pressed', 'false'); }
+    return;
+  }
+  var html = _snapDiffHtml(snap.content, _snapCurrentText());
+  if(html === null){
+    showToast('内容段落太多，无法逐段对比，请直接查看原文', 3500);
+    return;
+  }
+  _snapDiffOn = true;
+  bodyEl.innerHTML =
+    '<div class="sn-diff-tip"><del class="sn-d-del">红色删除线</del>：该版本有、当前没有；<ins class="sn-d-add">绿色</ins>：当前新增</div>' + html;
+  if(diffBtn){ diffBtn.textContent = '查看原文'; diffBtn.setAttribute('aria-pressed', 'true'); }
 }
 
 // 确认恢复弹窗
 function _restoreSnapshotConfirm(){
-  if(!_snapPreviewId || !curRd) return;
-  var key = _snapKey(curRd.id, curCh);
-  var list = ld(key, []);
-  if(!Array.isArray(list)) return;
-  var snap = list.find(function(s){ return s.id === _snapPreviewId; });
+  var snap = _snapFind(_snapPreviewId);
   if(!snap){ showToast('找不到该版本'); return; }
 
   showDlg(
     '确认恢复',
-    '将把第' + (curCh + 1) + '章恢复到「' + snap.label + '」版本\n\n' +
+    '将把' + _snapName() + '恢复到「' + snap.label + '」版本\n\n' +
     '当前内容会被替换（当前版本已自动存档备份）。\n\n确认恢复吗？',
     function(){
       _doRestoreSnapshot(snap);
@@ -11766,15 +12514,20 @@ function _restoreSnapshotConfirm(){
   );
 }
 
-// 执行恢复
+// 执行恢复（一键替换当前内容）
 function _doRestoreSnapshot(snap){
-  if(!curRd || curRd.type !== 'long' || !Array.isArray(curRd.chapters)) return;
+  if(!curRd) return;
+  if(_snapIsLong() && !Array.isArray(curRd.chapters)) return;
 
   // 先把「当前版本」存一份，防止误操作
-  saveChapterSnapshot(curRd.id, curCh, '恢复前备份·第' + (curCh + 1) + '章');
+  saveChapterSnapshot(curRd.id, _snapIdx(), '恢复前备份·' + _snapName());
 
   // 写回
-  curRd.chapters[curCh] = snap.content;
+  if(_snapIsLong()){
+    curRd.chapters[curCh] = snap.content;
+  } else {
+    curRd.content = snap.content;
+  }
   syncArticle(curRd);
   renderChContent();
 
@@ -11793,7 +12546,7 @@ function _doRestoreSnapshot(snap){
 // 删除某条快照
 function deleteSnapshotById(snapId){
   if(!curRd) return;
-  var key = _snapKey(curRd.id, curCh);
+  var key = _snapKey(curRd.id, _snapIdx());
   var list = ld(key, []);
   if(!Array.isArray(list)) return;
   list = list.filter(function(s){ return s.id !== snapId; });
@@ -11802,17 +12555,17 @@ function deleteSnapshotById(snapId){
   showToast('已删除该版本');
 }
 
-// 清空当前章节所有快照
+// 清空当前章节（短篇为当前作品）所有快照
 function clearChapterSnapshots(){
   if(!curRd) return;
   showDlg(
     '清空确认',
-    '确定要清空第' + (curCh + 1) + '章的全部历史版本吗？此操作不可恢复。',
+    '确定要清空' + _snapName() + '的全部历史版本吗？此操作不可恢复。',
     function(){
-      var key = _snapKey(curRd.id, curCh);
+      var key = _snapKey(curRd.id, _snapIdx());
       sv(key, []);
       renderSnapshotList();
-      showToast('已清空该章历史版本');
+      showToast('已清空历史版本');
     },
     true
   );
