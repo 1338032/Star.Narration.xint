@@ -225,6 +225,203 @@ body{
   border:1px solid rgba(247,201,72,.25);
 }
 .hero-btn-gold:hover{background:rgba(247,201,72,.15);border-color:var(--gold);transform:translateY(-1px);}
+/* ===== 免费 AI 教程下载 ===== */
+.guide-download{
+  max-width:620px;
+  margin:22px auto 0;
+  text-align:left;
+  animation:fadeInDown .7s .5s ease both;
+}
+
+.guide-download-main{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 16px;
+  background:rgba(67,232,176,.06);
+  border:1px solid rgba(67,232,176,.18);
+  border-radius:var(--radius-md);
+  transition:var(--transition);
+}
+
+.guide-download-main:hover{
+  border-color:rgba(67,232,176,.35);
+  background:rgba(67,232,176,.09);
+  box-shadow:0 4px 20px rgba(67,232,176,.08);
+}
+
+.guide-download-icon{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  background:rgba(67,232,176,.1);
+  border:1px solid rgba(67,232,176,.18);
+  color:var(--green);
+  font-size:16px;
+}
+
+.guide-download-info{
+  flex:1;
+  min-width:0;
+}
+
+.guide-download-name{
+  color:var(--text);
+  font-size:12px;
+  font-weight:600;
+  font-family:'JetBrains Mono',monospace;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.guide-download-desc{
+  color:var(--text2);
+  font-size:10px;
+  margin-top:2px;
+}
+
+.guide-download-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 12px;
+  border-radius:8px;
+  border:1px solid rgba(67,232,176,.22);
+  background:rgba(67,232,176,.08);
+  color:var(--green);
+  text-decoration:none;
+  font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  transition:var(--transition);
+  flex-shrink:0;
+}
+
+.guide-download-btn:hover{
+  background:rgba(67,232,176,.15);
+  border-color:var(--green);
+  transform:translateY(-1px);
+}
+
+/* 无法下载折叠栏 */
+.guide-fallback{
+  margin-top:8px;
+  border:1px solid var(--border2);
+  border-radius:10px;
+  background:rgba(124,109,240,.035);
+  overflow:hidden;
+}
+
+.guide-fallback summary{
+  padding:9px 12px;
+  color:var(--text2);
+  font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  cursor:pointer;
+  transition:var(--transition);
+  list-style:none;
+}
+
+.guide-fallback summary::-webkit-details-marker{
+  display:none;
+}
+
+.guide-fallback summary::before{
+  content:'›';
+  display:inline-block;
+  margin-right:7px;
+  color:var(--accent2);
+  transition:var(--transition);
+}
+
+.guide-fallback[open] summary::before{
+  transform:rotate(90deg);
+}
+
+.guide-fallback summary:hover{
+  color:var(--accent2);
+  background:rgba(124,109,240,.06);
+}
+
+.guide-fallback-content{
+  padding:0 12px 12px;
+}
+
+.guide-fallback-code{
+  position:relative;
+  padding:10px 12px;
+  padding-right:78px;
+  border-radius:8px;
+  background:rgba(0,0,0,.3);
+  border:1px solid var(--border2);
+  color:var(--text2);
+  font-size:10px;
+  line-height:1.7;
+  font-family:'JetBrains Mono',monospace;
+  word-break:break-all;
+}
+
+.guide-copy-btn{
+  position:absolute;
+  top:7px;
+  right:7px;
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  padding:4px 8px;
+  border-radius:6px;
+  border:1px solid var(--border2);
+  background:rgba(124,109,240,.08);
+  color:var(--text2);
+  font-size:9px;
+  font-family:'JetBrains Mono',monospace;
+  cursor:pointer;
+  transition:var(--transition);
+}
+
+.guide-copy-btn:hover{
+  border-color:var(--accent);
+  color:var(--accent2);
+  background:rgba(124,109,240,.15);
+}
+
+.guide-copy-btn.copied{
+  border-color:var(--green);
+  color:var(--green);
+  background:rgba(67,232,176,.08);
+}
+
+@media(max-width:640px){
+  .guide-download{
+    margin-top:18px;
+  }
+
+  .guide-download-main{
+    padding:10px 12px;
+  }
+
+  .guide-download-icon{
+    width:34px;
+    height:34px;
+  }
+
+  .guide-download-btn{
+    padding:6px 9px;
+  }
+
+  .guide-download-desc{
+    font-size:9px;
+  }
+
+  .guide-fallback-code{
+    padding-right:70px;
+    font-size:9px;
+  }
+    }
 
 .hero-orb{position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;}
 .deco-line{position:absolute;background:linear-gradient(90deg,transparent,var(--accent),transparent);height:1px;opacity:.25;}
@@ -752,6 +949,46 @@ body{
     <a href="#sec-deepseek" class="hero-btn hero-btn-primary"><i class="fas fa-bolt"></i> 国内推荐：DeepSeek</a>
     <a href="#sec-integrate" class="hero-btn hero-btn-secondary"><i class="fas fa-plug"></i> 直接接入星叙</a>
     <a href="#sec-trouble" class="hero-btn hero-btn-gold"><i class="fas fa-wrench"></i> 遇到问题？</a>
+  </div>
+  <!-- 免费 AI 教程下载 -->
+  <div class="guide-download">
+    <div class="guide-download-main">
+      <div class="guide-download-icon">
+        <i class="fas fa-file-word"></i>
+      </div>
+
+      <div class="guide-download-info">
+        <div class="guide-download-name">Quick-API-access.docx</div>
+        <div class="guide-download-desc">免费 AI 快速获取教程 · Word 文档</div>
+      </div>
+
+      <a
+        href="./Others/Quick-API-access.docx"
+        download="Quick-API-access.docx"
+        class="guide-download-btn"
+      >
+        <i class="fas fa-download"></i>
+        下载教程
+      </a>
+    </div>
+
+    <details class="guide-fallback">
+      <summary>无法下载？复制以下内容到百度网盘</summary>
+
+      <div class="guide-fallback-content">
+        <div class="guide-fallback-code">
+          <span>通过百度网盘分享的文件：星叙分享<br>链接:https://pan.baidu.com/s/1UZjsVua1MBKVGxuCKHDLSw?pwd=Bsyn<br>复制这段内容打开「百度网盘APP」即可获取</span>
+
+          <button
+            class="guide-copy-btn"
+            onclick="copyText('通过百度网盘分享的文件：星叙分享\n链接:https://pan.baidu.com/s/1UZjsVua1MBKVGxuCKHDLSw?pwd=Bsyn\n复制这段内容打开「百度网盘APP」即可获取',this)"
+          >
+            <i class="fas fa-copy"></i>
+            快速复制
+          </button>
+        </div>
+      </div>
+    </details>
   </div>
   <div class="deco-line h"></div>
 </div>
